@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajukan Peminjaman | SIM-BMN</title>
+  <style>
+    :root { --navy:#102b55; --blue:#2879d0; --ink:#172f59; --muted:#647a9b; --line:#dce5f2; --canvas:#edf2fb; }
+    * { box-sizing: border-box; }
+    body { min-width:320px; min-height:100vh; margin:0; background:var(--canvas); color:var(--ink); font-family:Arial,Helvetica,sans-serif; }
+    button, a { font:inherit; cursor:pointer; }
+    .user-app { min-height:100vh; }
+    .workspace { width:100%; min-width:0; margin:0; }
+    .menu-drawer { position:fixed; top:68px; left:0; z-index:30; width:220px; height:calc(100vh - 68px); padding:22px 12px; background:linear-gradient(170deg,#102b55,#06356f); box-shadow:8px 0 24px #102b5530; transform:translateX(-105%); transition:transform .2s ease; }
+    .menu-drawer.open { transform:translateX(0); }
+    .menu-drawer-title { margin:0 10px 12px; color:#bcd3ec; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+    .drawer-menu { display:grid; gap:7px; }
+    .drawer-link { display:flex; align-items:center; gap:12px; width:100%; padding:12px 13px; border:0; border-radius:8px; background:transparent; color:#e7f2ff; font-size:13px; font-weight:700; text-align:left; }
+    .drawer-link:hover,.drawer-link.active { background:#167bd5; color:#fff; }
+    .drawer-icon { display:grid; width:22px; height:22px; place-items:center; border:1px solid #a9d4ff; border-radius:6px; color:#fff; font-size:11px; }
+    .drawer-overlay { position:fixed; inset:68px 0 0; z-index:25; display:none; background:#102b5540; }
+    .drawer-overlay.open { display:block; }
+    .topbar { position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between; gap:16px; height:68px; padding:0 28px; border-bottom:1px solid var(--line); background:#fff; color:var(--navy); }
+    .topbar-brand { display:flex; align-items:center; gap:14px; font-size:20px; font-weight:800; }
+    .menu-icon { font-size:24px; }
+    .topbar-user { display:flex; align-items:center; gap:10px; color:var(--navy); font-size:12px; font-weight:700; }
+    .avatar { display:grid; width:34px; height:34px; place-items:center; border-radius:50%; background:#e4edf9; font-size:17px; }
+    .brand { display:flex; align-items:center; gap:11px; }
+    .brand-mark { display:grid; width:39px; height:39px; place-items:center; border-radius:10px; background:#1677c7; font-weight:800; }
+    .brand strong,.brand small { display:block; } .brand strong { font-size:16px; } .brand small { margin-top:3px; color:#c3d2e8; font-size:10px; }
+    .back-link { padding:8px 12px; border:1px solid #ffffff55; border-radius:6px; color:#fff; font-size:12px; text-decoration:none; }
+    main { width:100%; max-width:none; margin:auto; padding:20px 28px 50px; }
+    .home-banner { height:174px; margin-bottom:22px; overflow:hidden; border-radius:13px; background:#1262b2 url('header1.png') center/cover no-repeat; box-shadow:0 8px 20px #07539a20; }
+    .heading { margin:0 0 18px; padding:25px 28px; border-radius:13px; background:linear-gradient(110deg,#fafdff,#eaf5ff); }
+    .eyebrow { color:#1768c0; font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; }
+    h1 { margin:6px 0; color:var(--navy); font-size:27px; } .heading p { margin:0; color:var(--muted); font-size:13px; }
+    .panel { padding:24px; border:1px solid var(--line); border-radius:12px; background:#fff; box-shadow:0 7px 22px #1939680a; }
+    .panel h2 { margin:0 0 5px; color:var(--navy); font-size:20px; } .panel p { margin:0 0 18px; color:var(--muted); font-size:12px; }
+    .choice-heading { display:flex; align-items:center; gap:12px; margin-bottom:17px; }
+    .choice-heading-icon { display:grid; width:40px; height:40px; place-items:center; border-radius:50%; background:#1685dd; color:#fff; font-size:21px; }
+    .choice-heading h2 { margin:0; } .choice-heading p { margin:4px 0 0; }
+    .choice-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .choice { display:grid; grid-template-columns:110px 1fr; min-height:135px; align-items:center; padding:0; overflow:hidden; border:1px solid #d5e5f7; border-radius:14px; background:linear-gradient(120deg,#fafdff,#eef6ff); color:var(--ink); text-align:left; }
+    .choice:hover { border-color:var(--blue); box-shadow:0 5px 15px #2879d01a; transform:translateY(-2px); }
+    .choice-visual { display:grid; height:100%; min-height:135px; place-items:center; background:#dceeff; color:var(--blue); font-size:40px; }
+    .choice-copy { padding:15px 13px; } .choice-icon { display:block; margin-bottom:10px; color:var(--blue); font-size:20px; }
+    .choice strong,.choice small { display:block; } .choice strong { margin-bottom:6px; font-size:13px; } .choice small { color:var(--muted); font-size:10px; line-height:1.5; }
+    .form-wrap { display:none; width:100%; } .form-wrap.active { display:block; }
+    .toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .toolbar h2 { margin:0; } .button { padding:9px 13px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); font-size:12px; font-weight:700; }
+    .button:hover { border-color:var(--blue); color:var(--blue); }
+    iframe { display:block; width:100%; min-height:900px; border:0; background:#fff; }
+    .step-note { margin:0 0 14px; padding:11px 13px; border-left:4px solid #e0ad25; border-radius:5px; background:#fff9e8; color:#705518; font-size:12px; line-height:1.5; }
+    .success { display:none; margin-top:14px; padding:13px; border-radius:6px; background:#e4f7ed; color:#087443; font-size:12px; line-height:1.5; }
+    .success.visible { display:block; }
+    @media (max-width:650px) { .topbar { padding:0 16px; } .topbar-brand span:last-child,.topbar-user span { display:none; } main { padding:14px 12px 35px; } .home-banner { height:125px; } .heading { padding:19px; } .choice-grid { grid-template-columns:1fr; } .choice { grid-template-columns:105px 1fr; } .panel { padding:16px; } iframe { min-height:1100px; } .toolbar { align-items:flex-start; flex-direction:column; } }
+  </style>
+</head>
+<body>
+  <div class="user-app">
+   
+    <div class="workspace">
+      <header class="topbar">
+        <div class="topbar-brand"><button class="menu-button" id="menuButton" type="button" aria-label="Buka menu utama" aria-expanded="false"></button><span>BLSDM KOMDIGI MANADO</span></div>
+        <div class="topbar-user"><span aria-hidden="true">♟</span><span class="avatar">●</span><span>Pengguna⌄</span></div>
+      </header>
+      <aside class="menu-drawer" id="menuDrawer" aria-label="Menu utama">
+        <p class="menu-drawer-title">Menu Utama</p>
+        <nav class="drawer-menu">
+          <button class="drawer-link active" type="button" data-service="peminjaman"><span class="drawer-icon">›</span><span>Pengajuan</span></button>
+          <button class="drawer-link" type="button" data-service="perpanjangan"><span class="drawer-icon">›</span><span>Perpanjangan</span></button>
+          <button class="drawer-link" type="button" data-service="pengembalian"><span class="drawer-icon">›</span><span>Pengembalian</span></button>
+        </nav>
+      </aside>
+      <div class="drawer-overlay" id="drawerOverlay"></div>
+      <main>
+    
+    <section class="heading"><div class="eyebrow">Layanan BMN</div><h1>Ajukan Peminjaman</h1><p>Pilih jenis BMN, isi formulir peminjaman, lalu lengkapi berita acara serah terima.</p></section>
+    <section class="panel" id="choicePanel">
+      <div class="choice-heading"><span class="choice-heading-icon">▦</span><div><h2 id="choiceTitle">Pilih jenis BMN</h2><p id="choiceDescription">Formulir dan berita acara akan menggunakan kolom sesuai jenis aset.</p></div></div>
+      <div class="choice-grid">
+        <button class="choice" type="button" data-entity="kendaraan"><span class="choice-visual">🚘</span><span class="choice-copy"><span class="choice-icon">🚘</span><strong>Kendaraan</strong><small>Form kendaraan dinas, identitas, tujuan, durasi, serta tanda tangan.</small></span></button>
+        <button class="choice" type="button" data-entity="ruangan"><span class="choice-visual">▦</span><span class="choice-copy"><span class="choice-icon">▦</span><strong>Ruangan</strong><small>Form ruangan, perangkat, jadwal kegiatan, serta tanda tangan.</small></span></button>
+        <button class="choice" type="button" data-entity="barang"><span class="choice-visual">◈</span><span class="choice-copy"><span class="choice-icon">◈</span><strong>Barang</strong><small>Form barang BMN, nomor inventaris, rincian kebutuhan, serta tanda tangan.</small></span></button>
+      </div>
+    </section>
+    <section class="panel form-wrap" id="formPanel">
+      <div class="toolbar"><h2 id="formTitle">Formulir Peminjaman</h2><button class="button" id="changeEntity" type="button">Ganti Jenis BMN</button></div>
+      <p class="step-note" id="stepNote">Isi dan simpan formulir sesuai layanan yang dipilih. Berita acara akan tersedia setelah formulir tersimpan.</p>
+      <iframe id="formFrame" title="Formulir peminjaman BMN"></iframe>
+      <div class="success" id="successMessage">Berita acara berhasil disimpan. Pengajuan telah tersimpan dan dapat dilihat admin melalui halaman dashboard.</div>
+    </section>
+      </main>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const labels = { kendaraan: 'Kendaraan', ruangan: 'Ruangan', barang: 'Barang' };
+      const frame = document.getElementById('formFrame');
+      const choicePanel = document.getElementById('choicePanel');
+      const formPanel = document.getElementById('formPanel');
+      const title = document.getElementById('formTitle');
+      const success = document.getElementById('successMessage');
+      let entity = '';
+      let service = 'peminjaman';
+      let loan = null;
+      let signature = '';
+      let bastSaved = false;
+      const showHome = () => {
+        entity = '';
+        loan = null;
+        signature = '';
+        bastSaved = false;
+        frame.src = 'about:blank';
+        frame.hidden = true;
+        formPanel.classList.remove('active');
+        choicePanel.hidden = false;
+        service = 'peminjaman';
+        document.querySelector('.heading h1').textContent = 'Ajukan Peminjaman';
+        document.getElementById('choiceTitle').textContent = 'Pilih jenis BMN';
+        document.getElementById('stepNote').textContent = 'Isi dan simpan formulir sesuai layanan yang dipilih. Berita acara akan tersedia setelah formulir tersimpan.';
+        document.querySelectorAll('.side-link').forEach((link) => link.classList.remove('active'));
+        document.getElementById('homeButton')?.classList.add('active');
+      };
+      const readSubmissions = () => {
+        const value = JSON.parse(localStorage.getItem('bmn-user-submissions-v1') || '[]');
+        if (!Array.isArray(value)) throw new Error('Data pengajuan pengguna tidak valid.');
+        return value;
+      };
+      const saveSubmission = (documentData = {}) => {
+        const submissions = readSubmissions();
+        const existing = submissions.find((item) => item.id === loan.id);
+        const submission = {
+          id: loan.id,
+          entity,
+          kind: documentData.kind || 'peminjaman',
+          loan: loan.data,
+          signature: documentData.signature || signature,
+          bast: documentData.kind ? null : documentData,
+          extra: documentData,
+          submittedAt: new Date().toISOString()
+        };
+        if (existing) submissions.splice(submissions.indexOf(existing), 1, submission); else submissions.unshift(submission);
+        localStorage.setItem('bmn-user-submissions-v1', JSON.stringify(submissions));
+      };
+      const initializeFrame = () => {
+        const view = service === 'perpanjangan' ? 'perpanjangan' : service === 'pengembalian' ? 'pengembalian' : 'peminjaman';
+        const mode = service === 'perpanjangan' ? 'extension' : service === 'pengembalian' ? 'return' : 'loan';
+        frame.contentWindow.postMessage({ type:'bmn:init', entity, view, mode, newLoan:mode === 'loan', newExtension:mode === 'extension', newReturn:mode === 'return', loan:loan?.data || null, signature, document:loan?.bast || null }, '*');
+      };
+      const showService = (nextService) => {
+        service = nextService;
+        entity = '';
+        loan = null;
+        signature = '';
+        bastSaved = false;
+        const titles = { peminjaman: 'Ajukan Peminjaman', perpanjangan: 'Ajukan Perpanjangan', pengembalian: 'Ajukan Pengembalian' };
+        document.querySelector('.heading h1').textContent = titles[service];
+        document.getElementById('choiceTitle').textContent = service === 'peminjaman' ? 'Pilih jenis BMN' : `Pilih jenis BMN untuk ${service}`;
+        document.getElementById('stepNote').textContent = service === 'peminjaman'
+          ? 'Isi dan simpan formulir peminjaman. Berita acara akan tersedia setelah formulir tersimpan.'
+          : `Isi dan simpan formulir ${service}. Berita acara akan tersedia setelah formulir tersimpan.`;
+        frame.src = 'about:blank'; frame.hidden = true; formPanel.classList.remove('active'); choicePanel.hidden = false;
+        document.querySelectorAll('.side-link').forEach((link) => link.classList.toggle('active', link.dataset.service === service));
+      };
+      document.querySelectorAll('[data-entity]').forEach((button) => button.addEventListener('click', () => {
+        entity = button.dataset.entity; loan = null; signature = ''; bastSaved = false; success.classList.remove('visible');
+        title.textContent = `${service === 'peminjaman' ? 'Peminjaman' : service === 'perpanjangan' ? 'Perpanjangan' : 'Pengembalian'} ${labels[entity]}`; choicePanel.hidden = true; formPanel.classList.add('active'); frame.hidden = false;
+        document.querySelectorAll('.side-link').forEach((link) => link.classList.remove('active'));
+        button.classList.add('active');
+        const view = service === 'perpanjangan' ? 'perpanjangan' : service === 'pengembalian' ? 'pengembalian' : 'peminjaman';
+        frame.src = `index_${entity}.html?view=${view}&embed=1&parent=1`;
+      }));
+      const homeButton = document.getElementById('homeButton');
+      if (homeButton) homeButton.addEventListener('click', showHome);
+      const changeEntity = document.getElementById('changeEntity');
+      if (changeEntity) changeEntity.addEventListener('click', showHome);
+      document.querySelectorAll('[data-service]').forEach((button) => button.addEventListener('click', () => showService(button.dataset.service)));
+      frame.addEventListener('load', () => {
+        if (!entity) return;
+        const childDocument = frame.contentDocument;
+        const childSidebar = childDocument?.querySelector('.sidebar');
+        const childShell = frame.contentDocument?.querySelector('.app-shell');
+        if (childSidebar) childSidebar.remove();
+        childDocument?.body.classList.add('embedded-form');
+        if (childShell) {
+          childShell.style.display = 'block';
+          childShell.style.minHeight = '100vh';
+        }
+        if (childDocument) {
+          const style = childDocument.createElement('style');
+          style.textContent = [
+            '.embedded-form .sidebar, .embedded-form .sidebar-label, .embedded-form .topbar, .embedded-form .intro, .embedded-form .tabs, .embedded-form .form-overview, .embedded-form [aria-label="Ringkasan isian formulir"] { display:none !important; }',
+            '.embedded-form .app-shell { display:block !important; }',
+            '.app-shell, .workspace, .dashboard-page { display:block !important; width:100% !important; min-width:0 !important; margin:0 !important; }',
+            '.dashboard-page { padding:0 !important; }',
+            '.panel { width:100% !important; margin:0 !important; }'
+          ].join('');
+          childDocument.head.appendChild(style);
+          const cleanEmbeddedForm = () => {
+            childDocument.querySelectorAll('.sidebar, .topbar, .intro, .tabs, .form-overview, [aria-label="Ringkasan isian formulir"]').forEach((element) => element.remove());
+          };
+          cleanEmbeddedForm();
+          new MutationObserver(cleanEmbeddedForm).observe(childDocument.body, { childList: true, subtree: true });
+        }
+        initializeFrame();
+      });
+      window.addEventListener('message', (event) => {
+        if (event.source !== frame.contentWindow || !event.data || event.data.entity !== entity) return;
+        if (event.data.type === 'bmn:loan-saved') {
+          loan = { id:`${entity}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`, data:event.data.loan || {} };
+          signature = event.data.signature || ''; saveSubmission(); service = 'peminjaman'; initializeFrame(); return;
+        }
+        if (event.data.type === 'bmn:extension-saved') {
+          loan = { id:`${entity}-extension-${Date.now()}`, data:event.data.extension || {} };
+          saveSubmission({ kind:'perpanjangan', signatures:event.data.extensionSignatures || {} });
+          success.textContent = 'Perpanjangan berhasil disimpan dan dapat dilihat admin.';
+          success.classList.add('visible');
+          return;
+        }
+        if (event.data.type === 'bmn:return-saved') {
+          loan = { id:`${entity}-return-${Date.now()}`, data:event.data.returnData || {} };
+          saveSubmission({ kind:'pengembalian', signature:event.data.returnSignature || '' });
+          success.textContent = 'Pengembalian berhasil disimpan dan dapat dilihat admin.';
+          success.classList.add('visible');
+          return;
+        }
+        if (event.data.type === 'bmn:bast-saved') {
+          if (!loan) return;
+          loan.bast = event.data.document || {}; saveSubmission(loan.bast); bastSaved = true; success.classList.add('visible');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
