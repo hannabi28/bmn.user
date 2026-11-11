@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulir Barang Milik Negara | BMN</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d8dee7;
+      --paper: #ffffff;
+      --canvas: #eef2f5;
+      --navy: #0f2747;
+      --teal: #0f766e;
+      --teal-dark: #0b5f59;
+      --gold: #c9943e;
+      --danger: #b42318;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .topbar {
+      background: var(--navy);
+      color: #fff;
+      padding: 24px max(24px, calc((100vw - 1180px) / 2));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand { display: flex; gap: 14px; align-items: center; }
+    .brand-logo {
+      width: 76px;
+      height: 48px;
+      display: block;
+      padding: 2px;
+      background: #fff;
+      object-fit: contain;
+    }
+    .brand strong { display: block; font-size: 17px; letter-spacing: .04em; }
+    .brand span { color: #cbd5e1; font: 12px Arial, sans-serif; }
+    .topbar small { color: #d8dee7; font: 12px Arial, sans-serif; }
+    .user-menu { display: flex; align-items: center; gap: 12px; color: #dceeff; font: 12px Arial, sans-serif; }
+    .user-menu strong, .user-menu small { display: block; }
+    .user-menu strong { color: #fff; margin-bottom: 3px; }
+    .user-menu small { color: #b9d9f6; }
+    .user-menu b { color: #fff; font-size: 14px; }
+    .user-bell { display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid #8fc7f5; border-radius: 50%; color: #fff; font-weight: bold; }
+    .topbar { height: auto; min-height: 0; padding: 0; border-bottom: 1px solid #d8e8f5; background: #eaf5ff; }
+    .header-slider { position: relative; height: 112px; overflow: hidden; background: #eaf5ff; }
+    .header-track { display: flex; height: 100%; transition: transform .45s ease; }
+    .header-slide { flex: 0 0 100%; min-width: 100%; height: 112px; object-fit: cover; object-position: center; user-select: none; }
+    .header-control { position: absolute; top: 50%; z-index: 1; display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid #fff8; border-radius: 50%; background: #07539a99; color: #fff; font: bold 18px Arial, sans-serif; transform: translateY(-50%); }
+    .header-control:hover { background: #07539a; }
+    .header-control.prev { left: 12px; }
+    .header-control.next { right: 12px; }
+    .header-dots { position: absolute; bottom: 7px; left: 50%; z-index: 1; display: flex; gap: 5px; transform: translateX(-50%); }
+    .header-dot { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; background: #fff9; }
+    .header-dot.active { background: #07539a; }
+
+    .page { max-width: 1180px; margin: 0 auto; padding: 30px 24px 70px; }
+    .intro { margin-bottom: 22px; }
+    .eyebrow { color: var(--gold); font: bold 11px Arial, sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 7px 0 8px; font-size: clamp(28px, 4vw, 42px); font-weight: 600; }
+    .intro p { max-width: 700px; margin: 0; color: var(--muted); font: 14px/1.7 Arial, sans-serif; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 18px; }
+    .tab {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--muted);
+      padding: 11px 15px;
+      border-radius: 3px;
+      font: bold 12px Arial, sans-serif;
+    }
+    .tab:hover, .tab.active { color: #fff; background: var(--teal); border-color: var(--teal); }
+    .tab[data-panel="berita-acara"] { display: none; }
+
+    .panel { display: none; background: var(--paper); border: 1px solid var(--line); padding: clamp(20px, 4vw, 36px); }
+    .panel.active { display: block; animation: appear .25s ease-out; }
+    @keyframes appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+    .panel-heading { border-bottom: 1px solid var(--line); margin-bottom: 24px; padding-bottom: 15px; }
+    .panel-heading h2 { margin: 0 0 5px; font-size: 24px; font-weight: 600; }
+    .panel-heading p { margin: 0; color: var(--muted); font: 13px/1.6 Arial, sans-serif; }
+    .section-title { margin: 24px 0 12px; color: var(--navy); font-size: 16px; font-weight: bold; }
+    .section-title:first-child { margin-top: 0; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .form-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .field.full { grid-column: 1 / -1; }
+    label { display: block; margin-bottom: 6px; color: #344054; font: bold 12px Arial, sans-serif; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      background: #fff;
+      color: var(--ink);
+      padding: 11px 12px;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px #0f766e1c; }
+    textarea { min-height: 100px; resize: vertical; }
+    .hint { margin: 6px 0 0; color: var(--muted); font: 11px/1.5 Arial, sans-serif; }
+    .actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 9px; margin-top: 28px; }
+    .btn { border: 1px solid var(--line); border-radius: 3px; background: #fff; color: var(--ink); padding: 11px 16px; font: bold 12px Arial, sans-serif; }
+    .btn:hover { border-color: var(--teal); color: var(--teal-dark); }
+    .btn.primary { background: var(--teal); border-color: var(--teal); color: #fff; }
+    .btn.primary:hover { background: var(--teal-dark); }
+    .btn.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
+    .notice { background: #f7f3eb; border-left: 3px solid var(--gold); padding: 13px 15px; color: #594522; font: 12px/1.6 Arial, sans-serif; }
+    .status { min-height: 20px; margin: 13px 0 0; color: var(--teal-dark); font: 12px Arial, sans-serif; text-align: right; }
+
+    .document-area { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 22px; }
+    .editor { min-width: 0; }
+    .preview {
+      min-width: 0;
+      border: 1px solid #cbd2dc;
+      background: #fff;
+      padding: 34px 38px;
+      color: #111;
+      line-height: 1.65;
+      box-shadow: 0 5px 18px #17203312;
+    }
+    .letterhead { text-align: center; margin-bottom: 20px; }
+    .letterhead img { width: 100%; max-width: 650px; height: auto; }
+    .preview h3 { margin: 15px 0 2px; text-align: center; font-size: 16px; text-decoration: underline; }
+    .preview .doc-subtitle { text-align: center; font-weight: bold; font-size: 14px; }
+    .preview .doc-number { margin: 4px 0 21px; text-align: center; font-size: 12px; }
+    .preview p { margin: 8px 0; font-size: 12px; }
+    .doc-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
+    .doc-table td { padding: 4px 5px; vertical-align: top; }
+    .doc-table td:first-child { width: 34%; }
+    .clause { margin-top: 22px; }
+    .clause h4 { margin: 0 0 6px; text-align: center; font-size: 13px; text-decoration: underline; }
+    .clause p { text-align: justify; }
+    .signature-preview { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 28px; text-align: center; font-size: 11px; }
+    .signature-preview .party-signature { display: flex; flex-direction: column; }
+    .signature-preview .party-role { height: 42px; }
+    .signature-preview .party-identity { line-height: 1.5; }
+    .signature-preview .approver { grid-column: 1 / -1; justify-self: center; width: calc(50% - 6px); }
+    .signature-preview .line { height: 62px; margin: 5px 0; display: grid; place-items: center; color: #777; }
+    .signature-preview img { max-height: 57px; max-width: 100%; }
+    .extension-signature-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .preview, .preview *, .loan-preview, .loan-preview * {
+      font-family: Arial, sans-serif !important;
+      font-size: 12px !important;
+    }
+
+    .signatures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .signature-card { border: 1px solid var(--line); padding: 15px; }
+    .signature-card h3 { margin: 0 0 4px; color: var(--navy); font-size: 15px; }
+    .signature-card p { min-height: 30px; margin: 0 0 12px; color: var(--muted); font: 11px/1.5 Arial, sans-serif; }
+    .canvas-wrap { border: 1px dashed #aeb8c5; background: #f8fafc; padding: 6px; }
+    canvas { display: block; width: 100%; height: 140px; background: #fff; touch-action: none; }
+    .signature-card .btn { margin-top: 9px; padding: 8px 10px; }
+    .document-signatures {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .document-signature h3 { margin: 0 0 8px; color: var(--navy); font-size: 14px; }
+    .document-signature .canvas-wrap { padding: 5px; }
+    .document-signature canvas { height: 120px; }
+    .document-signature .btn { margin-top: 8px; padding: 8px 10px; }
+    .extension-signatures {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .next-document {
+      margin-top: 28px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+    }
+    .next-document h3 { margin: 0 0 6px; color: var(--navy); font-size: 16px; }
+    .next-document p { margin: 0; color: var(--muted); font: 12px/1.5 Arial, sans-serif; }
+
+    .loan-preview {
+      max-width: 820px;
+      margin: 28px auto 0;
+      padding: 44px 62px 56px;
+      border: 1px solid #cbd2dc;
+      background: #fff;
+      color: #111;
+      font: 15px/1.5 Arial, sans-serif;
+      box-shadow: 0 5px 18px #17203312;
+    }
+    .loan-preview .loan-letterhead {
+      margin-bottom: 42px;
+      text-align: center;
+    }
+    .loan-preview .loan-letterhead img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    .return-preview .loan-letterhead { text-align: center; }
+    .return-preview .loan-letterhead img { display: block; width: 100%; max-width: 100%; height: auto; margin: 0 auto; }
+    .loan-preview h2 {
+      margin: 0;
+      text-align: center;
+      font-size: 20px;
+      line-height: 1.65;
+      text-decoration: underline;
+    }
+    .loan-preview .loan-body { margin-top: 48px; }
+    .loan-preview p { margin: 0 0 7px; text-align: justify; }
+    .loan-lines { margin: 8px 0 8px; }
+    .loan-line { display: grid; grid-template-columns: 180px 16px minmax(0, 1fr); min-height: 27px; }
+    .loan-line .value { overflow-wrap: anywhere; border-bottom: 1px dotted #111; min-height: 22px; }
+    .loan-sign-date { margin: 30px 0 0 auto; width: 250px; text-align: center; }
+    .loan-signature { margin: 30px 0 0 auto; width: 250px; text-align: center; }
+    .loan-signature .space {
+      height: 78px;
+      margin: 6px 0 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .loan-signature .space img {
+      display: block;
+      max-width: 100%;
+      max-height: 70px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      margin: 0 auto;
+    }
+    .loan-signature strong { display: block; }
+    .loan-signature-input {
+      grid-column: 1 / -1;
+      border: 1px solid var(--line);
+      padding: 15px;
+      background: #fbfcfd;
+    }
+    .loan-signature-input h3 { margin: 0 0 5px; color: var(--navy); font-size: 15px; }
+    .loan-signature-input p { margin: 0 0 10px; color: var(--muted); font: 11px/1.5 Arial, sans-serif; }
+    .loan-signature-input .canvas-wrap { max-width: 560px; }
+    .loan-signature-input .actions { justify-content: flex-start; margin-top: 10px; }
+
+    .app-shell { display: flex; min-height: calc(100vh - 76px); }
+    .sidebar {
+      width: 212px;
+      flex: 0 0 212px;
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 22px 13px;
+      background: #07539a;
+      color: #fff;
+    }
+    .sidebar-label { margin: 20px 12px 10px; color: #b7d9fb; font: bold 10px Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+    .sidebar .tabs { display: flex; flex-direction: column; gap: 7px; margin: 0; }
+    .sidebar .tab {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #e9f3ff;
+      padding: 13px 12px;
+      text-align: left;
+      font: 600 13px Arial, sans-serif;
+    }
+    .sidebar .tab::before { content: '>'; display: grid; place-items: center; width: 21px; height: 21px; border: 1px solid #a9d4ff; border-radius: 6px; color: #fff; font-size: 11px; }
+    .sidebar .tab:hover, .sidebar .tab.active { background: #1678cf; color: #fff; }
+    .sidebar .tab[data-panel="dashboard"]::before { content: '#'; }
+    .embedded-mode .topbar.no-print { display: none; }
+    .app-shell.service-mode .sidebar .tab[data-panel="dashboard"] { display: none; }
+    .sidebar-foot { margin: 36vh 12px 0; color: #d4e9ff; font: 11px/1.5 Arial, sans-serif; }
+    .sidebar-foot strong { display: block; margin-bottom: 5px; color: #fff; font-size: 12px; }
+
+    .dashboard-page { flex: 1; min-width: 0; padding: 28px clamp(18px, 3vw, 34px) 60px; }
+    .dashboard-page .intro { margin: 0 0 21px; }
+    .dashboard-page.form-view > .intro { display: none; }
+    .dashboard-page .eyebrow { color: #e0a900; }
+    .dashboard-page h1 { margin: 3px 0 6px; color: #0c4a8c; font: 700 28px Arial, sans-serif; }
+    .dashboard-page .intro p { max-width: 700px; color: #55708f; font: 13px/1.6 Arial, sans-serif; }
+    .dashboard-page .tabs { display: none; }
+    .dashboard-panel { display: none; border: 0; background: transparent; padding: 0; }
+    .dashboard-panel.active { display: block; }
+    .dashboard-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr); height: 202px; overflow: hidden; border-radius: 10px; background: #dceeff; box-shadow: 0 9px 22px #07539a16; }
+    .dashboard-hero-copy { padding: 28px 26px; background: linear-gradient(105deg, #e6f5ff, #c9e8ff); }
+    .dashboard-hero h2 { margin: 0 0 9px; color: #0759b9; font: 800 35px/1.05 Arial, sans-serif; }
+    .dashboard-hero p { max-width: 360px; margin: 0; color: #255988; font: 13px/1.5 Arial, sans-serif; }
+    .hero-pills { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 19px; }
+    .hero-pills span { padding: 7px 11px; border-radius: 99px; background: #ffe044; color: #174679; font: bold 11px Arial, sans-serif; }
+    .dashboard-hero img { display: block; width: 100%; height: 202px; object-fit: cover; object-position: 50% 42%; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+    .dash-card { min-height: 145px; padding: 19px; border: 1px solid #dce9f4; border-radius: 9px; background: #fff; box-shadow: 0 5px 16px #07539a0d; }
+    .dash-card-icon { display: grid; place-items: center; width: 39px; height: 39px; margin-bottom: 13px; border-radius: 11px; background: #1685dd; color: #fff; font: bold 20px Arial, sans-serif; }
+    .dash-card:nth-child(2) .dash-card-icon { background: #ffda1e; color: #624700; }
+    .dash-card:nth-child(3) .dash-card-icon { background: #126ce2; }
+    .dash-card h3 { margin: 0 0 7px; color: #123e72; font: bold 16px Arial, sans-serif; }
+    .dash-card p { margin: 0; color: #66809d; font: 11px/1.5 Arial, sans-serif; }
+    .dash-card button { float: right; width: 28px; height: 28px; margin-top: -25px; border: 0; border-radius: 50%; background: #146ce1; color: #fff; font-weight: bold; }
+    .dashboard-lower { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .7fr); gap: 16px; margin-top: 16px; }
+    .activity, .stats-card { border: 1px solid #dce9f4; border-radius: 9px; background: #fff; box-shadow: 0 5px 16px #07539a0d; }
+    .dash-heading { display: flex; align-items: center; justify-content: space-between; padding: 17px 19px 12px; color: #123e72; font: bold 15px Arial, sans-serif; }
+    .dash-heading span { color: #126ce2; font-size: 10px; }
+    .activity table { width: 100%; border-collapse: collapse; color: #57728f; font: 11px Arial, sans-serif; }
+    .activity th, .activity td { padding: 10px 15px; border-top: 1px solid #edf3f8; text-align: left; }
+    .activity th { color: #7891aa; font-size: 10px; font-weight: 600; }
+    .status-pill { display: inline-block; padding: 4px 7px; border-radius: 10px; background: #fff1bf; color: #9a6c00; font-size: 10px; }
+    .stats-card { padding-bottom: 14px; }
+    .stat-total { display: grid; place-items: center; width: 104px; height: 104px; margin: 4px auto 14px; border: 10px solid #1477d8; border-right-color: #ffdc18; border-radius: 50%; color: #153f75; font: bold 22px Arial, sans-serif; }
+    .stat-total small { display: block; margin-top: -30px; color: #7891aa; font: 9px Arial, sans-serif; }
+    .stat-lines { display: grid; gap: 8px; padding: 0 20px; color: #456989; font: 11px Arial, sans-serif; }
+    .stat-lines span { display: flex; justify-content: space-between; }
+    .stat-lines b { color: #126ce2; }
+    .dashboard-panel + .panel { margin-top: 28px; }
+    .page > .panel { margin-left: 0; }
+
+    @media (max-width: 680px) {
+      .dashboard-hero { grid-template-columns: 1fr; }
+      .dashboard-hero img { max-height: 220px; }
+      .dashboard-lower { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .app-shell { display: block; }
+      .sidebar { position: static; width: 100%; height: auto; overflow-y: visible; padding: 9px 12px; }
+      .sidebar .tabs { flex-direction: row; overflow-x: auto; }
+      .sidebar .tab { flex: 0 0 auto; width: auto; padding: 9px; white-space: nowrap; }
+      .sidebar-label, .sidebar-foot { display: none; }
+      .dashboard-page { padding: 20px 13px 45px; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .activity { overflow-x: auto; }
+      .activity table { min-width: 540px; }
+    }
+
+    @media (max-width: 900px) {
+      .document-area { grid-template-columns: 1fr; }
+      .preview { order: 2; }
+    }
+    @media (max-width: 640px) {
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .page { padding: 22px 14px 50px; }
+      .form-grid, .form-grid.three, .signatures { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .preview { padding: 24px 18px; }
+      .signature-preview { gap: 6px; font-size: 9px; }
+      .loan-preview { padding: 30px 22px 40px; font-size: 13px; }
+      .loan-preview .loan-letterhead { margin-bottom: 28px; }
+      .loan-preview h2 { font-size: 16px; }
+      .loan-preview .loan-body { margin-top: 32px; }
+      .loan-line { grid-template-columns: 130px 12px minmax(0, 1fr); }
+      .document-signatures { grid-template-columns: 1fr; }
+      .extension-signatures { grid-template-columns: 1fr; }
+    }
+    @media print {
+      @page { size: A4 portrait; margin: 10mm; }
+      body { background: #fff; }
+      .form-overview { display: none !important; }
+      .topbar, .sidebar, .intro, .tabs, .editor, .no-print, .panel-heading { display: none !important; }
+      .page { max-width: none; padding: 0; }
+      .panel, .document-area { display: block; border: 0; padding: 0; }
+      .preview { box-shadow: none; border: 0; padding: 0; }
+      .preview:not(.selected-preview) { display: none; }
+      .panel:not(.active) { display: none !important; }
+      .panel.active > form,
+      .panel.active > .next-document { display: none !important; }
+      .panel.active { display: block !important; border: 0; padding: 0; }
+      body.printing-loan .topbar,
+      body.printing-loan .intro,
+      body.printing-loan .tabs,
+      body.printing-loan .panel,
+      body.printing-loan #peminjaman > form,
+      body.printing-loan #peminjaman > .panel-heading { display: none !important; }
+      body.printing-loan #peminjaman { display: block !important; }
+      body.printing-loan .loan-preview {
+        max-width: none;
+        margin: 0;
+        border: 0;
+        box-shadow: none;
+        padding: 0;
+        font-size: 10.5pt;
+        line-height: 1.28;
+      }
+      body.printing-loan .loan-preview .loan-letterhead { margin-bottom: 7mm; }
+      body.printing-loan .loan-preview h2 { font-size: 13pt; line-height: 1.28; }
+      body.printing-loan .loan-preview .loan-body { margin-top: 9mm; }
+      body.printing-loan .loan-preview p { margin-bottom: 4px; }
+      body.printing-loan .loan-line { min-height: 20px; }
+      body.printing-loan .loan-line .value { min-height: 17px; }
+      body.printing-loan .loan-sign-date { margin-top: 7mm; }
+      body.printing-loan .loan-signature { margin-top: 5mm; }
+      body.printing-loan .loan-signature .space { height: 22mm; margin: 2mm 0 2mm; }
+      body.printing-loan .loan-signature .space img { max-height: 20mm; }
+      body.printing-extension .topbar,
+      body.printing-extension .intro,
+      body.printing-extension .tabs,
+      body.printing-extension .panel,
+      body.printing-extension #perpanjangan > form,
+      body.printing-extension #perpanjangan > .panel-heading { display: none !important; }
+      body.printing-extension #perpanjangan { display: block !important; }
+      body.printing-extension .extension-preview { max-width: none; margin: 0; border: 0; box-shadow: none; padding: 0; font-size: 10.5pt; line-height: 1.28; }
+      body.printing-extension .extension-preview .loan-letterhead { margin-bottom: 7mm; }
+      body.printing-extension .extension-preview h2 { font-size: 13pt; line-height: 1.28; }
+      body.printing-extension .extension-preview .loan-body { margin-top: 9mm; }
+      body.printing-extension .extension-preview p { margin-bottom: 4px; }
+      body.printing-extension .extension-preview .loan-line { min-height: 20px; }
+      body.printing-extension .extension-preview .loan-line .value { min-height: 17px; }
+      body.printing-extension .extension-preview .extension-signature-preview { margin-top: 8mm; }
+      body.printing-return .topbar,
+      body.printing-return .intro,
+      body.printing-return .tabs,
+      body.printing-return .panel,
+      body.printing-return #pengembalian > form,
+      body.printing-return #pengembalian > .panel-heading { display: none !important; }
+      body.printing-return #pengembalian { display: block !important; }
+      body.printing-return .return-preview { max-width: none; margin: 0; border: 0; box-shadow: none; padding: 0; font-size: 10.5pt; line-height: 1.28; }
+      body.printing-return .return-preview .loan-letterhead { margin-bottom: 7mm; }
+      body.printing-return .return-preview h2 { font-size: 13pt; line-height: 1.28; }
+      body.printing-return .return-preview .loan-body { margin-top: 9mm; }
+      body.printing-return .return-preview p { margin-bottom: 4px; }
+      body.printing-return .return-preview .loan-line { min-height: 20px; }
+      body.printing-return .return-preview .loan-line .value { min-height: 17px; }
+      .preview, .preview *, .loan-preview, .loan-preview * {
+        font-family: Arial, sans-serif !important;
+        font-size: 12px !important;
+      }
+      .preview .clause {
+        margin-top: 8px;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .preview .clause h4 { margin-bottom: 3px; }
+      .preview .clause p { margin: 4px 0; }
+      .preview .clause ol { margin-top: 4px; margin-bottom: 4px; }
+      .preview .signature-preview {
+        break-before: page;
+        page-break-before: always;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar no-print">
+    <div class="header-slider" id="headerSlider" aria-label="Banner informasi">
+      <div class="header-track" id="headerTrack">
+        <img class="header-slide" src="header1.png" alt="Header Balai Pelatihan Sumber Daya Manusia Komunikasi dan Digital Manado">
+        <img class="header-slide" src="header2.png" alt="Header zona integritas BLSDM Komdigi Manado">
+      </div>
+      <button class="header-control prev" id="headerPrevious" type="button" aria-label="Gambar sebelumnya">&lt;</button>
+      <button class="header-control next" id="headerNext" type="button" aria-label="Gambar berikutnya">&gt;</button>
+      <div class="header-dots" aria-label="Pilih gambar header"><button class="header-dot active" type="button" aria-label="Tampilkan gambar 1"></button><button class="header-dot" type="button" aria-label="Tampilkan gambar 2"></button></div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar no-print">
+      <div class="sidebar-label">Menu Utama</div>
+      <nav class="tabs" aria-label="Navigasi e-BMN">
+        <button class="tab active" data-panel="dashboard">Dashboard</button>
+        <button class="tab" data-panel="peminjaman">Pengajuan</button>
+        <button class="tab" data-panel="perpanjangan">Perpanjangan</button>
+        <button class="tab" data-panel="pengembalian">Pengembalian</button>
+      </nav>
+      
+    </aside>
+
+  <main class="page dashboard-page">
+    <section class="intro no-print">
+      <div class="eyebrow">Layanan administrasi</div>
+      <h1>Selamat Datang</h1>
+      <p>Kelola pengajuan dan penggunaan Barang Milik Negara secara mudah, cepat, dan transparan.</p>
+    </section>
+
+    <section class="panel dashboard-panel active" id="dashboard">
+      <div class="dashboard-hero">
+        <div class="dashboard-hero-copy">
+          <h2>e-BMN<br>BLSDM KOMDIGI MANADO</h2>
+          <p>Sistem Elektronik Manajemen Barang Milik Negara<br>Kementerian Komunikasi dan Digital</p>
+          <div class="hero-pills"><span>Mudah</span><span>Cepat</span><span>Transparan</span></div>
+        </div>
+        <img src="gedung.jpg" alt="Gedung kantor KOMDIGI">
+      </div>
+      <div class="dashboard-grid">
+        <article class="dash-card"><div class="dash-card-icon">+</div><h3>Pengajuan</h3><p>Ajukan permohonan BMN baru atau perubahan data.</p><button type="button" class="tab" data-panel="peminjaman" aria-label="Buka pengajuan">&gt;</button></article>
+        <article class="dash-card"><div class="dash-card-icon">o</div><h3>Perpanjangan</h3><p>Perpanjang masa manfaat barang milik negara.</p><button type="button" class="tab" data-panel="perpanjangan" aria-label="Buka perpanjangan">&gt;</button></article>
+        <article class="dash-card"><div class="dash-card-icon">&lt;</div><h3>Pengembalian</h3><p>Kembalikan BMN yang tidak digunakan atau tidak layak.</p><button type="button" class="tab" data-panel="pengembalian" aria-label="Buka pengembalian">&gt;</button></article>
+      </div>
+      <div class="dashboard-lower">
+        <section class="activity"><div class="dash-heading">Riwayat Terbaru <span>Lihat Semua</span></div><table><thead><tr><th>No</th><th>Jenis</th><th>Nomor Pengajuan</th><th>Tanggal</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td>Pengajuan</td><td>BMN-2025-0012</td><td>12 Apr 2025</td><td><span class="status-pill">Dalam Proses</span></td></tr><tr><td>2</td><td>Perpanjangan</td><td>PRJ-2025-0008</td><td>10 Apr 2025</td><td><span class="status-pill" style="background:#d8f7e7;color:#087443">Disetujui</span></td></tr><tr><td>3</td><td>Pengembalian</td><td>KMB-2025-0005</td><td>8 Apr 2025</td><td><span class="status-pill" style="background:#ffe0e0;color:#b42318">Ditolak</span></td></tr><tr><td>4</td><td>Pengajuan</td><td>BMN-2025-0011</td><td>5 Apr 2025</td><td><span class="status-pill" style="background:#d8f7e7;color:#087443">Disetujui</span></td></tr></tbody></table></section>
+        <aside class="stats-card"><div class="dash-heading">Statistik BMN <span>Lihat Detail</span></div><div class="stat-total">24<small>Total BMN</small></div><div class="stat-lines"><span>Aktif <b>18</b></span><span>Perpanjangan <b style="color:#e4b900">4</b></span><span>Pengembalian <b>2</b></span></div></aside>
+      </div>
+    </section>
+
+    <section class="panel" id="peminjaman">
+      <div class="panel-heading"><h2>Formulir Peminjaman Barang</h2><p>Permohonan penggunaan Barang Milik Negara.</p></div>
+      <form id="loanForm">
+        <div class="section-title">Identitas pemohon</div>
+        <div class="form-grid">
+          <div><label for="nama">Nama lengkap</label><input id="nama" name="nama" required></div>
+          <div><label for="nip">NIP</label><input id="nip" name="nip" required></div>
+          <div><label for="pangkat">Pangkat / golongan</label><input id="pangkat" name="pangkat"></div>
+          <div><label for="jabatan">Jabatan</label><input id="jabatan" name="jabatan" required></div>
+          <div><label for="unit">Unit kerja</label><input id="unit" name="unit"></div>
+          <div><label for="kontak">Nomor kontak</label><input id="kontak" name="kontak" type="tel"></div>
+        </div>
+        <div class="section-title">Rincian barang dan penggunaan</div>
+        <div class="form-grid">
+          <div><label for="merk">Nama / tipe barang</label><input id="merk" name="merk" required></div>
+          <div><label for="nopol">Nomor inventaris</label><input id="nopol" name="nopol" required></div>
+          <div><label for="durasi">Durasi peminjaman</label><input id="durasi" name="durasi" placeholder="Contoh: 3 hari" required></div>
+          <div><label for="mulai">Tanggal mulai</label><input id="mulai" name="mulai" type="date" required></div>
+          <div><label for="tanggalRencanaPengembalian">Rencana pengembalian</label><input id="tanggalRencanaPengembalian" name="pengembalian" type="date" required></div>
+          <div><label for="pengemudi">Penanggung jawab barang</label><input id="pengemudi" name="pengemudi"></div>
+          <div><label for="tujuan">Tujuan / lokasi</label><input id="tujuan" name="tujuan" required></div>
+          <div class="field full"><label for="keperluan">Keperluan peminjaman</label><textarea id="keperluan" name="keperluan" required></textarea></div>
+          <div class="field full"><label for="kelengkapan">Kelengkapan barang saat diterima</label><textarea id="kelengkapan" name="kelengkapan" placeholder="Contoh: adaptor, kabel, tas, dokumen, dan kelengkapan lainnya"></textarea></div>
+          <div class="loan-signature-input">
+            <h3>Tanda tangan peminjam</h3>
+            <p>Gambar tanda tangan langsung menggunakan kursor, touchpad, atau layar sentuh.</p>
+            <div class="canvas-wrap"><canvas id="loanSignature" width="560" height="220"></canvas></div>
+            <div class="actions"><button class="btn" type="button" data-clear="loanSignature">Bersihkan</button><button class="btn" type="button" id="saveLoanSignature">Simpan tanda tangan</button></div>
+          </div>
+        </div>
+        <div class="actions"><button class="btn" type="button" id="loanPrintButton">Cetak formulir</button><button class="btn primary" type="submit">Simpan permohonan</button></div>
+        <p class="status" id="loanStatus" role="status"></p>
+      </form>
+      <article class="loan-preview" id="loanPreview" aria-label="Pratinjau formulir permohonan peminjaman"></article>
+      <div class="next-document no-print">
+        <h3>Berita Acara Serah Terima Peminjaman</h3>
+        <p>Setelah formulir peminjaman disimpan, lanjutkan untuk mengisi dan menandatangani berita acara peminjaman.</p>
+        <div class="actions"><button class="btn primary" type="button" id="loanBastButton">Lanjut ke berita acara peminjaman</button></div>
+      </div>
+    </section>
+
+    <section class="panel" id="perpanjangan">
+      <div class="panel-heading"><h2>Formulir Perpanjangan</h2><p>Ajukan perpanjangan masa peminjaman sebelum tanggal pengembalian.</p></div>
+      <form id="extensionForm">
+        <div class="notice">Perpanjangan mengikuti persetujuan pengelola BMN dan tidak menghapus data peminjaman awal.</div>
+        <div class="section-title">Referensi peminjaman</div>
+        <div class="form-grid">
+          <div><label for="nomorPeminjaman">Nomor peminjaman</label><input id="nomorPeminjaman" name="nomorPeminjaman" required></div>
+          <div><label for="namaPerpanjangan">Nama peminjam</label><input id="namaPerpanjangan" name="namaPerpanjangan" required></div>
+          <div><label for="kendaraanPerpanjangan">Barang</label><input id="kendaraanPerpanjangan" name="kendaraanPerpanjangan" required></div>
+          <div><label for="tanggalLama">Tanggal pengembalian sebelumnya</label><input id="tanggalLama" name="tanggalLama" type="date" required></div>
+        </div>
+        <div class="section-title">Permohonan tambahan waktu</div>
+        <div class="form-grid">
+          <div><label for="durasiTambahan">Durasi perpanjangan</label><input id="durasiTambahan" name="durasiTambahan" placeholder="Contoh: 7 hari" required></div>
+          <div><label for="tanggalBaru">Tanggal pengembalian baru</label><input id="tanggalBaru" name="tanggalBaru" type="date" required></div>
+          <div class="field full"><label for="alasanPerpanjangan">Alasan perpanjangan</label><textarea id="alasanPerpanjangan" name="alasanPerpanjangan" required></textarea></div>
+          <div class="field full"><label for="catatanPerpanjangan">Catatan tambahan</label><textarea id="catatanPerpanjangan" name="catatanPerpanjangan"></textarea></div>
+          <div class="extension-signatures">
+            <div class="document-signature"><h3>Pihak Pertama</h3><div class="canvas-wrap"><canvas id="extensionSignatureOne" data-extension-key="extensionOne" width="520" height="220"></canvas></div><button class="btn" type="button" data-clear="extensionSignatureOne">Bersihkan</button></div>
+            <div class="document-signature"><h3>Pihak Kedua / Peminjam</h3><div class="canvas-wrap"><canvas id="extensionSignatureTwo" data-extension-key="extensionTwo" width="520" height="220"></canvas></div><button class="btn" type="button" data-clear="extensionSignatureTwo">Bersihkan</button></div>
+          </div>
+          <div class="actions"><button class="btn" type="button" id="saveExtensionSignatures">Simpan tanda tangan</button></div>
+        </div>
+        <div class="actions"><button class="btn" type="button" id="extensionPrintButton">Cetak formulir</button><button class="btn primary" type="submit">Simpan perpanjangan</button></div>
+        <p class="status" id="extensionStatus" role="status"></p>
+      </form>
+      <article class="loan-preview extension-preview" id="extensionPreview" aria-label="Pratinjau formulir perpanjangan"></article>
+    </section>
+
+    <section class="panel" id="pengembalian">
+      <div class="panel-heading"><h2>Formulir Pengembalian Barang</h2><p>Laporkan pengembalian Barang Milik Negara dan kondisinya setelah digunakan.</p></div>
+      <form id="returnForm">
+        <div class="section-title">Referensi dokumen</div>
+        <div class="form-grid">
+          <div><label for="nomorPeminjamanKembali">Nomor pengembalian</label><input id="nomorPeminjamanKembali" name="nomorPeminjamanKembali" required></div>
+          <div><label for="namaPengembalian">Nama peminjam</label><input id="namaPengembalian" name="namaPengembalian" required></div>
+          <div><label for="pangkatPengembalian">Pangkat / golongan</label><input id="pangkatPengembalian" name="pangkatPengembalian"></div>
+          <div><label for="kendaraanPengembalian">Barang</label><input id="kendaraanPengembalian" name="kendaraanPengembalian" required></div>
+          <div><label for="nopolPengembalian">Nomor inventaris barang</label><input id="nopolPengembalian" name="nopolPengembalian" required></div>
+          <div><label for="tanggalKembali">Tanggal pengembalian</label><input id="tanggalKembali" name="tanggalKembali" type="date" required></div>
+        </div>
+        <div class="section-title">Kondisi serah terima</div>
+        <div class="form-grid">
+          <div><label for="odometer">Jumlah / ukuran akhir</label><input id="odometer" name="odometer" type="number" min="0"></div>
+          <div><label for="bahanBakar">Kondisi barang</label><input id="bahanBakar" name="bahanBakar"></div>
+          <div class="field full"><label for="kondisiKembali">Kondisi barang dan kelengkapan</label><textarea id="kondisiKembali" name="kondisiKembali" required placeholder="Jelaskan kondisi barang, kerusakan, atau kelengkapan yang dikembalikan"></textarea></div>
+          <div class="field full"><label for="catatanPengembalian">Catatan pemeriksaan</label><textarea id="catatanPengembalian" name="catatanPengembalian"></textarea></div>
+          <div class="loan-signature-input">
+            <h3>Tanda tangan peminjam</h3>
+            <p>Gambar tanda tangan langsung menggunakan kursor, touchpad, atau layar sentuh.</p>
+            <div class="canvas-wrap"><canvas id="returnSignature" data-return-key="returnSignature" width="560" height="220"></canvas></div>
+            <div class="actions"><button class="btn" type="button" data-clear="returnSignature">Bersihkan</button><button class="btn" type="button" id="saveReturnSignature">Simpan tanda tangan</button></div>
+          </div>
+        </div>
+        <div class="actions"><button class="btn" type="button" id="returnPrintButton">Cetak formulir</button><button class="btn primary" type="submit">Simpan pengembalian</button></div>
+        <p class="status" id="returnStatus" role="status"></p>
+      </form>
+      <article class="loan-preview return-preview" id="returnPreview" aria-label="Pratinjau formulir pengembalian"></article>
+      <div class="next-document no-print">
+        <h3>Berita Acara Serah Terima Pengembalian</h3>
+        <p>Setelah formulir pengembalian disimpan, lanjutkan untuk mengisi dan menandatangani berita acara pengembalian.</p>
+        <div class="actions"><button class="btn primary" type="button" id="returnBastButton">Buka berita acara pengembalian</button></div>
+      </div>
+    </section>
+
+    <section class="panel" id="berita-acara">
+      <div class="panel-heading no-print"><h2>Berita Acara Barang</h2><p>Isi data pihak yang menandatangani, kemudian periksa pratinjau berita acara.</p></div>
+      <div class="document-area">
+        <div class="editor no-print">
+          <form id="documentForm">
+            <div class="section-title">Identitas berita acara</div>
+            <div class="form-grid">
+              <div><label for="nomorBerita">Nomor berita acara</label><input id="nomorBerita" name="nomorBerita" value="BAST/____/____" required></div>
+              <div><label for="tempatBerita">Tempat</label><input id="tempatBerita" name="tempatBerita" required></div>
+              <div><label for="tanggalBerita">Tanggal</label><input id="tanggalBerita" name="tanggalBerita" type="date" required></div>
+              <div><label for="jenisBerita">Jenis berita acara</label><select id="jenisBerita" name="jenisBerita"><option value="peminjaman">Serah terima peminjaman</option><option value="pengembalian">Serah terima pengembalian</option></select></div>
+              <div><label for="pangkatPertama">Pangkat/Golongan pihak pertama</label><input id="pangkatPertama" name="pangkatPertama" value="III/C" readonly></div>
+              <div><label for="nomorBastPengembalian">Nomor BAST Peminjaman</label><input id="nomorBastPengembalian" name="nomorBastPengembalian" placeholder="Isi nomor BAST peminjaman"></div>
+            </div>
+            <div class="section-title">Pihak yang terlibat</div>
+            <div class="form-grid">
+              <div><label for="pihakPertama">Nama pihak pertama</label><input id="pihakPertama" name="pihakPertama" value="Irfan Suhanta, S.T." readonly required></div>
+              <div><label for="nipPertama">NIP pihak pertama</label><input id="nipPertama" name="nipPertama" value="198111082007011001" readonly></div>
+              <div><label for="jabatanPertama">Jabatan pihak pertama</label><input id="jabatanPertama" name="jabatanPertama" value="Penanggung Jawab/Pengelola BMN" readonly required></div>
+              <div><label for="pihakKedua">Nama pihak kedua</label><input id="pihakKedua" name="pihakKedua" required></div>
+              <div><label for="nipKedua">NIP pihak kedua</label><input id="nipKedua" name="nipKedua"></div>
+              <div><label for="jabatanKedua">Jabatan pihak kedua</label><input id="jabatanKedua" name="jabatanKedua" required></div>
+              <div><label for="mengetahui">Nama pejabat yang mengetahui</label><input id="mengetahui" name="mengetahui" value="Arsyad, S.Kom., M.I.Kom" readonly required></div>
+              <div><label for="nipMengetahui">NIP pejabat</label><input id="nipMengetahui" name="nipMengetahui" value="198001012008031001" readonly></div>
+            </div>
+            <div class="section-title">Objek dan ketentuan</div>
+            <div class="form-grid">
+              <div><label for="kendaraanBerita">Nama / tipe barang</label><input id="kendaraanBerita" name="kendaraanBerita" required></div>
+              <div><label for="nopolBerita">Nomor inventaris</label><input id="nopolBerita" name="nopolBerita" required></div>
+              <div class="field full"><label for="rincianBerita">Rincian kondisi / kelengkapan</label><textarea id="rincianBerita" name="rincianBerita" required></textarea></div>
+              <div class="field full"><label for="ketentuanKhusus">Ketentuan khusus</label><textarea id="ketentuanKhusus" name="ketentuanKhusus"></textarea></div>
+              <div class="document-signatures">
+                <div class="document-signature"><h3>Pihak Pertama</h3><div class="canvas-wrap"><canvas id="documentSignatureOne" data-signature-key="signatureOne" width="520" height="220"></canvas></div><button class="btn" type="button" data-clear="documentSignatureOne">Bersihkan</button></div>
+                <div class="document-signature"><h3>Pihak Kedua / Peminjam</h3><div class="canvas-wrap"><canvas id="documentSignatureTwo" data-signature-key="signatureTwo" width="520" height="220"></canvas></div><button class="btn" type="button" data-clear="documentSignatureTwo">Bersihkan</button></div>
+                <div class="document-signature"><h3>Mengetahui</h3><div class="canvas-wrap"><canvas id="documentSignatureThree" data-signature-key="signatureThree" width="520" height="220"></canvas></div><button class="btn" type="button" data-clear="documentSignatureThree">Bersihkan</button></div>
+              </div>
+              <div class="actions"><button class="btn" type="button" id="saveDocumentSignatures">Simpan tanda tangan ketiga pihak</button></div>
+            </div>
+            <div class="actions"><button class="btn" type="button" id="printButton">Cetak / simpan PDF</button><button class="btn primary" type="submit">Simpan berita acara</button></div>
+            <p class="status" id="documentStatus" role="status"></p>
+          </form>
+        </div>
+        <article class="preview selected-preview" id="documentPreview" aria-label="Pratinjau berita acara"></article>
+      </div>
+    </section>
+
+  </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'bmn-user-form-v1';
+    const FIRST_PARTY_SIGNATURE = '';
+    const APPROVING_PARTY_SIGNATURE = '';
+    const FIRST_PARTY_RANK = 'III/C';
+    const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const $ = (selector) => document.querySelector(selector);
+    const formData = (form) => Object.fromEntries(new FormData(form).entries());
+    const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const parentEntity = 'barang';
+    const embeddedParent = new URLSearchParams(window.location.search).get('parent') === '1' && window.parent !== window;
+    function notifyParent(type, values = {}) {
+      if (!embeddedParent) return;
+      window.parent.postMessage({
+        type,
+        entity: parentEntity,
+        panel: document.querySelector('.panel.active')?.id || 'peminjaman',
+        recordId: state.parentRecordId || null,
+        extensionId: state.parentExtensionId || null,
+        ...values
+      }, '*');
+    }
+    const text = (value, fallback = '________________') => value || fallback;
+    const formatDateIndonesia = (value, fallback = '... , (tanggal, bulan, tahun)') => {
+      if (!value) return fallback;
+      const [year, month, day] = value.split('-').map(Number);
+      if (!year || !month || !day) return fallback;
+      const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      return `${day} ${monthNames[month - 1]} ${year}`;
+    };
+    const numberToIndonesianWords = (number) => {
+      const words = ['nol', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas'];
+      if (number < 12) return words[number];
+      if (number < 20) return `${words[number - 10]} belas`;
+      if (number < 100) return `${words[Math.floor(number / 10)]} puluh${number % 10 ? ` ${words[number % 10]}` : ''}`;
+      if (number < 200) return `seratus${number % 100 ? ` ${numberToIndonesianWords(number % 100)}` : ''}`;
+      if (number < 1000) return `${words[Math.floor(number / 100)]} ratus${number % 100 ? ` ${numberToIndonesianWords(number % 100)}` : ''}`;
+      if (number < 2000) return `seribu${number % 1000 ? ` ${numberToIndonesianWords(number % 1000)}` : ''}`;
+      if (number < 1000000) return `${numberToIndonesianWords(Math.floor(number / 1000))} ribu${number % 1000 ? ` ${numberToIndonesianWords(number % 1000)}` : ''}`;
+      return String(number);
+    };
+    const formatDateIndonesiaWords = (value, fallback = '... , (tanggal, bulan, tahun)') => {
+      if (!value) return fallback;
+      const [year, month, day] = value.split('-').map(Number);
+      if (!year || !month || !day) return fallback;
+      const monthNames = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
+      return `${numberToIndonesianWords(day)} ${monthNames[month - 1]} tahun ${numberToIndonesianWords(year)}`;
+    };
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[character]));
+    const headerTrack = $('#headerTrack');
+    const headerDots = [...document.querySelectorAll('.header-dot')];
+    let headerIndex = 0;
+    let headerStartX = null;
+    function showHeaderSlide(index) {
+      headerIndex = (index + headerDots.length) % headerDots.length;
+      headerTrack.style.transform = `translateX(-${headerIndex * 100}%)`;
+      headerDots.forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === headerIndex));
+    }
+    $('#headerPrevious').addEventListener('click', () => showHeaderSlide(headerIndex - 1));
+    $('#headerNext').addEventListener('click', () => showHeaderSlide(headerIndex + 1));
+    headerDots.forEach((dot, dotIndex) => dot.addEventListener('click', () => showHeaderSlide(dotIndex)));
+    const headerSlider = $('#headerSlider');
+    headerSlider.addEventListener('pointerdown', (event) => { headerStartX = event.clientX; headerSlider.setPointerCapture(event.pointerId); });
+    headerSlider.addEventListener('pointerup', (event) => {
+      if (headerStartX === null) return;
+      const distance = event.clientX - headerStartX;
+      if (Math.abs(distance) > 45) showHeaderSlide(headerIndex + (distance < 0 ? 1 : -1));
+      headerStartX = null;
+    });
+    headerSlider.addEventListener('pointercancel', () => { headerStartX = null; });
+    setInterval(() => showHeaderSlide(headerIndex + 1), 5000);
+    function croppedSignature(canvas) {
+      const context = canvas.getContext('2d');
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      let left = canvas.width;
+      let top = canvas.height;
+      let right = -1;
+      let bottom = -1;
+      for (let y = 0; y < canvas.height; y += 1) {
+        for (let x = 0; x < canvas.width; x += 1) {
+          const offset = (y * canvas.width + x) * 4;
+          if (pixels[offset + 3] > 10 && (pixels[offset] < 240 || pixels[offset + 1] < 240 || pixels[offset + 2] < 240)) {
+            left = Math.min(left, x);
+            top = Math.min(top, y);
+            right = Math.max(right, x);
+            bottom = Math.max(bottom, y);
+          }
+        }
+      }
+      if (right < 0) return canvas.toDataURL('image/png');
+      const padding = 14;
+      const cropLeft = Math.max(0, left - padding);
+      const cropTop = Math.max(0, top - padding);
+      const cropRight = Math.min(canvas.width, right + padding + 1);
+      const cropBottom = Math.min(canvas.height, bottom + padding + 1);
+      const croppedCanvas = document.createElement('canvas');
+      croppedCanvas.width = cropRight - cropLeft;
+      croppedCanvas.height = cropBottom - cropTop;
+      const croppedContext = croppedCanvas.getContext('2d');
+      croppedContext.fillStyle = '#fff';
+      croppedContext.fillRect(0, 0, croppedCanvas.width, croppedCanvas.height);
+      croppedContext.drawImage(canvas, cropLeft, cropTop, croppedCanvas.width, croppedCanvas.height, 0, 0, croppedCanvas.width, croppedCanvas.height);
+      return croppedCanvas.toDataURL('image/png');
+    }
+
+    function activatePanel(panelId, selectedTab = null) {
+      document.querySelector('.dashboard-page').classList.toggle('form-view', panelId !== 'dashboard');
+      document.querySelectorAll('.tab').forEach((item) => item.classList.toggle('active', item === selectedTab || item.dataset.panel === panelId && item.closest('.sidebar')));
+      document.querySelectorAll('.panel').forEach((panel) => panel.classList.toggle('active', panel.id === panelId));
+      if (panelId === 'berita-acara') renderPreview();
+      notifyParent('bmn:panel-change', { panel: panelId });
+    }
+    document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('click', () => {
+      activatePanel(tab.dataset.panel, tab);
+    }));
+    const pageParams = new URLSearchParams(window.location.search);
+    const initialPanel = pageParams.get('view');
+    if (initialPanel && document.getElementById(initialPanel)?.classList.contains('panel') && (initialPanel !== 'dashboard' || pageParams.get('embed') === '1')) {
+      document.body.classList.add('embedded-mode');
+      document.querySelector('.app-shell').classList.add('service-mode');
+      activatePanel(initialPanel);
+    }
+
+    function setStatus(id, message) { const element = $('#' + id); element.textContent = message; setTimeout(() => { element.textContent = ''; }, 3500); }
+    function saveForm(formId, target, statusId, message) {
+      const form = $('#' + formId);
+      form.addEventListener('submit', (event) => { event.preventDefault(); state[target] = formData(form); if (target === 'loan' && $('#loanSignature')) state.loanSignature = croppedSignature($('#loanSignature')); if (target === 'extension' && $('#extensionSignatureOne')) { state.extensionSignatures = state.extensionSignatures || {}; state.extensionSignatures.extensionOne = croppedSignature($('#extensionSignatureOne')); state.extensionSignatures.extensionTwo = croppedSignature($('#extensionSignatureTwo')); } if (target === 'returnForm' && $('#returnSignature')) state.returnSignature = croppedSignature($('#returnSignature')); save(); if (target === 'loan') notifyParent('bmn:loan-saved', { loan: state.loan, signature: state.loanSignature || '' }); if (target === 'extension') notifyParent('bmn:extension-saved', { extension: state.extension, extensionSignatures: state.extensionSignatures || {} }); if (target === 'returnForm') notifyParent('bmn:return-saved', { returnData: state.returnForm, returnSignature: state.returnSignature || '', returnId: state.parentReturnId || null }); if (target === 'document') notifyParent('bmn:bast-saved', { document: state.document, loan: state.loan || {}, signature: state.loanSignature || '', returnId: state.parentReturnId || null }); setStatus(statusId, message); if (target === 'document') renderPreview(); if (target === 'loan') renderLoanPreview(); if (target === 'extension') renderExtensionPreview(); if (target === 'returnForm') renderReturnPreview(); });
+    }
+    saveForm('loanForm', 'loan', 'loanStatus', 'Permohonan tersimpan di perangkat ini.');
+    saveForm('extensionForm', 'extension', 'extensionStatus', 'Permohonan perpanjangan tersimpan.');
+    saveForm('returnForm', 'returnForm', 'returnStatus', 'Laporan pengembalian tersimpan.');
+    saveForm('documentForm', 'document', 'documentStatus', 'Berita acara tersimpan.');
+    $('#jenisBerita').addEventListener('change', renderPreview);
+    $('#mulai').addEventListener('input', renderLoanPreview);
+    document.querySelector('#tanggalRencanaPengembalian').addEventListener('input', renderLoanPreview);
+    $('#tanggalKembali').addEventListener('input', renderReturnPreview);
+    $('#tanggalBerita').addEventListener('input', renderPreview);
+    $('#nomorBastPengembalian').addEventListener('input', renderPreview);
+
+    function fillForm(formId, data) {
+      if (!data) return;
+      Object.entries(data).forEach(([key, value]) => { const input = $('#' + formId + ' [name="' + key + '"]'); if (input) input.value = value; });
+    }
+    fillForm('loanForm', state.loan);
+    fillForm('extensionForm', state.extension);
+    fillForm('returnForm', state.returnForm);
+    fillForm('documentForm', state.document);
+
+    function renderLoanPreview() {
+      const data = { ...(state.loan || {}), ...formData($('#loanForm')) };
+      $('#loanPreview').innerHTML = `
+        <div class="loan-letterhead"><img src="kop_logo.jpeg" alt="Kop surat Kementerian Komunikasi dan Digital"></div>
+        <h2>FORMULIR PERMOHONAN PEMINJAMAN BARANG</h2>
+        <h2>DINAS OPERASIONAL/FUNGSIONAL</h2>
+        <h2>BLSDM Komdigi Manado</h2>
+        <div class="loan-body">
+          <p>Saya yang bertanda tangan di bawah ini:</p>
+          <div class="loan-lines">
+            <div class="loan-line"><span>Nama</span><span>:</span><span class="value">${escapeHtml(text(data.nama, ''))}</span></div>
+            <div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(text(data.nip, ''))}</span></div>
+            <div class="loan-line"><span>Pangkat/Golongan</span><span>:</span><span class="value">${escapeHtml(text(data.pangkat, ''))}</span></div>
+            <div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">${escapeHtml(text(data.jabatan, ''))}</span></div>
+          </div>
+          <p>Menyatakan akan meminjam Barang Milik Negara berupa:</p>
+          <div class="loan-lines">
+            <div class="loan-line"><span>Nama/Tipe Barang</span><span>:</span><span class="value">${escapeHtml(text(data.merk, ''))}</span></div>
+            <div class="loan-line"><span>Nomor Inventaris Barang</span><span>:</span><span class="value">${escapeHtml(text(data.nopol, ''))}</span></div>
+            <div class="loan-line"><span>Durasi Peminjaman</span><span>:</span><span class="value">${escapeHtml(text(data.durasi, ''))}</span></div>
+            <div class="loan-line"><span>Tanggal Pengembalian</span><span>:</span><span class="value">${escapeHtml(formatDateIndonesia(data.pengembalian, ''))}</span></div>
+            <div class="loan-line"><span>Untuk Keperluan</span><span>:</span><span class="value">${escapeHtml(text(data.keperluan, ''))}</span></div>
+          </div>
+          <p>Atas peminjaman Barang Milik Negara tersebut saya berjanji untuk memakai dengan baik selama saya pinjam, serta sanggup untuk mengembalikan dalam keadaan baik selama masa peminjaman.</p>
+          <p>Apabila selama masa peminjaman terjadi kerusakan dan/atau kehilangan serta hal lain yang ditimbulkan, maka saya bertanggung jawab sepenuhnya sesuai ketentuan.</p>
+          <div class="loan-sign-date">${escapeHtml(formatDateIndonesia(data.mulai))}</div>
+          <div class="loan-signature">Peminjam,<div class="space">${state.loanSignature ? `<img src="${state.loanSignature}" alt="Tanda tangan peminjam">` : ''}</div><strong>${escapeHtml(text(data.nama, '(Nama Peminjam)'))}</strong>NIP. ${escapeHtml(text(data.nip, '(NIP Peminjam)'))}</div>
+        </div>`;
+    }
+
+    function renderExtensionPreview() {
+      const data = state.extension || formData($('#extensionForm'));
+      const loan = state.loan || {};
+      const firstParty = 'Irfan Suhanta, S.T.';
+      const firstPartyNip = '198111082007011001';
+      const secondParty = data.namaPerpanjangan || loan.nama || 'Nama Peminjam';
+      const secondPartyNip = loan.nip || 'NIP Peminjam';
+      const secondPartyRole = loan.jabatan || 'Peminjam';
+      $('#extensionPreview').innerHTML = `
+        <div class="loan-letterhead"><img src="kop_logo.jpeg" alt="Kop surat Kementerian Komunikasi dan Digital"></div>
+        <h2>FORMULIR PERPANJANGAN PEMINJAMAN BARANG</h2>
+        <h2>DINAS OPERASIONAL/FUNGSIONAL</h2>
+        <h2>(BLSDM Komdigi Manado)</h2>
+        <div class="doc-number">Nomor: ${escapeHtml(text(data.nomorPeminjaman, '................'))}</div>
+        <div class="loan-body">
+          <p>Kami yang bertanda tangan di bawah ini:</p>
+          <p><b>1. Nama</b> ${escapeHtml(firstParty)}<br><b>&nbsp;&nbsp;&nbsp;NIP</b> ${escapeHtml(firstPartyNip)}<br><b>&nbsp;&nbsp;&nbsp;Jabatan</b> Penanggung Jawab/Pengelola BMN</p>
+          <p>Dalam hal ini bertindak untuk dan atas nama BLSDM Komdigi Manado selaku penanggung jawab/pengelola Barang Milik Negara, selanjutnya disebut <b>Pihak Pertama</b>.</p>
+          <p>Menyetujui permohonan perpanjangan Barang Milik Negara sebagaimana dimaksud. Adapun rincian perpanjangan peminjaman sebagai berikut:</p>
+          <div class="loan-lines"><div class="loan-line"><span>a. Durasi Peminjaman</span><span>:</span><span class="value">${escapeHtml(text(data.durasiTambahan, '(maksimal 2 minggu)'))}</span></div><div class="loan-line"><span>b. Rencana Pengembalian</span><span>:</span><span class="value">${escapeHtml(formatDateIndonesia(data.tanggalBaru, ''))}</span></div><div class="loan-line"><span>c. Untuk Keperluan</span><span>:</span><span class="value">${escapeHtml(text(data.alasanPerpanjangan || data.catatanPerpanjangan, ''))}</span></div></div>
+          <p><b>2. Nama</b> ${escapeHtml(secondParty)}<br><b>&nbsp;&nbsp;&nbsp;NIP</b> ${escapeHtml(secondPartyNip)}<br><b>&nbsp;&nbsp;&nbsp;Jabatan</b> ${escapeHtml(secondPartyRole)}</p>
+          <p>Dalam hal ini bertindak selaku peminjam Barang Milik Negara, selanjutnya disebut <b>Pihak Kedua</b>.</p>
+          <p>Menyatakan akan melanjutkan peminjaman Barang Milik Negara sebagaimana tertuang dalam Berita Acara Serah Terima Peminjaman Barang Nomor ${escapeHtml(text(data.nomorPeminjaman, '____'))} tanggal ${escapeHtml(text(data.tanggalLama, '____'))}, yang merupakan dokumen yang tidak terpisahkan dari formulir perpanjangan ini. Seluruh ketentuan, hak, dan kewajiban sebagaimana tercantum dalam BAST Peminjaman dimaksud tetap berlaku dan mengikat selama masa perpanjangan.</p>
+          <p>Demikian Formulir Perpanjangan Peminjaman Barang ini dibuat sebagai dasar perpanjangan peminjaman dan pengendalian terhadap penggunaan Barang Milik Negara untuk digunakan sebagaimana mestinya.</p>
+          <div class="signature-preview extension-signature-preview"><div>Pihak Pertama<br>Penanggung Jawab<div class="line" id="extensionPreviewOne"></div><b>${escapeHtml(firstParty)}</b><br>NIP. ${escapeHtml(firstPartyNip)}</div><div>Pihak Kedua<br>Peminjam<div class="line" id="extensionPreviewTwo"></div><b>${escapeHtml(secondParty)}</b><br>NIP. ${escapeHtml(secondPartyNip)}</div></div>
+        </div>`;
+      applyExtensionSignatureImages();
+    }
+
+    function applyExtensionSignatureImages() {
+      const map = { extensionOne: 'extensionPreviewOne', extensionTwo: 'extensionPreviewTwo' };
+      Object.entries(map).forEach(([signatureKey, previewId]) => {
+        if (!state.extensionSignatures?.[signatureKey]) return;
+        const image = new Image(); image.src = state.extensionSignatures[signatureKey]; image.alt = 'Tanda tangan';
+        const target = $('#' + previewId); if (target) { target.textContent = ''; target.appendChild(image); }
+      });
+    }
+
+
+    function renderReturnBASTPreview(data, loan) {
+      const vehicle = data.kendaraanBerita || loan.merk || '________________';
+      const plate = data.nopolBerita || loan.nopol || '________________';
+      const firstParty = data.pihakPertama || 'Irfan Suhanta, S.T.';
+      const firstPartyNip = data.nipPertama || '198111082007011001';
+      const firstPartyRole = data.jabatanPertama || 'Penanggung Jawab/Pengelola BMN';
+      const secondParty = data.pihakKedua || loan.nama || 'Nama Peminjam';
+      const secondPartyNip = data.nipKedua || loan.nip || 'NIP Peminjam';
+      const secondPartyRole = data.jabatanKedua || loan.jabatan || 'Peminjam';
+      const approvingParty = data.mengetahui || 'Arsyad, S.Kom., M.I.Kom';
+      const approvingPartyNip = data.nipMengetahui || '198001012008031001';
+      $('#documentPreview').innerHTML = `
+        <div class="letterhead"><img src="kop_logo.jpeg" alt="Kop surat instansi"></div>
+        <div class="doc-subtitle">BERITA ACARA SERAH TERIMA PENGEMBALIAN BARANG</div>
+        <h3>DINAS OPERASIONAL/FUNGSIONAL</h3>
+        <div class="doc-number">Nomor: ${escapeHtml(text(data.nomorBerita, '................'))}</div>
+        <p>Pada hari ini, <b>${escapeHtml(formatDateIndonesiaWords(data.tanggalBerita, '___ tanggal ___ bulan ___ tahun ___'))}</b>, bertempat di <b>${escapeHtml(text(data.tempatBerita, '______'))}</b>, kami yang bertanda tangan di bawah ini:</p>
+        <div class="loan-lines"><p><b>1.</b></p><div class="loan-line"><span>Nama</span><span>:</span><span class="value">${escapeHtml(firstParty)}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(firstPartyNip)}</span></div><div class="loan-line"><span>Pangkat/Golongan</span><span>:</span><span class="value">${escapeHtml(FIRST_PARTY_RANK)}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">${escapeHtml(firstPartyRole)}</span></div></div>
+        <p>Dalam hal ini bertindak untuk dan atas nama BLSDM Komdigi Manado selaku penanggung jawab/pengelola Barang Milik Negara, selanjutnya disebut <b>Pihak Pertama</b>.</p>
+        <div class="loan-lines"><p><b>2.</b></p><div class="loan-line"><span>Nama</span><span>:</span><span class="value">${escapeHtml(secondParty)}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(secondPartyNip)}</span></div><div class="loan-line"><span>Pangkat/Golongan</span><span>:</span><span class="value">${escapeHtml(data.pangkatPengembalian || loan.pangkat || '')}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">${escapeHtml(secondPartyRole)}</span></div></div>
+        <p>Dalam hal ini bertindak selaku peminjam Barang Milik Negara, selanjutnya disebut <b>Pihak Kedua</b>.</p>
+        <div class="clause"><h4>PERNYATAAN SERAH TERIMA</h4><p>1. Pihak Kedua telah mengembalikan dan Pihak Pertama telah menerima Barang Milik Negara dengan rincian:</p><table class="doc-table"><tr><td>Nama/Tipe Barang</td><td>: ${escapeHtml(vehicle)}</td></tr><tr><td>Nomor Inventaris Barang</td><td>: ${escapeHtml(plate)}</td></tr><tr><td>Tanggal Pengembalian</td><td>: ${escapeHtml(formatDateIndonesia(data.tanggalBerita))}</td></tr><tr><td>Nomor BAST Peminjaman</td><td>: ${escapeHtml(text(data.nomorBastPengembalian || data.nomorBerita || data.nomorPeminjaman || loan.nomorPeminjaman))}</td></tr></table><p>2. Barang diserahkan dalam kondisi baik dan lengkap, dengan kelengkapannya meliputi:</p><ol type="a"><li>Kelengkapan utama;</li><li>Dokumen barang;</li><li>Aksesori atau perlengkapan pendukung jika ada; dan</li><li>Kelengkapan barang lainnya jika ada.</li></ol><p>3. Kondisi dan catatan pemeriksaan: ${escapeHtml(text(data.rincianBerita || data.ketentuanKhusus))}</p></div>
+        <div class="signature-preview"><div class="party-signature"><b>Pihak Pertama</b><div class="party-role">${escapeHtml(firstPartyRole)}</div><div class="line" id="previewOne"></div><div class="party-identity"><b>${escapeHtml(firstParty)}</b><br>NIP. ${escapeHtml(firstPartyNip)}</div></div><div class="party-signature"><b>Pihak Kedua</b><div class="party-role">Peminjam</div><div class="line" id="previewTwo"></div><div class="party-identity"><b>${escapeHtml(secondParty)}</b><br>NIP. ${escapeHtml(secondPartyNip)}</div></div><div class="approver"><b>Mengetahui</b><br>Kepala Balai Pelatihan SDM<br>Komdigi Manado<div class="line" id="previewThree"></div><b>${escapeHtml(approvingParty)}</b><br>NIP. ${escapeHtml(approvingPartyNip)}</div></div>`;
+      applySignatureImages();
+    }
+    function renderReturnPreview() {
+      const data = { ...(state.returnForm || {}), ...formData($('#returnForm')) };
+      const loan = state.loan || {};
+      const borrower = data.namaPengembalian || loan.nama || 'Nama Peminjam';
+      const borrowerNip = loan.nip || 'NIP Peminjam';
+      const borrowerRole = loan.jabatan || 'Peminjam';
+      $('#returnPreview').innerHTML = `
+        <div class="loan-letterhead"><img src="kop_logo.jpeg" alt="Kop surat Kementerian Komunikasi dan Digital"></div>
+        <h2>FORMULIR PENGEMBALIAN BARANG</h2>
+        <h2>DINAS OPERASIONAL/FUNGSIONAL</h2>
+        <h2>(BLSDM Komdigi Manado)</h2>
+        <div class="loan-body">
+          <p>Saya yang bertanda tangan di bawah ini:</p>
+          <div class="loan-lines"><div class="loan-line"><span>Nama</span><span>:</span><span class="value">${escapeHtml(borrower)}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(borrowerNip)}</span></div><div class="loan-line"><span>Pangkat/Golongan</span><span>:</span><span class="value">${escapeHtml(data.pangkatPengembalian || loan.pangkat || '')}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">${escapeHtml(borrowerRole)}</span></div></div>
+          <p>Menyatakan telah mengembalikan Barang Milik Negara berupa:</p>
+          <div class="loan-lines"><div class="loan-line"><span>Nama/Tipe Barang</span><span>:</span><span class="value">${escapeHtml(data.kendaraanPengembalian || loan.merk || '')}</span></div><div class="loan-line"><span>Nomor Inventaris Barang</span><span>:</span><span class="value">${escapeHtml(data.nopolPengembalian || loan.nopol || '')}</span></div><div class="loan-line"><span>Tanggal Pengembalian</span><span>:</span><span class="value">${escapeHtml(formatDateIndonesia(data.tanggalKembali, ''))}</span></div><div class="loan-line"><span>Nomor BAST Peminjaman</span><span>:</span><span class="value">${escapeHtml(data.nomorPeminjamanKembali || '')}</span></div></div>
+          <p>Demikian Formulir Pengembalian Barang ini dibuat untuk dipergunakan sebagaimana mestinya.</p>
+          <div class="loan-sign-date">${escapeHtml(formatDateIndonesia(data.tanggalKembali))}</div>
+          <div class="loan-signature">Peminjam,<div class="space">${state.returnSignature ? `<img src="${state.returnSignature}" alt="Tanda tangan peminjam">` : ''}</div><strong>${escapeHtml(borrower)}</strong>NIP. ${escapeHtml(borrowerNip)}</div>
+        </div>`;
+    }
+
+    function renderPreview() {
+      const data = { ...(state.document || {}), ...formData($('#documentForm')) };
+      const isReturn = data.jenisBerita === 'pengembalian';
+      const loan = state.loan || {};
+      if (isReturn) return renderReturnBASTPreview(data, loan);
+      const vehicle = data.kendaraanBerita || loan.merk || '________________';
+      const plate = data.nopolBerita || loan.nopol || '________________';
+      const firstParty = data.pihakPertama || 'Irfan Suhanta, S.T.';
+      const firstPartyNip = data.nipPertama || '198111082007011001';
+      const firstPartyRole = data.jabatanPertama || 'Penanggung Jawab/Pengelola BMN';
+      const secondParty = data.pihakKedua || loan.nama || 'Nama Peminjam';
+      const secondPartyNip = data.nipKedua || loan.nip || 'NIP Peminjam';
+      const secondPartyRole = data.jabatanKedua || loan.jabatan || 'Peminjam';
+      const secondPartyRank = data.pangkatKedua || loan.pangkat || '________________';
+      const approvingParty = data.mengetahui || 'Arsyad, S.Kom., M.I.Kom';
+      const approvingPartyNip = data.nipMengetahui || '198001012008031001';
+      $('#documentPreview').innerHTML = `
+        <div class="letterhead"><img src="kop_logo.jpeg" alt="Kop surat instansi"></div>
+        <div class="doc-subtitle">BERITA ACARA SERAH TERIMA ${isReturn ? 'PENGEMBALIAN' : 'PEMINJAMAN'} BARANG MILIK NEGARA</div>
+        <h3>OPERASIONAL / FUNGSIONAL</h3>
+        <div class="doc-number">Nomor: ${escapeHtml(text(data.nomorBerita))}</div>
+        <p>Pada hari ini, tanggal <b>${escapeHtml(formatDateIndonesiaWords(data.tanggalBerita, '____ tanggal ____ bulan ____ tahun ____'))}</b>, bertempat di <b>${escapeHtml(text(data.tempatBerita))}</b>, kami yang bertanda tangan di bawah ini:</p>
+        <div class="loan-lines"><div class="loan-line"><span>1. Nama</span><span>:</span><span class="value">${escapeHtml(firstParty)}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(firstPartyNip)}</span></div><div class="loan-line"><span>Pangkat/Golongan</span><span>:</span><span class="value">${escapeHtml(FIRST_PARTY_RANK)}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">${escapeHtml(firstPartyRole)}</span></div></div>
+        <p>Dalam hal ini bertindak untuk dan atas nama BLSDM Komdigi Manado selaku penanggung jawab/pengelola Barang Milik Negara, selanjutnya disebut <b>Pihak Pertama</b>.</p>
+        <div class="loan-lines"><div class="loan-line"><span>2. Nama</span><span>:</span><span class="value">${escapeHtml(secondParty)}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(secondPartyNip)}</span></div><div class="loan-line"><span>Pangkat/Golongan</span><span>:</span><span class="value">${escapeHtml(secondPartyRank)}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">${escapeHtml(secondPartyRole)}</span></div></div>
+        <p>Dalam hal ini bertindak selaku peminjam Barang Milik Negara, selanjutnya disebut <b>Pihak Kedua</b>.</p>
+        <p>Pihak Pertama dan Pihak Kedua selanjutnya secara masing-masing disebut sebagai "Pihak" dan bersama-sama disebut sebagai "Para Pihak".</p>
+        <div class="clause"><h4>Pasal 1</h4><p>Menetapkan Petunjuk Teknis Pelaksanaan Pengawasan dan Pengendalian Barang Milik Negara di Lingkungan Kementerian Komunikasi dan Informatika sebagaimana tercantum dalam lampiran Peraturan Menteri ini.</p></div>
+        <div class="clause"><h4>Pasal 2</h4><p>Petunjuk teknis pengawasan dan pengendalian Barang Milik Negara digunakan sebagai acuan bagi setiap unit kerja di lingkungan Kementerian Komunikasi dan Informatika dalam pelaksanaan tugas dan fungsinya yang berkaitan dengan pengawasan dan pengendalian Barang Milik Negara.</p></div>
+        <div class="clause"><h4>Pasal 3</h4><p>Ketentuan mengenai Petunjuk Teknis Pelaksanaan Pengawasan dan Pengendalian Barang Milik Negara di Lingkungan Kementerian Komunikasi dan Informatika sebagaimana dimaksud dalam <b>Pasal 1</b> tercantum dalam Lampiran yang merupakan bagian tidak terpisahkan dari Peraturan Menteri ini.</p></div>
+        <div class="clause"><h4>Pasal 4</h4><p>Peraturan Menteri ini mulai berlaku pada tanggal diundangkan. Agar setiap orang mengetahuinya, memerintahkan Pengundangan Peraturan Menteri ini dengan penempatannya dalam Berita Negara Republik Indonesia.</p></div>
+        <div class="signature-preview"><div class="party-signature"><b>Pihak Pertama</b><div class="party-role">${escapeHtml(firstPartyRole)}</div><div class="line" id="previewOne"></div><div class="party-identity"><b>${escapeHtml(firstParty)}</b><br>NIP. ${escapeHtml(firstPartyNip)}</div></div><div class="party-signature"><b>Pihak Kedua</b><div class="party-role">${escapeHtml(secondPartyRole)}</div><div class="line" id="previewTwo"></div><div class="party-identity"><b>${escapeHtml(secondParty)}</b><br>NIP. ${escapeHtml(secondPartyNip)}</div></div><div class="approver"><b>Mengetahui</b><br>Kepala Balai Pelatihan SDM<br>Komdigi Manado<div class="line" id="previewThree"></div><b>${escapeHtml(approvingParty)}</b><br>NIP. ${escapeHtml(approvingPartyNip)}</div></div>`;
+      applySignatureImages();
+    }
+
+    function applySignatureImages() {
+      const map = { signatureOne: 'previewOne', signatureTwo: 'previewTwo', signatureThree: 'previewThree' };
+      Object.entries(map).forEach(([canvasId, previewId]) => {
+        const source = canvasId === 'signatureOne' ? FIRST_PARTY_SIGNATURE : canvasId === 'signatureThree' ? APPROVING_PARTY_SIGNATURE : state.signatures?.[canvasId];
+        if (!source) return;
+        const image = new Image(); image.src = source; image.alt = 'Tanda tangan';
+        const target = $('#' + previewId); if (target) { target.textContent = ''; target.appendChild(image); }
+      });
+    }
+
+    function setupCanvas(canvas) {
+      const context = canvas.getContext('2d'); context.lineWidth = 3; context.lineCap = 'round'; context.strokeStyle = '#111';
+      let drawing = false; let last = null;
+      const position = (event) => { const rect = canvas.getBoundingClientRect(); const point = event.touches?.[0] || event; return { x: (point.clientX - rect.left) * canvas.width / rect.width, y: (point.clientY - rect.top) * canvas.height / rect.height }; };
+      const start = (event) => { drawing = true; last = position(event); event.preventDefault(); };
+      const move = (event) => { if (!drawing) return; const point = position(event); context.beginPath(); context.moveTo(last.x, last.y); context.lineTo(point.x, point.y); context.stroke(); last = point; event.preventDefault(); };
+      const stop = () => { drawing = false; };
+      canvas.addEventListener('pointerdown', start); canvas.addEventListener('pointermove', move); canvas.addEventListener('pointerup', stop); canvas.addEventListener('pointerleave', stop);
+      canvas.addEventListener('touchstart', start, { passive: false }); canvas.addEventListener('touchmove', move, { passive: false }); canvas.addEventListener('touchend', stop);
+      const signatureKey = canvas.dataset.signatureKey || canvas.id;
+      const savedSignature = canvas.id === 'loanSignature' ? state.loanSignature : canvas.dataset.extensionKey ? state.extensionSignatures?.[canvas.dataset.extensionKey] : canvas.dataset.returnKey ? state.returnSignature : signatureKey === 'signatureOne' ? FIRST_PARTY_SIGNATURE : signatureKey === 'signatureThree' ? APPROVING_PARTY_SIGNATURE : state.signatures?.[signatureKey];
+      if (savedSignature) {
+        const image = new Image();
+        image.onload = () => {
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+          if (canvas.id === 'loanSignature') {
+            state.loanSignature = croppedSignature(canvas);
+            save();
+            renderLoanPreview();
+          }
+        };
+        image.src = savedSignature;
+      }
+    }
+    document.querySelectorAll('canvas').forEach(setupCanvas);
+    document.querySelectorAll('[data-clear]').forEach((button) => button.addEventListener('click', () => {
+      const canvas = $('#' + button.dataset.clear); const signatureKey = canvas.dataset.signatureKey || canvas.id; canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height); if (canvas.id === 'loanSignature') delete state.loanSignature; else if (canvas.dataset.extensionKey) { if (state.extensionSignatures) delete state.extensionSignatures[canvas.dataset.extensionKey]; } else if (canvas.dataset.returnKey) delete state.returnSignature; else if (state.signatures) delete state.signatures[signatureKey]; save(); renderLoanPreview(); renderPreview(); renderExtensionPreview(); renderReturnPreview();
+    }));
+    $('#saveLoanSignature').addEventListener('click', () => {
+      state.loanSignature = croppedSignature($('#loanSignature'));
+      save();
+      renderLoanPreview();
+      if ($('#loanForm').checkValidity()) notifyParent('bmn:loan-saved', { loan: formData($('#loanForm')), signature: state.loanSignature || '' });
+      setStatus('loanStatus', 'Tanda tangan peminjam tersimpan.');
+    });
+    $('#saveExtensionSignatures').addEventListener('click', () => {
+      state.extension = formData($('#extensionForm'));
+      state.extensionSignatures = {
+        extensionOne: croppedSignature($('#extensionSignatureOne')),
+        extensionTwo: croppedSignature($('#extensionSignatureTwo'))
+      };
+      save();
+      renderExtensionPreview();
+      if ($('#extensionForm').checkValidity()) notifyParent('bmn:extension-saved', { extension: state.extension, extensionSignatures: state.extensionSignatures });
+      setStatus('extensionStatus', 'Tanda tangan perpanjangan tersimpan.');
+    });
+    $('#saveDocumentSignatures').addEventListener('click', () => {
+      state.signatures = state.signatures || {};
+      document.querySelectorAll('[data-signature-key]').forEach((canvas) => { state.signatures[canvas.dataset.signatureKey] = croppedSignature(canvas); });
+      save(); renderPreview(); setStatus('documentStatus', 'Tanda tangan ketiga pihak tersimpan.');
+    });
+    $('#saveReturnSignature').addEventListener('click', () => {
+      state.returnSignature = croppedSignature($('#returnSignature'));
+      state.returnForm = formData($('#returnForm'));
+      save(); renderReturnPreview();
+      if ($('#returnForm').checkValidity()) notifyParent('bmn:return-saved', { returnData: state.returnForm, returnSignature: state.returnSignature || '', returnId: state.parentReturnId || null });
+      setStatus('returnStatus', 'Tanda tangan peminjam tersimpan.');
+    });
+    $('#loanPrintButton').addEventListener('click', () => {
+      state.loan = formData($('#loanForm'));
+      save();
+      if ($('#loanForm').checkValidity()) notifyParent('bmn:loan-saved', { loan: state.loan, signature: state.loanSignature || '' });
+      renderLoanPreview();
+      document.body.classList.add('printing-loan');
+      window.print();
+    });
+    $('#loanBastButton').addEventListener('click', () => {
+      state.loan = formData($('#loanForm'));
+      state.document = state.document || {};
+      state.document.jenisBerita = 'peminjaman';
+      save();
+      if ($('#loanForm').checkValidity()) notifyParent('bmn:loan-saved', { loan: state.loan, signature: state.loanSignature || '' });
+      $('#jenisBerita').value = 'peminjaman';
+      renderPreview();
+      activatePanel('berita-acara');
+    });
+    $('#extensionPrintButton').addEventListener('click', () => {
+      state.extension = formData($('#extensionForm'));
+      save();
+      if ($('#extensionForm').checkValidity()) notifyParent('bmn:extension-saved', { extension: state.extension, extensionSignatures: state.extensionSignatures || {} });
+      renderExtensionPreview();
+      document.body.classList.add('printing-extension');
+      window.print();
+    });
+    $('#returnPrintButton').addEventListener('click', () => {
+      state.returnForm = formData($('#returnForm'));
+      save();
+      if ($('#returnForm').checkValidity()) notifyParent('bmn:return-saved', { returnData: state.returnForm, returnSignature: state.returnSignature || '', returnId: state.parentReturnId || null });
+      renderReturnPreview();
+      document.body.classList.add('printing-return');
+      window.print();
+    });
+    $('#returnBastButton').addEventListener('click', () => {
+      state.returnForm = formData($('#returnForm'));
+      if (!$('#returnForm').checkValidity() && !state.parentReturnId) {
+        $('#returnForm').reportValidity();
+        return;
+      }
+      if ($('#returnForm').checkValidity()) notifyParent('bmn:return-saved', { returnData: state.returnForm, returnSignature: state.returnSignature || '', returnId: state.parentReturnId || null });
+      state.document = {
+        ...(state.document || {}),
+        jenisBerita: 'pengembalian',
+        tanggalBerita: state.returnForm.tanggalKembali || '',
+        pihakKedua: state.returnForm.namaPengembalian || '',
+        kendaraanBerita: state.returnForm.kendaraanPengembalian || '',
+        nopolBerita: state.returnForm.nopolPengembalian || '',
+        nomorBastPengembalian: state.returnForm.nomorPeminjamanKembali || '',
+        rincianBerita: state.returnForm.kondisiKembali || ''
+      };
+      save();
+      $('#jenisBerita').value = 'pengembalian';
+      fillForm('documentForm', state.document);
+      renderPreview();
+      activatePanel('berita-acara');
+    });
+    $('#printButton').addEventListener('click', () => {
+      state.document = { ...(state.document || {}), ...formData($('#documentForm')) };
+      save();
+      activatePanel('berita-acara');
+      if ($('#documentForm').checkValidity()) notifyParent('bmn:bast-saved', { document: state.document, loan: state.loan || {}, signature: state.loanSignature || '' });
+      window.print();
+    });
+    window.bmnSaveCurrentDocument = (kind) => {
+      if (kind === 'return') {
+        state.returnForm = formData($('#returnForm'));
+        save();
+        renderReturnPreview();
+        if ($('#returnForm').checkValidity()) notifyParent('bmn:return-saved', { returnData: state.returnForm, returnSignature: state.returnSignature || '', returnId: state.parentReturnId || null });
+      } else if (kind === 'extension') {
+        state.extension = formData($('#extensionForm'));
+        save();
+        renderExtensionPreview();
+        if ($('#extensionForm').checkValidity()) notifyParent('bmn:extension-saved', { extension: state.extension, extensionSignatures: state.extensionSignatures || {} });
+      } else if (kind === 'bast') {
+        state.document = { ...(state.document || {}), ...formData($('#documentForm')) };
+        save();
+        renderPreview();
+        if ($('#documentForm').checkValidity()) notifyParent('bmn:bast-saved', { document: state.document, loan: state.loan || {}, signature: state.loanSignature || '' });
+      } else {
+        state.loan = formData($('#loanForm'));
+        save();
+        renderLoanPreview();
+        if ($('#loanForm').checkValidity()) notifyParent('bmn:loan-saved', { loan: state.loan, signature: state.loanSignature || '' });
+      }
+    };
+    window.addEventListener('message', (event) => {
+      const message = event.data;
+      if (event.source !== window.parent || !message || message.entity !== parentEntity) return;
+      if (message.type === 'bmn:extension-record-saved') {
+        state.parentExtensionId = message.extensionId;
+        save();
+        return;
+      }
+      if (message.type === 'bmn:record-saved') {
+        state.parentRecordId = message.recordId;
+        const historyRecord = state.history?.find((item) => item.id === message.historyRecordId);
+        if (historyRecord) historyRecord.parentRecordId = message.recordId;
+        save();
+        return;
+      }
+      if (message.type === 'bmn:return-record-saved') {
+        state.parentReturnId = message.returnId;
+        save();
+        return;
+      }
+      if (message.type !== 'bmn:init') return;
+      state.parentRecordId = message.recordId || null;
+      state.parentExtensionId = message.extensionId || null;
+      state.parentReturnId = message.returnId || null;
+      if (message.mode === 'extension') {
+        state.extension = message.newExtension ? {} : { ...(message.extensionData || {}) };
+        state.extensionSignatures = message.extensionSignatures || {};
+        $('#extensionForm').reset();
+        fillForm('extensionForm', state.extension);
+        renderExtensionPreview();
+        save();
+        activatePanel('perpanjangan');
+        notifyParent('bmn:state-ready', { history: state.history || [], initialized: true });
+        return;
+      }
+      if (message.mode === 'return') {
+        state.loan = { ...(message.loan || {}) };
+        state.returnForm = message.newReturn ? {} : { ...(message.returnData || {}) };
+        state.returnSignature = message.newReturn ? '' : message.returnSignature || '';
+        state.document = message.newReturn ? {} : { ...(message.document || {}) };
+        $('#returnForm').reset();
+        $('#documentForm').reset();
+        fillForm('returnForm', state.returnForm);
+        const returnCanvas = $('#returnSignature');
+        returnCanvas.getContext('2d').clearRect(0, 0, returnCanvas.width, returnCanvas.height);
+        if (state.returnSignature) {
+          const image = new Image();
+          image.onload = () => returnCanvas.getContext('2d').drawImage(image, 0, 0, returnCanvas.width, returnCanvas.height);
+          image.src = state.returnSignature;
+        }
+        if (!message.document && message.view === 'berita-acara') {
+          state.document = {
+            jenisBerita: 'pengembalian',
+            tanggalBerita: state.returnForm.tanggalKembali || '',
+            pihakKedua: state.returnForm.namaPengembalian || '',
+            nipKedua: state.loan.nip || '',
+            pangkatKedua: state.returnForm.pangkatPengembalian || state.loan.pangkat || '',
+            jabatanKedua: state.loan.jabatan || '',
+            kendaraanBerita: state.returnForm.kendaraanPengembalian || '',
+            nopolBerita: state.returnForm.nopolPengembalian || '',
+            nomorBastPengembalian: state.returnForm.nomorPeminjamanKembali || '',
+            rincianBerita: state.returnForm.kondisiKembali || ''
+          };
+        }
+        fillForm('documentForm', state.document);
+        $('#jenisBerita').value = 'pengembalian';
+        save();
+        renderReturnPreview();
+        renderPreview();
+        activatePanel(message.view || 'pengembalian');
+        notifyParent('bmn:state-ready', { history: state.history || [], initialized: true });
+        return;
+      }
+      state.loan = message.newLoan ? {} : { ...(message.loan || {}) };
+      state.document = message.newLoan ? {} : { ...(message.document || {}) };
+      state.loanSignature = message.newLoan ? '' : message.signature || '';
+      $('#loanForm').reset();
+      $('#documentForm').reset();
+      fillForm('loanForm', state.loan);
+      fillForm('documentForm', state.document);
+      const signatureCanvas = $('#loanSignature');
+      signatureCanvas.getContext('2d').clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+      if (state.loanSignature) {
+        const image = new Image();
+        image.onload = () => {
+          signatureCanvas.getContext('2d').drawImage(image, 0, 0, signatureCanvas.width, signatureCanvas.height);
+          renderLoanPreview();
+        };
+        image.src = state.loanSignature;
+      }
+      if (!message.document && message.mode === 'bast') {
+        state.document = {
+          jenisBerita: 'peminjaman',
+          pihakKedua: state.loan.nama || '',
+          nipKedua: state.loan.nip || '',
+          pangkatKedua: state.loan.pangkat || '',
+          jabatanKedua: state.loan.jabatan || '',
+          kendaraanBerita: state.loan.merk || '',
+          nopolBerita: state.loan.nopol || ''
+        };
+        fillForm('documentForm', state.document);
+      }
+      if (document.getElementById('jenisBerita')) $('#jenisBerita').value = state.document.jenisBerita || 'peminjaman';
+      save();
+      renderLoanPreview();
+      renderPreview();
+      activatePanel(message.view || 'peminjaman');
+      notifyParent('bmn:state-ready', { history: state.history || [], initialized: true });
+    });
+    window.addEventListener('afterprint', () => {
+      document.body.classList.remove('printing-loan', 'printing-extension', 'printing-return');
+    });
+    renderLoanPreview();
+    renderExtensionPreview();
+    renderReturnPreview();
+    renderPreview();
+    notifyParent('bmn:state-ready', { history: state.history || [], initialized: false });
+  </script>
+</body>
+</html>
