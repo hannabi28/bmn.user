@@ -64,6 +64,14 @@
     .step-note { margin:0 0 14px; border-left:4px solid #e0ad25; background:#fff9e8; color:#705518; }
     .success { display:none; margin-top:14px; background:#e4f7ed; color:#087443; }
     .success.visible { display:block; }
+    body.form-mode { overflow:hidden; }
+    body.form-mode main { height:calc(100vh - 80px); overflow:hidden; padding-top:18px; padding-bottom:18px; }
+    body.form-mode .stats, body.form-mode #homeContent { display:none; }
+    body.form-mode .form-wrap { display:flex; height:100%; min-height:0; flex-direction:column; }
+    body.form-mode .form-wrap .toolbar,
+    body.form-mode .form-wrap .step-note,
+    body.form-mode .form-wrap .success { flex:none; }
+    body.form-mode .form-wrap iframe { flex:1; height:auto; min-height:0; }
     @media (max-width:760px) {
       .topbar { height:auto; min-height:80px; padding:14px 16px; }
       .brand-logo { width:86px; height:42px; }
@@ -71,6 +79,7 @@
       .clock { display:none; } .refresh { padding:9px 11px; }
       main { padding:18px 12px 40px; } .stats,.layout { grid-template-columns:1fr; }
       .panel { padding:18px; } .form-wrap { grid-column:auto; }
+      body.form-mode main { height:calc(100vh - 70px); padding:12px; }
     }
   </style>
 </head>
@@ -126,8 +135,9 @@
       const homeContent = document.getElementById('homeContent');
       const title = document.getElementById('formTitle');
       const success = document.getElementById('successMessage');
-     const sheetsWebAppUrl =
-  'https://script.google.com/macros/s/AKfycb.../exec';
+     
+const sheetsWebAppUrl = 'https://script.google.com/macros/s/AKfycbx9LhCXjseGvG0C1xq7KToK6Lb5aqn9Kfp03MM3HljY9YIwYR88lE6bAw2KqHWMMVJCzA/exec';
+
       const SESSION_KEY = 'bmn-user-active-form-v1';
       let entity = ''; let service = 'peminjaman'; let loan = null; let signature = '';
       let restoringSession = false;
@@ -138,11 +148,14 @@
       };
       const updateCount = () => { document.getElementById('submissionCount').textContent = `${readSubmissions().length} Pengajuan`; };
       const syncToSpreadsheet = (record) => {
-        if (sheetsWebAppUrl === 'PASTE_APPS_SCRIPT_WEB_APP_URL_HERE') {
-          console.warn('Google Sheets belum terhubung. Isi sheetsWebAppUrl pada index.html.');
-          return;
+        if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(sheetsWebAppUrl)) {
+          const message = 'URL Web App Apps Script belum diisi dengan benar.';
+          console.error(message);
+          success.textContent = `${message} Data tersimpan di browser, tetapi belum dikirim ke Google Sheets.`;
+          success.classList.add('visible');
+          return Promise.reject(new Error(message));
         }
-        fetch(sheetsWebAppUrl, {
+        return fetch(sheetsWebAppUrl, {
           method:'POST',
           mode:'no-cors',
           headers:{ 'Content-Type':'text/plain;charset=utf-8' },
@@ -151,6 +164,7 @@
           console.error('Sinkronisasi Google Sheets gagal.', error);
           success.textContent='Data tersimpan di browser, tetapi gagal dikirim ke Google Sheets.';
           success.classList.add('visible');
+          throw error;
         });
       };
       const saveSubmission = (documentData = {}) => {
@@ -158,7 +172,9 @@
         const existing = submissions.find((item) => item.id === loan.id);
         const submission = { id:loan.id, entity, kind:documentData.kind || 'peminjaman', loan:loan.data, signature:documentData.signature || signature, bast:documentData.kind ? null : documentData, extra:documentData, submittedAt:new Date().toISOString() };
         if (existing) submissions.splice(submissions.indexOf(existing), 1, submission); else submissions.unshift(submission);
-        localStorage.setItem('bmn-user-submissions-v1', JSON.stringify(submissions)); updateCount(); syncToSpreadsheet(submission);
+        localStorage.setItem('bmn-user-submissions-v1', JSON.stringify(submissions));
+        updateCount();
+        syncToSpreadsheet(submission).catch(() => {});
       };
       const initializeFrame = () => {
         if (!frame.contentWindow) return;
@@ -186,6 +202,7 @@
       const showHome = () => {
         entity=''; loan=null; signature=''; restoringSession=false;
         localStorage.removeItem(SESSION_KEY);
+        document.body.classList.remove('form-mode');
         frame.src='about:blank'; frame.hidden=true; formPanel.classList.remove('active'); homeContent.style.display='grid';
       };
       const showService = (nextService) => {
@@ -198,6 +215,7 @@
       document.querySelectorAll('[data-service]').forEach((button) => button.addEventListener('click', () => showService(button.dataset.service)));
       const selectEntity = (nextEntity, restore = false) => {
         entity=nextEntity; loan=null; signature=''; restoringSession=restore; success.classList.remove('visible');
+        document.body.classList.add('form-mode');
         localStorage.setItem(SESSION_KEY, JSON.stringify({ entity, service }));
         title.textContent=`${service === 'peminjaman' ? 'Peminjaman' : service === 'perpanjangan' ? 'Perpanjangan' : 'Pengembalian'} ${labels[entity]}`;
         homeContent.style.display='none'; formPanel.classList.add('active'); frame.hidden=false;
@@ -217,9 +235,9 @@
           const style=childDocument.createElement('style');
           style.textContent=[
             '.embedded-form{min-width:0!important;background:linear-gradient(120deg,#063b78,#0871cf)!important;color:#102b55!important;font-family:Arial,Helvetica,sans-serif!important}',
-            '.embedded-form html,.embedded-form body{width:100%!important;min-width:0!important;overflow-x:hidden!important}',
+            '.embedded-form html,.embedded-form body{width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;overflow:visible!important;overflow-x:hidden!important}',
             '.embedded-form .sidebar,.embedded-form .sidebar-label,.embedded-form .topbar,.embedded-form .intro,.embedded-form .tabs,.embedded-form .form-overview,[aria-label="Ringkasan isian formulir"]{display:none!important}',
-            '.embedded-form .app-shell,.app-shell,.workspace,.dashboard-page{display:block!important;width:100%!important;min-width:0!important;margin:0!important}',
+            '.embedded-form .app-shell,.app-shell,.workspace,.dashboard-page{display:block!important;width:100%!important;height:auto!important;min-width:0!important;min-height:0!important;margin:0!important;overflow:visible!important}',
             '.dashboard-page{padding:22px!important}',
             '.embedded-form .panel{width:100%!important;margin:0 0 20px!important;padding:26px!important;border:1px solid #d5e5f5!important;border-radius:20px!important;background:#fff!important;box-shadow:0 10px 24px #002f6725!important}',
             '.embedded-form .panel-heading{display:flex!important;align-items:center!important;gap:10px!important;margin:0 0 20px!important;padding:0 0 14px!important;border-bottom:1px solid #dce7f2!important}',
@@ -251,14 +269,28 @@
           const cleanEmbeddedForm = () => {
             childDocument.body.classList.add('embedded-form');
             childDocument.querySelectorAll('.sidebar,.sidebar-label,.topbar,.intro,.tabs,.form-overview,[aria-label="Ringkasan isian formulir"]').forEach((element) => element.remove());
-            const height = Math.max(childDocument.documentElement.scrollHeight, childDocument.body.scrollHeight);
-            frame.style.height = `${Math.max(height + 8, 320)}px`;
           };
           cleanEmbeddedForm();
-          new MutationObserver(cleanEmbeddedForm).observe(childDocument.body, { childList:true, subtree:true });
-          if (childDocument.defaultView.ResizeObserver) {
-            new childDocument.defaultView.ResizeObserver(cleanEmbeddedForm).observe(childDocument.body);
-          }
+          const draftKey = 'bmn-user-form-v1';
+          const draftFields = { loanForm:'loan', extensionForm:'extension', returnForm:'returnForm', documentForm:'document' };
+          const draftTimers = new WeakMap();
+          const saveDraft = (form) => {
+            const key = draftFields[form.id];
+            if (!key) return;
+            const previousTimer = draftTimers.get(form);
+            if (previousTimer) clearTimeout(previousTimer);
+            draftTimers.set(form, setTimeout(() => {
+              let draft = {};
+              try { draft = JSON.parse(localStorage.getItem(draftKey) || '{}'); } catch (error) { console.warn('Draft formulir tidak dapat dibaca.', error); }
+              draft[key] = Object.fromEntries(new FormData(form).entries());
+              localStorage.setItem(draftKey, JSON.stringify(draft));
+              draftTimers.delete(form);
+            }, 300));
+          };
+          childDocument.querySelectorAll('form').forEach((form) => {
+            form.addEventListener('input', () => saveDraft(form));
+            form.addEventListener('change', () => saveDraft(form));
+          });
         }
         initializeFrame();
       });
