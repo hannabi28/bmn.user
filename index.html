@@ -59,7 +59,7 @@
     .toolbar h2 { margin:0; font-size:19px; }
     .button { padding:9px 13px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); font-size:12px; font-weight:700; }
     .button:hover { border-color:var(--blue); color:var(--blue); }
-    iframe { display:block; width:100%; min-height:900px; border:0; background:#fff; }
+    iframe { display:block; width:100%; height:320px; min-height:0; border:0; background:#fff; }
     .step-note,.success { padding:12px 14px; border-radius:9px; font-size:12px; line-height:1.5; }
     .step-note { margin:0 0 14px; border-left:4px solid #e0ad25; background:#fff9e8; color:#705518; }
     .success { display:none; margin-top:14px; background:#e4f7ed; color:#087443; }
@@ -126,27 +126,68 @@
       const homeContent = document.getElementById('homeContent');
       const title = document.getElementById('formTitle');
       const success = document.getElementById('successMessage');
+     const sheetsWebAppUrl =
+  'https://script.google.com/macros/s/AKfycb.../exec';
+      const SESSION_KEY = 'bmn-user-active-form-v1';
       let entity = ''; let service = 'peminjaman'; let loan = null; let signature = '';
+      let restoringSession = false;
       const readSubmissions = () => {
         const value = JSON.parse(localStorage.getItem('bmn-user-submissions-v1') || '[]');
         if (!Array.isArray(value)) throw new Error('Data pengajuan pengguna tidak valid.');
         return value;
       };
       const updateCount = () => { document.getElementById('submissionCount').textContent = `${readSubmissions().length} Pengajuan`; };
+      const syncToSpreadsheet = (record) => {
+        if (sheetsWebAppUrl === 'PASTE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+          console.warn('Google Sheets belum terhubung. Isi sheetsWebAppUrl pada index.html.');
+          return;
+        }
+        fetch(sheetsWebAppUrl, {
+          method:'POST',
+          mode:'no-cors',
+          headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+          body:JSON.stringify({ source:'bmn-user', event:'submission-upsert', record })
+        }).catch((error) => {
+          console.error('Sinkronisasi Google Sheets gagal.', error);
+          success.textContent='Data tersimpan di browser, tetapi gagal dikirim ke Google Sheets.';
+          success.classList.add('visible');
+        });
+      };
       const saveSubmission = (documentData = {}) => {
         const submissions = readSubmissions();
         const existing = submissions.find((item) => item.id === loan.id);
         const submission = { id:loan.id, entity, kind:documentData.kind || 'peminjaman', loan:loan.data, signature:documentData.signature || signature, bast:documentData.kind ? null : documentData, extra:documentData, submittedAt:new Date().toISOString() };
         if (existing) submissions.splice(submissions.indexOf(existing), 1, submission); else submissions.unshift(submission);
-        localStorage.setItem('bmn-user-submissions-v1', JSON.stringify(submissions)); updateCount();
+        localStorage.setItem('bmn-user-submissions-v1', JSON.stringify(submissions)); updateCount(); syncToSpreadsheet(submission);
       };
       const initializeFrame = () => {
         if (!frame.contentWindow) return;
         const view = service === 'perpanjangan' ? 'perpanjangan' : service === 'pengembalian' ? 'pengembalian' : 'peminjaman';
         const mode = service === 'perpanjangan' ? 'extension' : service === 'pengembalian' ? 'return' : 'loan';
-        frame.contentWindow.postMessage({ type:'bmn:init', entity, view, mode, newLoan:mode === 'loan', newExtension:mode === 'extension', newReturn:mode === 'return', loan:loan?.data || null, signature, document:loan?.bast || null }, '*');
+        let draft = {};
+        try { draft = JSON.parse(localStorage.getItem('bmn-user-form-v1') || '{}'); } catch (error) { console.warn('Draft formulir tidak dapat dibaca.', error); }
+        frame.contentWindow.postMessage({
+          type:'bmn:init',
+          entity,
+          view,
+          mode,
+          newLoan:mode === 'loan' && !restoringSession,
+          newExtension:mode === 'extension' && !restoringSession,
+          newReturn:mode === 'return' && !restoringSession,
+          loan:loan?.data || draft.loan || null,
+          signature:signature || draft.loanSignature || '',
+          document:loan?.bast || draft.document || null,
+          extensionData:draft.extension || null,
+          extensionSignatures:draft.extensionSignatures || {},
+          returnData:draft.returnForm || null,
+          returnSignature:draft.returnSignature || ''
+        }, '*');
       };
-      const showHome = () => { entity=''; loan=null; signature=''; frame.src='about:blank'; frame.hidden=true; formPanel.classList.remove('active'); homeContent.style.display='grid'; };
+      const showHome = () => {
+        entity=''; loan=null; signature=''; restoringSession=false;
+        localStorage.removeItem(SESSION_KEY);
+        frame.src='about:blank'; frame.hidden=true; formPanel.classList.remove('active'); homeContent.style.display='grid';
+      };
       const showService = (nextService) => {
         service=nextService; showHome();
         document.getElementById('stepNote').textContent=service === 'peminjaman'
@@ -155,13 +196,15 @@
         document.querySelectorAll('.service-tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.service === service));
       };
       document.querySelectorAll('[data-service]').forEach((button) => button.addEventListener('click', () => showService(button.dataset.service)));
-      document.querySelectorAll('[data-entity]').forEach((button) => button.addEventListener('click', () => {
-        entity=button.dataset.entity; loan=null; signature=''; success.classList.remove('visible');
+      const selectEntity = (nextEntity, restore = false) => {
+        entity=nextEntity; loan=null; signature=''; restoringSession=restore; success.classList.remove('visible');
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ entity, service }));
         title.textContent=`${service === 'peminjaman' ? 'Peminjaman' : service === 'perpanjangan' ? 'Perpanjangan' : 'Pengembalian'} ${labels[entity]}`;
         homeContent.style.display='none'; formPanel.classList.add('active'); frame.hidden=false;
         const view=service === 'perpanjangan' ? 'perpanjangan' : service === 'pengembalian' ? 'pengembalian' : 'peminjaman';
         frame.src=`index_${entity}.html?view=${view}&embed=1&parent=1&v=${Date.now()}`;
-      }));
+      };
+      document.querySelectorAll('[data-entity]').forEach((button) => button.addEventListener('click', () => selectEntity(button.dataset.entity)));
       document.getElementById('changeEntity').addEventListener('click', showHome);
       document.getElementById('refreshButton').addEventListener('click', () => { updateCount(); window.location.reload(); });
       frame.addEventListener('load', () => {
@@ -174,6 +217,7 @@
           const style=childDocument.createElement('style');
           style.textContent=[
             '.embedded-form{min-width:0!important;background:linear-gradient(120deg,#063b78,#0871cf)!important;color:#102b55!important;font-family:Arial,Helvetica,sans-serif!important}',
+            '.embedded-form html,.embedded-form body{width:100%!important;min-width:0!important;overflow-x:hidden!important}',
             '.embedded-form .sidebar,.embedded-form .sidebar-label,.embedded-form .topbar,.embedded-form .intro,.embedded-form .tabs,.embedded-form .form-overview,[aria-label="Ringkasan isian formulir"]{display:none!important}',
             '.embedded-form .app-shell,.app-shell,.workspace,.dashboard-page{display:block!important;width:100%!important;min-width:0!important;margin:0!important}',
             '.dashboard-page{padding:22px!important}',
@@ -207,9 +251,14 @@
           const cleanEmbeddedForm = () => {
             childDocument.body.classList.add('embedded-form');
             childDocument.querySelectorAll('.sidebar,.sidebar-label,.topbar,.intro,.tabs,.form-overview,[aria-label="Ringkasan isian formulir"]').forEach((element) => element.remove());
+            const height = Math.max(childDocument.documentElement.scrollHeight, childDocument.body.scrollHeight);
+            frame.style.height = `${Math.max(height + 8, 320)}px`;
           };
           cleanEmbeddedForm();
           new MutationObserver(cleanEmbeddedForm).observe(childDocument.body, { childList:true, subtree:true });
+          if (childDocument.defaultView.ResizeObserver) {
+            new childDocument.defaultView.ResizeObserver(cleanEmbeddedForm).observe(childDocument.body);
+          }
         }
         initializeFrame();
       });
@@ -218,10 +267,21 @@
         if (event.data.type === 'bmn:loan-saved') { loan={id:`${entity}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,data:event.data.loan || {}}; signature=event.data.signature || ''; saveSubmission(); service='peminjaman'; return; }
         if (event.data.type === 'bmn:extension-saved') { loan={id:`${entity}-extension-${Date.now()}`,data:event.data.extension || {}}; saveSubmission({kind:'perpanjangan',signatures:event.data.extensionSignatures || {}}); success.textContent='Perpanjangan berhasil disimpan dan dapat dilihat admin.'; success.classList.add('visible'); return; }
         if (event.data.type === 'bmn:return-saved') { loan={id:`${entity}-return-${Date.now()}`,data:event.data.returnData || {}}; saveSubmission({kind:'pengembalian',signature:event.data.returnSignature || ''}); success.textContent='Pengembalian berhasil disimpan dan dapat dilihat admin.'; success.classList.add('visible'); return; }
-        if (event.data.type === 'bmn:bast-saved' && loan) { loan.bast=event.data.document || {}; saveSubmission(loan.bast); success.classList.add('visible'); }
+        if (event.data.type === 'bmn:bast-saved' && loan) { loan.bast=event.data.document || {}; saveSubmission(loan.bast); success.textContent='Berita acara berhasil disimpan dan dikirim ke Google Sheets.'; success.classList.add('visible'); }
       });
       const tick=()=>{ const now=new Date(); document.getElementById('clockTime').textContent=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Makassar'})+' WITA'; document.getElementById('clockDate').textContent=now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'short',year:'numeric',timeZone:'Asia/Makassar'}); };
       updateCount(); tick(); setInterval(tick,1000);
+      try {
+        const active = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+        if (active && labels[active.entity] && ['peminjaman', 'perpanjangan', 'pengembalian'].includes(active.service)) {
+          service = active.service;
+          document.querySelectorAll('.service-tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.service === service));
+          selectEntity(active.entity, true);
+        }
+      } catch (error) {
+        console.warn('Sesi formulir aktif tidak dapat dipulihkan.', error);
+        localStorage.removeItem(SESSION_KEY);
+      }
     })();
   </script>
 </body>

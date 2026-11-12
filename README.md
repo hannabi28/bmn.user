@@ -39,6 +39,7 @@ Lalu buka `http://localhost:8000`.
 - Cetak / Save as PDF menggunakan dialog print browser.
 - Data disimpan di localStorage sehingga tetap ada saat halaman direfresh pada browser yang sama.
 - Daftar inventaris awal merupakan data contoh prototype dan belum tersinkron ke server/database.
+- Sinkronisasi Google Sheets tersedia melalui `apps-script/Code.gs`. Setelah Apps Script dideploy sebagai Web App, URL Web App harus ditempelkan pada `sheetsWebAppUrl` di `index.html`.
 - `user.html` menyediakan alur pengguna untuk mengajukan peminjaman kendaraan, ruangan, atau barang, mengisi formulir dan berita acara, lalu mengirimkannya ke daftar peminjaman admin.
 
 ## Catatan
