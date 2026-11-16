@@ -168,6 +168,7 @@
     .bast-signing-gap { height: 78px; display: grid; place-items: center; }
     .bast-knowing { grid-column: 1 / -1; width: 50%; justify-self: center; }
     .extension-signature-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .extension-signature-preview .signature-space { height: 62px; margin: 5px 0; display: grid; place-items: center; }
 
     .preview, .preview *, .loan-preview, .loan-preview * {
       font-family: Arial, sans-serif !important;
@@ -234,10 +235,12 @@
       text-decoration: underline;
     }
     .loan-preview .loan-body { margin-top: 48px; }
+    .loan-preview .doc-number { text-align: center; }
     .loan-preview p { margin: 0 0 7px; text-align: justify; }
     .loan-lines { margin: 8px 0 8px; }
     .loan-line { display: grid; grid-template-columns: 180px 16px minmax(0, 1fr); min-height: 27px; }
     .loan-line .value { overflow-wrap: anywhere; border-bottom: 1px dotted #111; min-height: 22px; }
+    .party-identity .loan-line .value { border-bottom: 0; min-height: 0; }
     .party-identity { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0; margin: 8px 0; }
     .party-identity .loan-lines { margin: 0; }
     .party-number { padding-top: 4px; }
@@ -581,11 +584,6 @@
         <p class="status" id="extensionStatus" role="status"></p>
       </form>
       <article class="loan-preview extension-preview" id="extensionPreview" aria-label="Pratinjau formulir perpanjangan"></article>
-      <div class="next-document no-print">
-        <h3>Berita Acara Perpanjangan Peminjaman</h3>
-        <p>Unduh berita acara dalam format Word untuk diedit atau dicetak dan diisi manual oleh Pihak Kedua.</p>
-        <div class="actions"><button class="btn primary" type="button" id="extensionBastButton">Buka berita acara perpanjangan</button></div>
-      </div>
     </section>
 
     <section class="panel" id="pengembalian">
@@ -910,18 +908,18 @@
         <div class="loan-letterhead letterhead"><img src="kop_logo.jpeg" alt="Kop surat Kementerian Komunikasi dan Digital RI"></div>
         <h2>FORMULIR PERPANJANGAN PEMINJAMAN RUANGAN</h2>
         <h2>BALAI PELATIHAN SUMBER DAYA MANUSIA KOMUNIKASI DAN DIGITAL MANADO</h2>
-        <div class="doc-number">Nomor: ${printedText(data.nomorPeminjaman, blank, '................')}</div>
+        <div class="doc-number">Nomor: ${printedText(data.nomorPeminjaman, blank, '')}</div>
         <div class="loan-body">
           <p>Kami yang bertanda tangan di bawah ini:</p>
-          <p><b>1. Nama</b> ${printedText(firstParty, blank)}<br><b>&nbsp;&nbsp;&nbsp;NIP</b> ${printedText(firstPartyNip, blank)}<br><b>&nbsp;&nbsp;&nbsp;Jabatan</b> Penanggung Jawab/Pengelola Ruangan Dinas/Instansi</p>
-          <p>Dalam hal ini bertindak untuk dan atas nama (satker) selaku penanggung jawab/pengelola ruangan dinas/instansi, selanjutnya disebut <b>Pihak Pertama</b>.</p>
+          <div class="party-identity"><b class="party-number">1.</b><div class="loan-lines"><div class="loan-line"><span>Nama</span><span>:</span><span class="value">${printedText(firstParty, blank, '')}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${printedText(firstPartyNip, blank, '')}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">${printedText('Penanggung Jawab/Pengelola Ruangan Dinas/Instansi', blank, '')}</span></div></div></div>
+          <p>Dalam hal ini bertindak untuk dan atas nama BLSDM Komdigi Manado selaku penanggung jawab/pengelola ruangan dinas/instansi, selanjutnya disebut <b>Pihak Pertama</b>.</p>
           <p>Menyetujui permohonan perpanjangan ruangan dinas/instansi sebagaimana dimaksud. Adapun rincian perpanjangan peminjaman sebagai berikut:</p>
-          <div class="loan-lines"><div class="loan-line"><span>a. Durasi Peminjaman</span><span>:</span><span class="value">${printedLine(data.durasiTambahan, blank)}</span></div><div class="loan-line"><span>b. Rencana Pengembalian</span><span>:</span><span class="value">${printedLine(formatDate(data.tanggalBaru, ''), blank)}</span></div><div class="loan-line"><span>c. Untuk Keperluan</span><span>:</span><span class="value">${printedLine(data.alasanPerpanjangan || data.catatanPerpanjangan, blank)}</span></div></div>
-          <p><b>2. Nama</b> ${printedText(secondParty, blank)}<br><b>&nbsp;&nbsp;&nbsp;NIP</b> ${printedText(secondPartyNip, blank)}<br><b>&nbsp;&nbsp;&nbsp;Jabatan</b> ${printedText(secondPartyRole, blank)}</p>
+          <div class="loan-lines"><div class="loan-line"><span>a. Durasi Peminjaman</span><span>:</span><span class="value">${printedLine(data.durasiTambahan, blank, '(maksimal 2 minggu)')}</span></div><div class="loan-line"><span>b. Rencana Pengembalian</span><span>:</span><span class="value">${printedLine(formatDate(data.tanggalBaru, ''), blank)}</span></div><div class="loan-line"><span>c. Untuk Keperluan</span><span>:</span><span class="value">${printedLine(data.alasanPerpanjangan || data.catatanPerpanjangan, blank)}</span></div></div>
+          <div class="party-identity"><b class="party-number">2.</b><div class="loan-lines"><div class="loan-line"><span>Nama</span><span>:</span><span class="value">${printedText(secondParty, blank, '')}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${printedText(secondPartyNip, blank, '')}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">${printedText(secondPartyRole, blank, '')}</span></div></div></div>
           <p>Dalam hal ini bertindak selaku peminjam ruangan dinas/instansi, selanjutnya disebut <b>Pihak Kedua</b>.</p>
           <p>Kami menyatakan akan melanjutkan peminjaman ruangan dinas/instansi sebagaimana tertuang dalam Berita Acara Serah Terima Peminjaman Ruangan (BAST Peminjaman) Nomor ${printedText(data.nomorPeminjaman, blank, '____')} tanggal ${printedText(formatDate(data.tanggalLama, '____'), blank)}, yang merupakan dokumen yang tidak terpisahkan dari formulir perpanjangan ini. Seluruh ketentuan, hak, dan kewajiban sebagaimana tercantum dalam BAST Peminjaman dimaksud tetap berlaku dan mengikat selama masa perpanjangan.</p>
-          <p>Demikian Formulir Perpanjangan Peminjaman Ruangan Dinas/Instansi ini dibuat sebagai dasar perpanjangan peminjaman dan pengendalian terhadap penggunaan ruangan dinas/instansi untuk digunakan sebagaimana mestinya.</p>
-          <div class="signature-preview extension-signature-preview"><div>Pihak Pertama<br>Penanggung Jawab<div class="line" id="extensionPreviewOne">${blank ? '' : '(ttd)'}</div><b>${printedText(firstParty, blank)}</b><br>NIP. ${printedText(firstPartyNip, blank)}</div><div>Pihak Kedua<br>Peminjam<div class="line" id="extensionPreviewTwo">${blank ? '' : '(ttd)'}</div><b>${printedText(secondParty, blank)}</b><br>NIP. ${printedText(secondPartyNip, blank)}</div></div>
+          <p>Demikian Formulir Perpanjangan Peminjaman Ruangan ini dibuat sebagai dasar perpanjangan peminjaman dan pengendalian terhadap penggunaan ruangan dinas/instansi untuk digunakan sebagaimana mestinya.</p>
+          <div class="signature-preview extension-signature-preview"><div>Pihak Pertama<br>Penanggung Jawab<div class="signature-space" id="extensionPreviewOne"></div><b>${printedText(firstParty, blank)}</b><br>NIP. ${printedText(firstPartyNip, blank)}</div><div>Pihak Kedua<br>Peminjam<div class="signature-space" id="extensionPreviewTwo"></div><b>${printedText(secondParty, blank)}</b><br>NIP. ${printedText(secondPartyNip, blank)}</div></div>
         </div>`;
       if (!blank) applyExtensionSignatureImages();
     }
@@ -1489,15 +1487,6 @@
       save();
       if ($('#loanForm').checkValidity()) notifyParent('bmn:loan-saved', { loan: state.loan, signature: state.loanSignature || '' });
       $('#jenisBerita').value = 'peminjaman';
-      renderPreview();
-      activatePanel('berita-acara');
-    });
-    $('#extensionBastButton').addEventListener('click', () => {
-      state.extension = formData($('#extensionForm'));
-      state.document = state.document || {};
-      state.document.jenisBerita = 'perpanjangan';
-      save();
-      $('#jenisBerita').value = 'perpanjangan';
       renderPreview();
       activatePanel('berita-acara');
     });

@@ -171,6 +171,7 @@
     .bast-signature-preview .signature-role { display: inline-block; min-height: 3em; }
     .bast-signature-preview > div:last-child { grid-column: 1 / -1; width: 50%; justify-self: center; }
     .extension-signature-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .extension-signature-preview .signature-space { height: 62px; margin: 5px 0; display: grid; place-items: center; }
 
     .preview, .preview *, .loan-preview, .loan-preview * {
       font-family: Arial, sans-serif !important;
@@ -243,10 +244,12 @@
       text-decoration: underline;
     }
     .loan-preview .loan-body { margin-top: 48px; }
+    .loan-preview .doc-number { text-align: center; }
     .loan-preview p { margin: 0 0 7px; text-align: justify; }
     .loan-lines { margin: 8px 0 8px; }
     .loan-line { display: grid; grid-template-columns: 180px 16px minmax(0, 1fr); min-height: 27px; }
     .loan-line .value { overflow-wrap: anywhere; border-bottom: 1px dotted #111; min-height: 22px; }
+    .party-identity .loan-line .value { border-bottom:0; min-height:0; }
     .loan-sign-date { margin: 30px 0 0 auto; width: 250px; text-align: center; }
     .loan-signature { margin: 30px 0 0 auto; width: 250px; text-align: center; }
     .loan-signature .space {
@@ -1161,7 +1164,7 @@
         <h2>FORMULIR PERPANJANGAN PEMINJAMAN KENDARAAN</h2>
         <h2>DINAS OPERASIONAL/FUNGSIONAL</h2>
         <h2>BLSDM Komdigi Manado</h2>
-        <div class="doc-number">Nomor: ${escapeHtml(text(data.nomorPeminjaman, '................'))}</div>
+        <div class="doc-number">Nomor: ${escapeHtml(text(data.nomorPeminjaman, ''))}</div>
         <div class="loan-body">
           <p>Kami yang bertanda tangan di bawah ini:</p>
           <div class="loan-lines"><div class="loan-line"><span><b>1. Nama</b></span><span>:</span><span class="value">${escapeHtml(firstParty)}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(firstPartyNip)}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">Penanggung Jawab/Pengelola Kendaraan Dinas</span></div></div>
@@ -1172,7 +1175,7 @@
           <p>Dalam hal ini bertindak selaku peminjam kendaraan dinas operasional/fungsional, selanjutnya disebut <b>Pihak Kedua</b>.</p>
           <p>Menyatakan akan melanjutkan peminjaman kendaraan dinas operasional/fungsional sebagaimana tertuang dalam Berita Acara Serah Terima Peminjaman Kendaraan Dinas Operasional/Fungsional (BAST Peminjaman) Nomor ${escapeHtml(text(data.nomorPeminjaman, '____'))} tanggal ${escapeHtml(formatIndonesianDate(text(data.tanggalLama, '____')))}, yang merupakan dokumen yang tidak terpisahkan dari formulir perpanjangan ini. Seluruh ketentuan, hak, dan kewajiban sebagaimana tercantum dalam BAST Peminjaman dimaksud tetap berlaku dan mengikat selama masa perpanjangan.</p>
           <p>Demikian Formulir Perpanjangan Peminjaman Kendaraan Dinas Operasional/Fungsional ini dibuat sebagai dasar perpanjangan peminjaman dan pengendalian terhadap penggunaan kendaraan dinas operasional/fungsional untuk digunakan sebagaimana mestinya.</p>
-          <div class="signature-preview extension-signature-preview"><div>Pihak Pertama<br>Penanggung Jawab<div class="line" id="extensionPreviewOne"></div><b>${escapeHtml(firstParty)}</b><br>NIP. ${escapeHtml(firstPartyNip)}</div><div>Pihak Kedua<br>Peminjam<div class="line" id="extensionPreviewTwo"></div><b>${escapeHtml(secondParty)}</b><br>NIP. ${escapeHtml(secondPartyNip)}</div></div>
+          <div class="signature-preview extension-signature-preview"><div>Pihak Pertama<br>Penanggung Jawab<div class="signature-space" id="extensionPreviewOne"></div><b>${escapeHtml(firstParty)}</b><br>NIP. ${escapeHtml(firstPartyNip)}</div><div>Pihak Kedua<br>Peminjam<div class="signature-space" id="extensionPreviewTwo"></div><b>${escapeHtml(secondParty)}</b><br>NIP. ${escapeHtml(secondPartyNip)}</div></div>
         </div>`;
       applyExtensionSignatureImages();
     }

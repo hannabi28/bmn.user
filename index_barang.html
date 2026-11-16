@@ -160,6 +160,7 @@
     .signature-preview .line { height: 62px; margin: 5px 0; display: grid; place-items: center; color: #777; }
     .signature-preview img { max-height: 57px; max-width: 100%; }
     .extension-signature-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .extension-signature-preview .signature-space { height: 62px; margin: 5px 0; display: grid; place-items: center; }
 
     .preview, .preview *, .loan-preview, .loan-preview * {
       font-family: Arial, sans-serif !important;
@@ -231,10 +232,12 @@
       text-decoration: underline;
     }
     .loan-preview .loan-body { margin-top: 48px; }
+    .loan-preview .doc-number { text-align: center; }
     .loan-preview p { margin: 0 0 7px; text-align: justify; }
     .loan-lines { margin: 8px 0 8px; }
     .loan-line { display: grid; grid-template-columns: 180px 16px minmax(0, 1fr); min-height: 27px; }
     .loan-line .value { overflow-wrap: anywhere; border-bottom: 1px dotted #111; min-height: 22px; }
+    .party-identity .loan-line .value { border-bottom:0; min-height:0; }
     .loan-sign-date { margin: 30px 0 0 auto; width: 250px; text-align: center; }
     .loan-signature { margin: 30px 0 0 auto; width: 250px; text-align: center; }
     .loan-signature .space {
@@ -859,18 +862,18 @@
         <h2>FORMULIR PERPANJANGAN PEMINJAMAN BARANG</h2>
         <h2>DINAS OPERASIONAL/FUNGSIONAL</h2>
         <h2>(BLSDM Komdigi Manado)</h2>
-        <div class="doc-number">Nomor: ${escapeHtml(text(data.nomorPeminjaman, '................'))}</div>
+        <div class="doc-number">Nomor: ${escapeHtml(text(data.nomorPeminjaman, ''))}</div>
         <div class="loan-body">
           <p>Kami yang bertanda tangan di bawah ini:</p>
-          <p><b>1. Nama</b> ${escapeHtml(firstParty)}<br><b>&nbsp;&nbsp;&nbsp;NIP</b> ${escapeHtml(firstPartyNip)}<br><b>&nbsp;&nbsp;&nbsp;Jabatan</b> Penanggung Jawab/Pengelola BMN</p>
+          <div class="party-identity"><b class="party-number">1.</b><div class="loan-lines"><div class="loan-line"><span>Nama</span><span>:</span><span class="value">${escapeHtml(firstParty)}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(firstPartyNip)}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">Penanggung Jawab/Pengelola BMN</span></div></div></div>
           <p>Dalam hal ini bertindak untuk dan atas nama BLSDM Komdigi Manado selaku penanggung jawab/pengelola Barang Milik Negara, selanjutnya disebut <b>Pihak Pertama</b>.</p>
           <p>Menyetujui permohonan perpanjangan Barang Milik Negara sebagaimana dimaksud. Adapun rincian perpanjangan peminjaman sebagai berikut:</p>
           <div class="loan-lines"><div class="loan-line"><span>a. Durasi Peminjaman</span><span>:</span><span class="value">${escapeHtml(text(data.durasiTambahan, '(maksimal 2 minggu)'))}</span></div><div class="loan-line"><span>b. Rencana Pengembalian</span><span>:</span><span class="value">${escapeHtml(formatDateIndonesia(data.tanggalBaru, ''))}</span></div><div class="loan-line"><span>c. Untuk Keperluan</span><span>:</span><span class="value">${escapeHtml(text(data.alasanPerpanjangan || data.catatanPerpanjangan, ''))}</span></div></div>
-          <p><b>2. Nama</b> ${escapeHtml(secondParty)}<br><b>&nbsp;&nbsp;&nbsp;NIP</b> ${escapeHtml(secondPartyNip)}<br><b>&nbsp;&nbsp;&nbsp;Jabatan</b> ${escapeHtml(secondPartyRole)}</p>
+          <div class="party-identity"><b class="party-number">2.</b><div class="loan-lines"><div class="loan-line"><span>Nama</span><span>:</span><span class="value">${escapeHtml(secondParty)}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(secondPartyNip)}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">${escapeHtml(secondPartyRole)}</span></div></div></div>
           <p>Dalam hal ini bertindak selaku peminjam Barang Milik Negara, selanjutnya disebut <b>Pihak Kedua</b>.</p>
           <p>Menyatakan akan melanjutkan peminjaman Barang Milik Negara sebagaimana tertuang dalam Berita Acara Serah Terima Peminjaman Barang Nomor ${escapeHtml(text(data.nomorPeminjaman, '____'))} tanggal ${escapeHtml(text(data.tanggalLama, '____'))}, yang merupakan dokumen yang tidak terpisahkan dari formulir perpanjangan ini. Seluruh ketentuan, hak, dan kewajiban sebagaimana tercantum dalam BAST Peminjaman dimaksud tetap berlaku dan mengikat selama masa perpanjangan.</p>
           <p>Demikian Formulir Perpanjangan Peminjaman Barang ini dibuat sebagai dasar perpanjangan peminjaman dan pengendalian terhadap penggunaan Barang Milik Negara untuk digunakan sebagaimana mestinya.</p>
-          <div class="signature-preview extension-signature-preview"><div>Pihak Pertama<br>Penanggung Jawab<div class="line" id="extensionPreviewOne"></div><b>${escapeHtml(firstParty)}</b><br>NIP. ${escapeHtml(firstPartyNip)}</div><div>Pihak Kedua<br>Peminjam<div class="line" id="extensionPreviewTwo"></div><b>${escapeHtml(secondParty)}</b><br>NIP. ${escapeHtml(secondPartyNip)}</div></div>
+          <div class="signature-preview extension-signature-preview"><div>Pihak Pertama<br>Penanggung Jawab<div class="signature-space" id="extensionPreviewOne"></div><b>${escapeHtml(firstParty)}</b><br>NIP. ${escapeHtml(firstPartyNip)}</div><div>Pihak Kedua<br>Peminjam<div class="signature-space" id="extensionPreviewTwo"></div><b>${escapeHtml(secondParty)}</b><br>NIP. ${escapeHtml(secondPartyNip)}</div></div>
         </div>`;
       applyExtensionSignatureImages();
     }
