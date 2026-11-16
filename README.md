@@ -40,6 +40,7 @@ Lalu buka `http://localhost:8000`.
 - Data disimpan di localStorage sehingga tetap ada saat halaman direfresh pada browser yang sama.
 - Daftar inventaris awal merupakan data contoh prototype dan belum tersinkron ke server/database.
 - Sinkronisasi Google Sheets tersedia melalui `apps-script/Code.gs`. Setelah Apps Script dideploy sebagai Web App, URL Web App harus ditempelkan pada `sheetsWebAppUrl` di `index.html`.
+- Konfigurasi absensi Google Forms/Sheets tersedia melalui `apps-script/AbsensiKomdigi.gs`. Buka Apps Script pada Spreadsheet target, tempelkan file tersebut, lalu jalankan `setupAbsensiKomdigi()` sekali. Fungsi ini membuat form absensi, sheet rekap, aturan punishment/SP1/SP2/SP3, validasi kelengkapan foto, dan dashboard.
 - `user.html` menyediakan alur pengguna untuk mengajukan peminjaman kendaraan, ruangan, atau barang, mengisi formulir dan berita acara, lalu mengirimkannya ke daftar peminjaman admin.
 
 ## Catatan
