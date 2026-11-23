@@ -234,13 +234,28 @@
     .handwrite-space { display: inline-block; min-width: 90px; height: 1em; border-bottom: 1px dotted #111; vertical-align: baseline; }
     .handwrite-space.wide { min-width: 180px; }
     .doc-table .handwrite-space { display: block; min-width: 100%; }
+    .loan-sign-date { margin: 30px 0 0 auto; width: 250px; text-align: center; }
     .loan-signature { margin: 30px 0 0 auto; width: 250px; text-align: center; }
-    #loanPreview .loan-signature { width: 300px; }
+    .loan-signature .space {
+      height: 78px;
+      margin: 6px 0 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .loan-signature .space img {
+      display: block;
+      max-width: 100%;
+      max-height: 70px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      margin: 0 auto;
+    }
+    .loan-signature strong { display: block; }
     .manual-signature-date { margin-bottom: 4px; white-space: nowrap; }
-    .manual-signature-identities { width: 100%; margin: 3em 0 0; border-collapse: collapse; table-layout: fixed; }
-    .manual-signature-identities td { padding: 0 3px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
-    .manual-signature-name { height: 1.2em; border-bottom: 1px dotted #111; text-align: center !important; }
-    .manual-signature-identities .manual-signature-nip { display: table-cell; width: 50%; margin: 0; }
+    .manual-signature-name { display: block; width: 82%; height: 1.2em; margin: 3em auto 3px; border-bottom: 1px dotted #111; }
     .bast-manual-signature-fields { width: 170px; margin: calc(3em + 64px) auto 0; text-align: left; }
     .bast-manual-signature-name { display: block; width: 100%; height: 1.2em; margin: 0 0 3px; border-bottom: 1px dotted #111; }
     .bast-manual-signature-nip { display: grid; grid-template-columns: 30px 1fr; align-items: baseline; gap: 5px; width: 100%; }
@@ -368,7 +383,7 @@
       .loan-preview h2 { font-size: 16px; }
       .loan-preview .loan-body { margin-top: 32px; }
       .loan-line { grid-template-columns: 130px 12px minmax(0, 1fr); }
-      #loanPreview .loan-signature { max-width: 100%; }
+      .loan-sign-date, .loan-signature { width: min(250px, 100%); }
       .document-signatures { grid-template-columns: 1fr; }
       .extension-signatures { grid-template-columns: 1fr; }
     }
@@ -419,7 +434,10 @@
       body.printing-loan .loan-preview p { margin-bottom: 4px; }
       body.printing-loan .loan-line { min-height: 20px; }
       body.printing-loan .loan-line .value { min-height: 17px; }
+      body.printing-loan .loan-sign-date { margin-top: 7mm; }
       body.printing-loan .loan-signature { margin-top: 5mm; }
+      body.printing-loan .loan-signature .space { height: 22mm; margin: 2mm 0 2mm; }
+      body.printing-loan .loan-signature .space img { max-height: 20mm; }
       body.printing-extension .topbar,
       body.printing-extension .intro,
       body.printing-extension .tabs,
@@ -945,7 +963,8 @@
           </div>
           <p>Atas peminjaman ruangan dinas/instansi tersebut kami berjanji untuk menggunakan dengan baik selama kegiatan, serta sanggup mengembalikan ruangan dan perangkat dalam keadaan baik setelah kegiatan selesai.</p>
           <p>Apabila selama masa peminjaman terjadi kerusakan dan/atau kehilangan serta hal lain yang ditimbulkan, maka kami bertanggung jawab sepenuhnya sesuai ketentuan.</p>
-          <div class="loan-signature"><div class="manual-signature-date">${printedText(formatDate(data.mulai, ''), blank)}</div>Peminjam,<table class="manual-signature-identities"><tbody><tr><td class="manual-signature-name">Nama: ${printedText(data.nama, blank)}</td><td class="manual-signature-nip">NIP: ${printedText(data.nip, blank)}</td></tr></tbody></table></div>
+          <div class="loan-sign-date">${escapeHtml(formatDate(data.mulai, '... , (tanggal, bulan, tahun)'))}</div>
+          <div class="loan-signature">Peminjam,<div class="space">${state.loanSignature ? `<img src="${state.loanSignature}" alt="Tanda tangan peminjam">` : ''}</div><strong>${escapeHtml(text(data.nama, '(Nama Peminjam)'))}</strong>NIP. ${escapeHtml(text(data.nip, '(NIP Peminjam)'))}</div>
         </div>`;
     }
 
@@ -1192,7 +1211,8 @@
 
       preview.querySelectorAll('.loan-signature').forEach((signature) => {
         const table = document.createElement('table');
-        const width = preview.id === 'loanPreview' ? 300 : 250;
+        const width = 250;
+        table.className = 'loan-signature';
         table.setAttribute('border', '0');
         table.setAttribute('cellpadding', '0');
         table.setAttribute('cellspacing', '0');
@@ -1423,6 +1443,11 @@
         .preview .letterhead { margin-bottom: 15pt; text-align: center; }
         .loan-preview .loan-letterhead { margin-bottom: 31.5pt; text-align: center; }
         .loan-preview .loan-body { margin-top: 36pt; }
+        .loan-preview .loan-sign-date { width: 187.5pt; margin: 22.5pt 0 0 auto; text-align: center; }
+        .loan-preview .loan-signature { width: 187.5pt; margin: 22.5pt 0 0 auto; text-align: center; }
+        .loan-preview .loan-signature .space { height: 58.5pt; margin: 4.5pt 0 6.75pt; display: block; overflow: hidden; text-align: center; }
+        .loan-preview .loan-signature .space img { max-width: 100%; max-height: 52.5pt; width: auto; height: auto; }
+        .loan-preview .loan-signature strong { display: block; }
         .loan-preview h2, .preview h3, .preview .doc-subtitle { margin: 0; font-size: 12pt; line-height: 1.28; text-align: center; font-weight: bold; }
         .preview .doc-number { margin: 4pt 0 15pt; text-align: center; }
         .preview p, .loan-preview p { margin: 0 0 5pt; }
