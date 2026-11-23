@@ -235,8 +235,12 @@
     .handwrite-space.wide { min-width: 180px; }
     .doc-table .handwrite-space { display: block; min-width: 100%; }
     .loan-signature { margin: 30px 0 0 auto; width: 250px; text-align: center; }
+    #loanPreview .loan-signature { width: 300px; }
     .manual-signature-date { margin-bottom: 4px; white-space: nowrap; }
-    .manual-signature-name { display: block; width: 82%; height: 1.2em; margin: 3em auto 3px; border-bottom: 1px dotted #111; }
+    .manual-signature-identities { width: 100%; margin: 3em 0 0; border-collapse: collapse; table-layout: fixed; }
+    .manual-signature-identities td { padding: 0 3px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+    .manual-signature-name { height: 1.2em; border-bottom: 1px dotted #111; text-align: center !important; }
+    .manual-signature-identities .manual-signature-nip { display: table-cell; width: 50%; margin: 0; }
     .bast-manual-signature-fields { width: 170px; margin: calc(3em + 64px) auto 0; text-align: left; }
     .bast-manual-signature-name { display: block; width: 100%; height: 1.2em; margin: 0 0 3px; border-bottom: 1px dotted #111; }
     .bast-manual-signature-nip { display: grid; grid-template-columns: 30px 1fr; align-items: baseline; gap: 5px; width: 100%; }
@@ -364,6 +368,7 @@
       .loan-preview h2 { font-size: 16px; }
       .loan-preview .loan-body { margin-top: 32px; }
       .loan-line { grid-template-columns: 130px 12px minmax(0, 1fr); }
+      #loanPreview .loan-signature { max-width: 100%; }
       .document-signatures { grid-template-columns: 1fr; }
       .extension-signatures { grid-template-columns: 1fr; }
     }
@@ -940,7 +945,7 @@
           </div>
           <p>Atas peminjaman ruangan dinas/instansi tersebut kami berjanji untuk menggunakan dengan baik selama kegiatan, serta sanggup mengembalikan ruangan dan perangkat dalam keadaan baik setelah kegiatan selesai.</p>
           <p>Apabila selama masa peminjaman terjadi kerusakan dan/atau kehilangan serta hal lain yang ditimbulkan, maka kami bertanggung jawab sepenuhnya sesuai ketentuan.</p>
-          <div class="loan-signature"><div class="manual-signature-date">.......................... 2026</div>Peminjam,<span class="manual-signature-name">${printedText(data.nama, blank)}</span><div class="manual-signature-nip">NIP. ${printedText(data.nip, blank)}</div></div>
+          <div class="loan-signature"><div class="manual-signature-date">${printedText(formatDate(data.mulai, ''), blank)}</div>Peminjam,<table class="manual-signature-identities"><tbody><tr><td class="manual-signature-name">Nama: ${printedText(data.nama, blank)}</td><td class="manual-signature-nip">NIP: ${printedText(data.nip, blank)}</td></tr></tbody></table></div>
         </div>`;
     }
 
@@ -1187,12 +1192,13 @@
 
       preview.querySelectorAll('.loan-signature').forEach((signature) => {
         const table = document.createElement('table');
+        const width = preview.id === 'loanPreview' ? 300 : 250;
         table.setAttribute('border', '0');
         table.setAttribute('cellpadding', '0');
         table.setAttribute('cellspacing', '0');
-        table.setAttribute('width', '250');
+        table.setAttribute('width', String(width));
         table.setAttribute('align', 'right');
-        table.style.width = '187.5pt';
+        table.style.width = `${width * 0.75}pt`;
         table.style.marginLeft = 'auto';
         table.style.borderCollapse = 'collapse';
         const cell = table.insertRow().insertCell();
@@ -1795,6 +1801,8 @@
       renderReturnPreview();
       renderPreview();
     });
+    $('#loanForm').addEventListener('input', () => renderLoanPreview());
+    $('#loanForm').addEventListener('change', () => renderLoanPreview());
     renderLoanPreview();
     renderExtensionPreview();
     renderReturnPreview();
