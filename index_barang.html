@@ -139,16 +139,6 @@
     .doc-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
     .doc-table td { padding: 4px 5px; vertical-align: top; }
     .doc-table td:first-child { width: 34%; }
-    .bast-identity-table { width: 100%; border-collapse: collapse; margin: 0 0 18px; font: 12px Arial, sans-serif; }
-    .bast-identity-table th, .bast-identity-table td { padding: 9px 10px; border: 1px solid var(--line); vertical-align: middle; text-align: left; }
-    .bast-identity-table th { background: #f3f7fb; color: var(--navy); font-size: 11px; }
-    .bast-identity-table td:first-child, .bast-identity-table td:nth-child(3) { width: 22%; color: var(--muted); font-weight: bold; }
-    .bast-identity-table input, .bast-identity-table select { margin: 0; }
-    .bast-identity-table .party-heading { background: #f8fbff; color: var(--navy); font-weight: bold; }
-    @media (max-width: 640px) {
-      .bast-identity-table { display: block; overflow-x: auto; white-space: normal; }
-      .bast-identity-table tbody { display: table; width: 100%; min-width: 620px; }
-    }
     .clause { margin-top: 22px; }
     .clause h4 { margin: 0 0 6px; text-align: center; font-size: 13px; text-decoration: underline; }
     .clause p { text-align: justify; }
@@ -160,7 +150,6 @@
     .signature-preview .line { height: 62px; margin: 5px 0; display: grid; place-items: center; color: #777; }
     .signature-preview img { max-height: 57px; max-width: 100%; }
     .extension-signature-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .extension-signature-preview .signature-space { height: 62px; margin: 5px 0; display: grid; place-items: center; }
 
     .preview, .preview *, .loan-preview, .loan-preview * {
       font-family: Arial, sans-serif !important;
@@ -232,12 +221,10 @@
       text-decoration: underline;
     }
     .loan-preview .loan-body { margin-top: 48px; }
-    .loan-preview .doc-number { text-align: center; }
     .loan-preview p { margin: 0 0 7px; text-align: justify; }
     .loan-lines { margin: 8px 0 8px; }
     .loan-line { display: grid; grid-template-columns: 180px 16px minmax(0, 1fr); min-height: 27px; }
     .loan-line .value { overflow-wrap: anywhere; border-bottom: 1px dotted #111; min-height: 22px; }
-    .party-identity .loan-line .value { border-bottom:0; min-height:0; }
     .loan-sign-date { margin: 30px 0 0 auto; width: 250px; text-align: center; }
     .loan-signature { margin: 30px 0 0 auto; width: 250px; text-align: center; }
     .loan-signature .space {
@@ -598,7 +585,6 @@
         <div class="form-grid">
           <div><label for="nomorPeminjamanKembali">Nomor pengembalian</label><input id="nomorPeminjamanKembali" name="nomorPeminjamanKembali" required></div>
           <div><label for="namaPengembalian">Nama peminjam</label><input id="namaPengembalian" name="namaPengembalian" required></div>
-          <div><label for="nipPengembalian">NIP peminjam</label><input id="nipPengembalian" name="nipPengembalian"></div>
           <div><label for="pangkatPengembalian">Pangkat / golongan</label><input id="pangkatPengembalian" name="pangkatPengembalian"></div>
           <div><label for="kendaraanPengembalian">Barang</label><input id="kendaraanPengembalian" name="kendaraanPengembalian" required></div>
           <div><label for="nopolPengembalian">Nomor inventaris barang</label><input id="nopolPengembalian" name="nopolPengembalian" required></div>
@@ -606,6 +592,8 @@
         </div>
         <div class="section-title">Kondisi serah terima</div>
         <div class="form-grid">
+          <div><label for="odometer">Jumlah / ukuran akhir</label><input id="odometer" name="odometer" type="number" min="0"></div>
+          <div><label for="bahanBakar">Kondisi barang</label><input id="bahanBakar" name="bahanBakar"></div>
           <div class="field full"><label for="kondisiKembali">Kondisi barang dan kelengkapan</label><textarea id="kondisiKembali" name="kondisiKembali" required placeholder="Jelaskan kondisi barang, kerusakan, atau kelengkapan yang dikembalikan"></textarea></div>
           <div class="field full"><label for="catatanPengembalian">Catatan pemeriksaan</label><textarea id="catatanPengembalian" name="catatanPengembalian"></textarea></div>
           <div class="loan-signature-input">
@@ -632,21 +620,25 @@
         <div class="editor no-print">
           <form id="documentForm">
             <div class="section-title">Identitas berita acara</div>
-            <table class="bast-identity-table"><tbody>
-              <tr><th colspan="4">Identitas Dokumen</th></tr>
-              <tr><td>Nomor BAST Pengembalian</td><td><input id="nomorBerita" name="nomorBerita" value="BAST/____/____" required></td><td>Tempat</td><td><input id="tempatBerita" name="tempatBerita" required></td></tr>
-              <tr><td>Tanggal</td><td><input id="tanggalBerita" name="tanggalBerita" type="date" required></td><td>Jenis BAST</td><td><select id="jenisBerita" name="jenisBerita"><option value="peminjaman">Serah terima peminjaman</option><option value="pengembalian">Serah terima pengembalian</option></select></td></tr>
-              <tr><td>Nomor BAST Peminjaman</td><td colspan="3"><input id="nomorBastPeminjaman" name="nomorBastPeminjaman" placeholder="Isi nomor BAST peminjaman bila pengembalian"></td></tr>
-              <tr><th colspan="4" class="party-heading">Pihak Pertama (otomatis)</th></tr>
-              <tr><td>Nama</td><td><input id="pihakPertama" name="pihakPertama" value="Irfan Suhanta, S.T." readonly required></td><td>NIP</td><td><input id="nipPertama" name="nipPertama" value="198111082007011001" readonly></td></tr>
-              <tr><td>Pangkat/Golongan</td><td><input id="pangkatPertama" name="pangkatPertama" value="III/C" readonly></td><td>Jabatan</td><td><input id="jabatanPertama" name="jabatanPertama" value="Penanggung Jawab/Pengelola BMN" readonly required></td></tr>
-              <tr><th colspan="4" class="party-heading">Pihak Kedua (diisi manual)</th></tr>
-              <tr><td>Nama</td><td><input id="pihakKedua" name="pihakKedua" required></td><td>NIP</td><td><input id="nipKedua" name="nipKedua"></td></tr>
-              <tr><td>Pangkat/Golongan</td><td><input id="pangkatKedua" name="pangkatKedua"></td><td>Jabatan</td><td><input id="jabatanKedua" name="jabatanKedua" required></td></tr>
-              <tr><th colspan="4" class="party-heading">Mengetahui (otomatis)</th></tr>
-              <tr><td>Nama</td><td><input id="mengetahui" name="mengetahui" value="Arsyad, S.Kom., M.I.Kom" readonly required></td><td>NIP</td><td><input id="nipMengetahui" name="nipMengetahui" value="198001012008031001" readonly></td></tr>
-              <tr><td>Pangkat/Golongan</td><td><input id="pangkatMengetahui" name="pangkatMengetahui" value="IV/a" readonly></td><td>Jabatan</td><td><input id="jabatanMengetahui" name="jabatanMengetahui" value="Kepala Balai Pelatihan SDM Komdigi Manado" readonly required></td></tr>
-            </tbody></table>
+            <div class="form-grid">
+              <div><label for="nomorBerita">Nomor berita acara</label><input id="nomorBerita" name="nomorBerita" value="BAST/____/____" required></div>
+              <div><label for="tempatBerita">Tempat</label><input id="tempatBerita" name="tempatBerita" required></div>
+              <div><label for="tanggalBerita">Tanggal</label><input id="tanggalBerita" name="tanggalBerita" type="date" required></div>
+              <div><label for="jenisBerita">Jenis berita acara</label><select id="jenisBerita" name="jenisBerita"><option value="peminjaman">Serah terima peminjaman</option><option value="pengembalian">Serah terima pengembalian</option></select></div>
+              <div><label for="pangkatPertama">Pangkat/Golongan pihak pertama</label><input id="pangkatPertama" name="pangkatPertama" value="III/C" readonly></div>
+              <div><label for="nomorBastPengembalian">Nomor BAST Peminjaman</label><input id="nomorBastPengembalian" name="nomorBastPengembalian" placeholder="Isi nomor BAST peminjaman"></div>
+            </div>
+            <div class="section-title">Pihak yang terlibat</div>
+            <div class="form-grid">
+              <div><label for="pihakPertama">Nama pihak pertama</label><input id="pihakPertama" name="pihakPertama" value="Irfan Suhanta, S.T." readonly required></div>
+              <div><label for="nipPertama">NIP pihak pertama</label><input id="nipPertama" name="nipPertama" value="198111082007011001" readonly></div>
+              <div><label for="jabatanPertama">Jabatan pihak pertama</label><input id="jabatanPertama" name="jabatanPertama" value="Penanggung Jawab/Pengelola BMN" readonly required></div>
+              <div><label for="pihakKedua">Nama pihak kedua</label><input id="pihakKedua" name="pihakKedua" required></div>
+              <div><label for="nipKedua">NIP pihak kedua</label><input id="nipKedua" name="nipKedua"></div>
+              <div><label for="jabatanKedua">Jabatan pihak kedua</label><input id="jabatanKedua" name="jabatanKedua" required></div>
+              <div><label for="mengetahui">Nama pejabat yang mengetahui</label><input id="mengetahui" name="mengetahui" value="Arsyad, S.Kom., M.I.Kom" readonly required></div>
+              <div><label for="nipMengetahui">NIP pejabat</label><input id="nipMengetahui" name="nipMengetahui" value="198001012008031001" readonly></div>
+            </div>
             <div class="section-title">Objek dan ketentuan</div>
             <div class="form-grid">
               <div><label for="kendaraanBerita">Nama / tipe barang</label><input id="kendaraanBerita" name="kendaraanBerita" required></div>
@@ -670,7 +662,7 @@
 
   </main>
   </div>
-
+  <script src="bmn-archive.js"></script>
   <script>
     const STORAGE_KEY = 'bmn-user-form-v1';
     const FIRST_PARTY_SIGNATURE = '';
@@ -684,14 +676,28 @@
     const embeddedParent = new URLSearchParams(window.location.search).get('parent') === '1' && window.parent !== window;
     function notifyParent(type, values = {}) {
       if (!embeddedParent) return;
-      window.parent.postMessage({
+      const message = {
         type,
         entity: parentEntity,
         panel: document.querySelector('.panel.active')?.id || 'peminjaman',
         recordId: state.parentRecordId || null,
         extensionId: state.parentExtensionId || null,
         ...values
-      }, '*');
+      };
+      const send = () => {
+        try {
+          if (window.BmnArchive) message.archiveDocument = window.BmnArchive.createDocument(document, type, parentEntity);
+        } catch (error) {
+          message.archiveError = error.message;
+          console.error('Pratinjau dokumen untuk arsip gagal dibuat.', error);
+        }
+        window.parent.postMessage(message, '*');
+      };
+      if (['bmn:loan-saved', 'bmn:extension-saved', 'bmn:return-saved', 'bmn:bast-saved'].includes(type)) {
+        window.requestAnimationFrame(send);
+      } else {
+        window.parent.postMessage(message, '*');
+      }
     }
     const text = (value, fallback = '________________') => value || fallback;
     const formatDateIndonesia = (value, fallback = '... , (tanggal, bulan, tahun)') => {
@@ -717,7 +723,7 @@
       const [year, month, day] = value.split('-').map(Number);
       if (!year || !month || !day) return fallback;
       const monthNames = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
-      return `${numberToIndonesianWords(day)} ${monthNames[month - 1]} tahun ${numberToIndonesianWords(year)}`;
+      return `${numberToIndonesianWords(day)} ${monthNames[month - 1]} ${numberToIndonesianWords(year)}`;
     };
     const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[character]));
     const headerTrack = $('#headerTrack');
@@ -808,7 +814,7 @@
     document.querySelector('#tanggalRencanaPengembalian').addEventListener('input', renderLoanPreview);
     $('#tanggalKembali').addEventListener('input', renderReturnPreview);
     $('#tanggalBerita').addEventListener('input', renderPreview);
-    $('#nomorBastPeminjaman').addEventListener('input', renderPreview);
+    $('#nomorBastPengembalian').addEventListener('input', renderPreview);
 
     function fillForm(formId, data) {
       if (!data) return;
@@ -862,18 +868,18 @@
         <h2>FORMULIR PERPANJANGAN PEMINJAMAN BARANG</h2>
         <h2>DINAS OPERASIONAL/FUNGSIONAL</h2>
         <h2>(BLSDM Komdigi Manado)</h2>
-        <div class="doc-number">Nomor: ${escapeHtml(text(data.nomorPeminjaman, ''))}</div>
+        <div class="doc-number">Nomor: ${escapeHtml(text(data.nomorPeminjaman, '................'))}</div>
         <div class="loan-body">
           <p>Kami yang bertanda tangan di bawah ini:</p>
-          <div class="party-identity"><b class="party-number">1.</b><div class="loan-lines"><div class="loan-line"><span>Nama</span><span>:</span><span class="value">${escapeHtml(firstParty)}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(firstPartyNip)}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">Penanggung Jawab/Pengelola BMN</span></div></div></div>
+          <p><b>1. Nama</b> ${escapeHtml(firstParty)}<br><b>&nbsp;&nbsp;&nbsp;NIP</b> ${escapeHtml(firstPartyNip)}<br><b>&nbsp;&nbsp;&nbsp;Jabatan</b> Penanggung Jawab/Pengelola BMN</p>
           <p>Dalam hal ini bertindak untuk dan atas nama BLSDM Komdigi Manado selaku penanggung jawab/pengelola Barang Milik Negara, selanjutnya disebut <b>Pihak Pertama</b>.</p>
           <p>Menyetujui permohonan perpanjangan Barang Milik Negara sebagaimana dimaksud. Adapun rincian perpanjangan peminjaman sebagai berikut:</p>
           <div class="loan-lines"><div class="loan-line"><span>a. Durasi Peminjaman</span><span>:</span><span class="value">${escapeHtml(text(data.durasiTambahan, '(maksimal 2 minggu)'))}</span></div><div class="loan-line"><span>b. Rencana Pengembalian</span><span>:</span><span class="value">${escapeHtml(formatDateIndonesia(data.tanggalBaru, ''))}</span></div><div class="loan-line"><span>c. Untuk Keperluan</span><span>:</span><span class="value">${escapeHtml(text(data.alasanPerpanjangan || data.catatanPerpanjangan, ''))}</span></div></div>
-          <div class="party-identity"><b class="party-number">2.</b><div class="loan-lines"><div class="loan-line"><span>Nama</span><span>:</span><span class="value">${escapeHtml(secondParty)}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(secondPartyNip)}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">${escapeHtml(secondPartyRole)}</span></div></div></div>
+          <p><b>2. Nama</b> ${escapeHtml(secondParty)}<br><b>&nbsp;&nbsp;&nbsp;NIP</b> ${escapeHtml(secondPartyNip)}<br><b>&nbsp;&nbsp;&nbsp;Jabatan</b> ${escapeHtml(secondPartyRole)}</p>
           <p>Dalam hal ini bertindak selaku peminjam Barang Milik Negara, selanjutnya disebut <b>Pihak Kedua</b>.</p>
           <p>Menyatakan akan melanjutkan peminjaman Barang Milik Negara sebagaimana tertuang dalam Berita Acara Serah Terima Peminjaman Barang Nomor ${escapeHtml(text(data.nomorPeminjaman, '____'))} tanggal ${escapeHtml(text(data.tanggalLama, '____'))}, yang merupakan dokumen yang tidak terpisahkan dari formulir perpanjangan ini. Seluruh ketentuan, hak, dan kewajiban sebagaimana tercantum dalam BAST Peminjaman dimaksud tetap berlaku dan mengikat selama masa perpanjangan.</p>
           <p>Demikian Formulir Perpanjangan Peminjaman Barang ini dibuat sebagai dasar perpanjangan peminjaman dan pengendalian terhadap penggunaan Barang Milik Negara untuk digunakan sebagaimana mestinya.</p>
-          <div class="signature-preview extension-signature-preview"><div>Pihak Pertama<br>Penanggung Jawab<div class="signature-space" id="extensionPreviewOne"></div><b>${escapeHtml(firstParty)}</b><br>NIP. ${escapeHtml(firstPartyNip)}</div><div>Pihak Kedua<br>Peminjam<div class="signature-space" id="extensionPreviewTwo"></div><b>${escapeHtml(secondParty)}</b><br>NIP. ${escapeHtml(secondPartyNip)}</div></div>
+          <div class="signature-preview extension-signature-preview"><div>Pihak Pertama<br>Penanggung Jawab<div class="line" id="extensionPreviewOne"></div><b>${escapeHtml(firstParty)}</b><br>NIP. ${escapeHtml(firstPartyNip)}</div><div>Pihak Kedua<br>Peminjam<div class="line" id="extensionPreviewTwo"></div><b>${escapeHtml(secondParty)}</b><br>NIP. ${escapeHtml(secondPartyNip)}</div></div>
         </div>`;
       applyExtensionSignatureImages();
     }
@@ -909,7 +915,7 @@
         <p>Dalam hal ini bertindak untuk dan atas nama BLSDM Komdigi Manado selaku penanggung jawab/pengelola Barang Milik Negara, selanjutnya disebut <b>Pihak Pertama</b>.</p>
         <div class="loan-lines"><p><b>2.</b></p><div class="loan-line"><span>Nama</span><span>:</span><span class="value">${escapeHtml(secondParty)}</span></div><div class="loan-line"><span>NIP</span><span>:</span><span class="value">${escapeHtml(secondPartyNip)}</span></div><div class="loan-line"><span>Pangkat/Golongan</span><span>:</span><span class="value">${escapeHtml(data.pangkatPengembalian || loan.pangkat || '')}</span></div><div class="loan-line"><span>Jabatan</span><span>:</span><span class="value">${escapeHtml(secondPartyRole)}</span></div></div>
         <p>Dalam hal ini bertindak selaku peminjam Barang Milik Negara, selanjutnya disebut <b>Pihak Kedua</b>.</p>
-        <div class="clause"><h4>PERNYATAAN SERAH TERIMA</h4><p>1. Pihak Kedua telah mengembalikan dan Pihak Pertama telah menerima Barang Milik Negara dengan rincian:</p><table class="doc-table"><tr><td>Nama/Tipe Barang</td><td>: ${escapeHtml(vehicle)}</td></tr><tr><td>Nomor Inventaris Barang</td><td>: ${escapeHtml(plate)}</td></tr><tr><td>Tanggal Pengembalian</td><td>: ${escapeHtml(formatDateIndonesia(data.tanggalBerita))}</td></tr><tr><td>Nomor BAST Peminjaman</td><td>: ${escapeHtml(text(data.nomorBastPeminjaman || data.nomorBerita || data.nomorPeminjaman || loan.nomorPeminjaman))}</td></tr></table><p>2. Barang diserahkan dalam kondisi baik dan lengkap, dengan kelengkapannya meliputi:</p><ol type="a"><li>Kelengkapan utama;</li><li>Dokumen barang;</li><li>Aksesori atau perlengkapan pendukung jika ada; dan</li><li>Kelengkapan barang lainnya jika ada.</li></ol><p>3. Kondisi dan catatan pemeriksaan: ${escapeHtml(text(data.rincianBerita || data.ketentuanKhusus))}</p></div>
+        <div class="clause"><h4>PERNYATAAN SERAH TERIMA</h4><p>1. Pihak Kedua telah mengembalikan dan Pihak Pertama telah menerima Barang Milik Negara dengan rincian:</p><table class="doc-table"><tr><td>Nama/Tipe Barang</td><td>: ${escapeHtml(vehicle)}</td></tr><tr><td>Nomor Inventaris Barang</td><td>: ${escapeHtml(plate)}</td></tr><tr><td>Tanggal Pengembalian</td><td>: ${escapeHtml(formatDateIndonesia(data.tanggalBerita))}</td></tr><tr><td>Nomor BAST Peminjaman</td><td>: ${escapeHtml(text(data.nomorBastPengembalian || data.nomorBerita || data.nomorPeminjaman || loan.nomorPeminjaman))}</td></tr></table><p>2. Barang diserahkan dalam kondisi baik dan lengkap, dengan kelengkapannya meliputi:</p><ol type="a"><li>Kelengkapan utama;</li><li>Dokumen barang;</li><li>Aksesori atau perlengkapan pendukung jika ada; dan</li><li>Kelengkapan barang lainnya jika ada.</li></ol><p>3. Kondisi dan catatan pemeriksaan: ${escapeHtml(text(data.rincianBerita || data.ketentuanKhusus))}</p></div>
         <div class="signature-preview"><div class="party-signature"><b>Pihak Pertama</b><div class="party-role">${escapeHtml(firstPartyRole)}</div><div class="line" id="previewOne"></div><div class="party-identity"><b>${escapeHtml(firstParty)}</b><br>NIP. ${escapeHtml(firstPartyNip)}</div></div><div class="party-signature"><b>Pihak Kedua</b><div class="party-role">Peminjam</div><div class="line" id="previewTwo"></div><div class="party-identity"><b>${escapeHtml(secondParty)}</b><br>NIP. ${escapeHtml(secondPartyNip)}</div></div><div class="approver"><b>Mengetahui</b><br>Kepala Balai Pelatihan SDM<br>Komdigi Manado<div class="line" id="previewThree"></div><b>${escapeHtml(approvingParty)}</b><br>NIP. ${escapeHtml(approvingPartyNip)}</div></div>`;
       applySignatureImages();
     }
@@ -917,7 +923,7 @@
       const data = { ...(state.returnForm || {}), ...formData($('#returnForm')) };
       const loan = state.loan || {};
       const borrower = data.namaPengembalian || loan.nama || 'Nama Peminjam';
-      const borrowerNip = data.nipPengembalian || loan.nip || 'NIP Peminjam';
+      const borrowerNip = loan.nip || 'NIP Peminjam';
       const borrowerRole = loan.jabatan || 'Peminjam';
       $('#returnPreview').innerHTML = `
         <div class="loan-letterhead"><img src="kop_logo.jpeg" alt="Kop surat Kementerian Komunikasi dan Digital"></div>
@@ -1086,7 +1092,7 @@
         pihakKedua: state.returnForm.namaPengembalian || '',
         kendaraanBerita: state.returnForm.kendaraanPengembalian || '',
         nopolBerita: state.returnForm.nopolPengembalian || '',
-        nomorBastPeminjaman: state.returnForm.nomorPeminjamanKembali || '',
+        nomorBastPengembalian: state.returnForm.nomorPeminjamanKembali || '',
         rincianBerita: state.returnForm.kondisiKembali || ''
       };
       save();
@@ -1185,7 +1191,7 @@
             jabatanKedua: state.loan.jabatan || '',
             kendaraanBerita: state.returnForm.kendaraanPengembalian || '',
             nopolBerita: state.returnForm.nopolPengembalian || '',
-            nomorBastPeminjaman: state.returnForm.nomorPeminjamanKembali || '',
+            nomorBastPengembalian: state.returnForm.nomorPeminjamanKembali || '',
             rincianBerita: state.returnForm.kondisiKembali || ''
           };
         }

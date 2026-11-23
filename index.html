@@ -127,6 +127,7 @@
       <div class="success" id="successMessage">Pengajuan berhasil disimpan dan dapat dilihat admin melalui halaman dashboard.</div>
     </section>
   </main>
+  <script src="bmn-archive.js"></script>
   <script>
     (() => {
       const labels = { kendaraan:'Kendaraan', ruangan:'Ruangan', barang:'Barang' };
@@ -135,9 +136,6 @@
       const homeContent = document.getElementById('homeContent');
       const title = document.getElementById('formTitle');
       const success = document.getElementById('successMessage');
-     
-const sheetsWebAppUrl = 'https://script.google.com/macros/s/AKfycbx9LhCXjseGvG0C1xq7KToK6Lb5aqn9Kfp03MM3HljY9YIwYR88lE6bAw2KqHWMMVJCzA/exec';
-
       const SESSION_KEY = 'bmn-user-active-form-v1';
       let entity = ''; let service = 'peminjaman'; let loan = null; let signature = '';
       let restoringSession = false;
@@ -147,34 +145,53 @@ const sheetsWebAppUrl = 'https://script.google.com/macros/s/AKfycbx9LhCXjseGvG0C
         return value;
       };
       const updateCount = () => { document.getElementById('submissionCount').textContent = `${readSubmissions().length} Pengajuan`; };
-      const syncToSpreadsheet = (record) => {
-        if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(sheetsWebAppUrl)) {
-          const message = 'URL Web App Apps Script belum diisi dengan benar.';
-          console.error(message);
-          success.textContent = `${message} Data tersimpan di browser, tetapi belum dikirim ke Google Sheets.`;
-          success.classList.add('visible');
-          return Promise.reject(new Error(message));
-        }
-        return fetch(sheetsWebAppUrl, {
-          method:'POST',
-          mode:'no-cors',
-          headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-          body:JSON.stringify({ source:'bmn-user', event:'submission-upsert', record })
-        }).catch((error) => {
-          console.error('Sinkronisasi Google Sheets gagal.', error);
-          success.textContent='Data tersimpan di browser, tetapi gagal dikirim ke Google Sheets.';
-          success.classList.add('visible');
-          throw error;
-        });
-      };
-      const saveSubmission = (documentData = {}) => {
+      const saveSubmission = (documentData = {}, archiveDocument = null, archiveError = '') => {
         const submissions = readSubmissions();
         const existing = submissions.find((item) => item.id === loan.id);
-        const submission = { id:loan.id, entity, kind:documentData.kind || 'peminjaman', loan:loan.data, signature:documentData.signature || signature, bast:documentData.kind ? null : documentData, extra:documentData, submittedAt:new Date().toISOString() };
+        const submission = {
+          ...(existing || {}),
+          id: loan.id,
+          entity,
+          kind: documentData.kind || service,
+          loan: loan.data,
+          signature: documentData.signature || signature || existing?.signature || '',
+          bast: archiveDocument?.type === 'bast' || (!documentData.kind && Object.keys(documentData).length)
+            ? documentData
+            : existing?.bast || null,
+          extra: documentData.kind ? documentData : existing?.extra || {},
+          submittedAt: new Date().toISOString()
+        };
         if (existing) submissions.splice(submissions.indexOf(existing), 1, submission); else submissions.unshift(submission);
         localStorage.setItem('bmn-user-submissions-v1', JSON.stringify(submissions));
         updateCount();
-        syncToSpreadsheet(submission).catch(() => {});
+        if (!archiveDocument) {
+          const reason = archiveError || 'Pratinjau PDF belum tersedia.';
+          console.error('Arsip Google Drive gagal dibuat.', reason);
+          success.textContent = `Data tersimpan di perangkat, tetapi PDF belum dikirim ke Google Drive. ${reason}`;
+          success.classList.add('visible');
+          return;
+        }
+        if (!window.BmnArchive) {
+          success.textContent = 'Data tersimpan di perangkat, tetapi modul arsip PDF tidak dapat dimuat.';
+          success.classList.add('visible');
+          return;
+        }
+        window.BmnArchive.save(submission, archiveDocument).then((cloudRecord) => {
+          const latest = readSubmissions();
+          const stored = latest.find((item) => item.id === submission.id);
+          if (stored) stored.pdfUrls = { ...(stored.pdfUrls || {}), ...(cloudRecord.pdfUrls || {}) };
+          localStorage.setItem('bmn-user-submissions-v1', JSON.stringify(latest));
+          success.textContent = `${archiveDocument.label} berhasil disimpan sebagai PDF di Google Drive.`;
+          success.classList.add('visible');
+        }).catch((error) => {
+          console.error('Penyimpanan PDF ke Google Drive gagal.', error);
+          success.textContent = error.pdfSaved
+            ? `Pengajuan dan PDF tersimpan, tetapi akses tautan Google Drive gagal: ${error.message}`
+            : error.recordSaved
+              ? `Pengajuan tersimpan di Spreadsheet, tetapi PDF gagal disimpan ke Google Drive: ${error.message}`
+              : `Data tersimpan di perangkat, tetapi PDF gagal dikirim ke Google Drive: ${error.message}`;
+          success.classList.add('visible');
+        });
       };
       const initializeFrame = () => {
         if (!frame.contentWindow) return;
@@ -296,10 +313,27 @@ const sheetsWebAppUrl = 'https://script.google.com/macros/s/AKfycbx9LhCXjseGvG0C
       });
       window.addEventListener('message', (event) => {
         if (event.source !== frame.contentWindow || !event.data || event.data.entity !== entity) return;
-        if (event.data.type === 'bmn:loan-saved') { loan={id:`${entity}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,data:event.data.loan || {}}; signature=event.data.signature || ''; saveSubmission(); service='peminjaman'; return; }
-        if (event.data.type === 'bmn:extension-saved') { loan={id:`${entity}-extension-${Date.now()}`,data:event.data.extension || {}}; saveSubmission({kind:'perpanjangan',signatures:event.data.extensionSignatures || {}}); success.textContent='Perpanjangan berhasil disimpan dan dapat dilihat admin.'; success.classList.add('visible'); return; }
-        if (event.data.type === 'bmn:return-saved') { loan={id:`${entity}-return-${Date.now()}`,data:event.data.returnData || {}}; saveSubmission({kind:'pengembalian',signature:event.data.returnSignature || ''}); success.textContent='Pengembalian berhasil disimpan dan dapat dilihat admin.'; success.classList.add('visible'); return; }
-        if (event.data.type === 'bmn:bast-saved' && loan) { loan.bast=event.data.document || {}; saveSubmission(loan.bast); success.textContent='Berita acara berhasil disimpan dan dikirim ke Google Sheets.'; success.classList.add('visible'); }
+        if (event.data.type === 'bmn:loan-saved') {
+          loan = { id: `${entity}-loan-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, data: event.data.loan || {} };
+          signature = event.data.signature || '';
+          service = 'peminjaman';
+          saveSubmission({}, event.data.archiveDocument, event.data.archiveError);
+          return;
+        }
+        if (event.data.type === 'bmn:extension-saved') {
+          loan = { id: `${entity}-extension-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, data: event.data.extension || {} };
+          saveSubmission({ kind: 'perpanjangan', signatures: event.data.extensionSignatures || {} }, event.data.archiveDocument, event.data.archiveError);
+          return;
+        }
+        if (event.data.type === 'bmn:return-saved') {
+          loan = { id: `${entity}-return-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, data: event.data.returnData || {} };
+          saveSubmission({ kind: 'pengembalian', signature: event.data.returnSignature || '' }, event.data.archiveDocument, event.data.archiveError);
+          return;
+        }
+        if (event.data.type === 'bmn:bast-saved' && loan) {
+          loan.bast = event.data.document || {};
+          saveSubmission(loan.bast, event.data.archiveDocument, event.data.archiveError);
+        }
       });
       const tick=()=>{ const now=new Date(); document.getElementById('clockTime').textContent=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Makassar'})+' WITA'; document.getElementById('clockDate').textContent=now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'short',year:'numeric',timeZone:'Asia/Makassar'}); };
       updateCount(); tick(); setInterval(tick,1000);

@@ -38,11 +38,13 @@ Lalu buka `http://localhost:8000`.
 - Status dokumen Draft → Diajukan → Ditandatangani.
 - Cetak / Save as PDF menggunakan dialog print browser.
 - Data disimpan di localStorage sehingga tetap ada saat halaman direfresh pada browser yang sama.
+- Formulir peminjaman, perpanjangan, pengembalian, dan berita acara yang disimpan dari alur pengguna maupun dashboard diarsipkan sebagai PDF di Google Drive dan disimpan bersama data pengajuan di Google Sheets.
+- Dashboard memuat pengajuan dari Apps Script sehingga pengajuan pengguna lain juga dapat dilihat, beserta tautan unduh PDF formulir dan berita acara.
 - Daftar inventaris awal merupakan data contoh prototype dan belum tersinkron ke server/database.
-- Sinkronisasi Google Sheets tersedia melalui `apps-script/Code.gs`. Setelah Apps Script dideploy sebagai Web App, URL Web App harus ditempelkan pada `sheetsWebAppUrl` di `index.html`.
-- Konfigurasi absensi Google Forms/Sheets tersedia melalui `apps-script/AbsensiKomdigi.gs`. Buka Apps Script pada Spreadsheet target, tempelkan file tersebut, lalu jalankan `setupAbsensiKomdigi()` sekali. Fungsi ini membuat form absensi, sheet rekap, aturan punishment/SP1/SP2/SP3, validasi kelengkapan foto, dan dashboard.
 - `user.html` menyediakan alur pengguna untuk mengajukan peminjaman kendaraan, ruangan, atau barang, mengisi formulir dan berita acara, lalu mengirimkannya ke daftar peminjaman admin.
 
 ## Catatan
 
-Ini adalah prototype frontend, belum memakai backend/database dan belum merupakan tanda tangan elektronik tersertifikasi. Untuk produksi, bagian tanda tangan dan autentikasi perlu dihubungkan ke backend serta mekanisme TTE/sertifikat yang berlaku.
+Penyimpanan pengajuan dan PDF memerlukan aktivasi backend Google Apps Script. `apps-script/Code.gs` diarahkan ke spreadsheet [Layanan BMN](https://docs.google.com/spreadsheets/d/1Q0aIq6pcrgfSpRTxijA9ZkkadSFptVqmwz_AxrKnHR4/edit), pada tab `BMN`, dan folder Drive `1NlmYXBSDJ_40F2GD0_RkO7KkKVeFFNLc`. Salin isi `apps-script/Code.gs` ke proyek Apps Script, pastikan akun pemilik deployment memiliki akses edit ke spreadsheet dan folder Drive, lalu deploy sebagai Web App dengan **Execute as: Me** dan akses yang mengizinkan pengguna aplikasi menjalankannya. Otorisasi akses Google Sheets dan Drive, lalu perbarui URL Web App pada `bmn-archive.js` jika URL deployment berubah. Perubahan kode Apps Script harus di-deploy ulang agar berlaku. Backend menyimpan data pengajuan ke Spreadsheet sebelum membuat PDF, jadi kegagalan Drive tidak menghapus data pengajuan.
+
+Arsip PDF mencoba memakai akses “siapa saja yang memiliki link”; jika kebijakan Drive menolak pengaturan tersebut, file tetap disimpan di folder dan aplikasi menampilkan peringatan bahwa tautan berbagi tidak aktif. Jika akses link berhasil diaktifkan, siapa pun yang memperoleh tautan dapat melihat atau mengunduh dokumen. Endpoint Web App juga tidak memakai autentikasi dan menyediakan daftar pengajuan untuk dashboard, sehingga siapa pun yang mengetahui URL deployment dapat membaca data pengajuan. Batasi distribusi tautan dan jangan gunakan konfigurasi ini untuk data yang wajib dirahasiakan. Aplikasi ini belum merupakan tanda tangan elektronik tersertifikasi.
