@@ -158,6 +158,7 @@
     .bast-signing-gap { height: 78px; display: grid; place-items: center; }
     .bast-knowing { grid-column: 1 / -1; width: 50%; justify-self: center; }
     .extension-signature-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .extension-signature-preview .line { height: 78px; margin: 6px 0 9px; }
 
     .preview, .preview *, .loan-preview, .loan-preview * {
       font-family: Arial, sans-serif !important;
@@ -234,8 +235,9 @@
     .handwrite-space { display: inline-block; min-width: 90px; height: 1em; border-bottom: 1px dotted #111; vertical-align: baseline; }
     .handwrite-space.wide { min-width: 180px; }
     .doc-table .handwrite-space { display: block; min-width: 100%; }
-    .loan-sign-date { margin: 30px 0 0 auto; width: 250px; text-align: center; }
-    .loan-signature { margin: 30px 0 0 auto; width: 250px; text-align: center; }
+    .loan-sign-date { margin: 24px 0 0 auto; width: min(250px, 100%); text-align: center; }
+    .loan-signature { margin: 8px 0 0 auto; width: min(250px, 100%); text-align: center; line-height: 1.5; }
+    .loan-signature .signature-role, .loan-signature .signature-nip { display: block; }
     .loan-signature .space {
       height: 78px;
       margin: 6px 0 9px;
@@ -254,14 +256,10 @@
       margin: 0 auto;
     }
     .loan-signature strong { display: block; }
-    .manual-signature-date { margin-bottom: 4px; white-space: nowrap; }
-    .manual-signature-name { display: block; width: 82%; height: 1.2em; margin: 3em auto 3px; border-bottom: 1px dotted #111; }
     .bast-manual-signature-fields { width: 170px; margin: calc(3em + 64px) auto 0; text-align: left; }
     .bast-manual-signature-name { display: block; width: 100%; height: 1.2em; margin: 0 0 3px; border-bottom: 1px dotted #111; }
     .bast-manual-signature-nip { display: grid; grid-template-columns: 30px 1fr; align-items: baseline; gap: 5px; width: 100%; }
     .bast-manual-signature-nip .handwrite-space { display: block; width: 100%; min-width: 0; }
-    .manual-signature-nip { display: flex; align-items: baseline; gap: 5px; width: 82%; margin: 0 auto; text-align: left; }
-    .manual-signature-nip .handwrite-space { flex: 1; }
     .loan-signature-input {
       grid-column: 1 / -1;
       border: 1px solid var(--line);
@@ -964,7 +962,7 @@
           <p>Atas peminjaman ruangan dinas/instansi tersebut kami berjanji untuk menggunakan dengan baik selama kegiatan, serta sanggup mengembalikan ruangan dan perangkat dalam keadaan baik setelah kegiatan selesai.</p>
           <p>Apabila selama masa peminjaman terjadi kerusakan dan/atau kehilangan serta hal lain yang ditimbulkan, maka kami bertanggung jawab sepenuhnya sesuai ketentuan.</p>
           <div class="loan-sign-date">${escapeHtml(formatDate(data.mulai, '... , (tanggal, bulan, tahun)'))}</div>
-          <div class="loan-signature">Peminjam,<div class="space">${state.loanSignature ? `<img src="${state.loanSignature}" alt="Tanda tangan peminjam">` : ''}</div><strong>${escapeHtml(text(data.nama, '(Nama Peminjam)'))}</strong>NIP. ${escapeHtml(text(data.nip, '(NIP Peminjam)'))}</div>
+          <div class="loan-signature"><div class="signature-role">Peminjam,</div><div class="space">${state.loanSignature ? `<img src="${state.loanSignature}" alt="Tanda tangan peminjam">` : ''}</div><strong>${escapeHtml(text(data.nama, '(Nama Peminjam)'))}</strong><div class="signature-nip">NIP. ${escapeHtml(text(data.nip, '(NIP Peminjam)'))}</div></div>
         </div>`;
     }
 
@@ -1052,7 +1050,8 @@
           <p>Menyatakan telah mengembalikan ruangan dinas/instansi dan perangkat yang dipinjam berupa:</p>
           <div class="loan-lines"><div class="loan-line"><span>Ruangan</span><span>:</span><span class="value">${printedLine(data.kendaraanPengembalian || loan.merk, blank)}</span></div><div class="loan-line"><span>Perangkat yang Dipinjam</span><span>:</span><span class="value">${printedLine(data.nopolPengembalian || loan.nopol, blank)}</span></div><div class="loan-line"><span>Tanggal Selesai Kegiatan</span><span>:</span><span class="value">${printedLine(formatDate(data.tanggalKembali, ''), blank)}</span></div><div class="loan-line"><span>Nomor BAST Peminjaman</span><span>:</span><span class="value">${printedLine(data.nomorPeminjamanKembali, blank)}</span></div></div>
           <p>Demikian Formulir Pengembalian Ruangan Dinas/Instansi ini dibuat untuk dipergunakan sebagaimana mestinya.</p>
-          <div class="loan-signature"><div class="manual-signature-date">.......................... 2026</div>Peminjam,<span class="manual-signature-name">${printedText(borrower, blank)}</span><div class="manual-signature-nip">NIP. ${printedText(borrowerNip, blank)}</div></div>
+          <div class="loan-sign-date">${escapeHtml(formatDate(data.tanggalKembali, '... , (tanggal, bulan, tahun)'))}</div>
+          <div class="loan-signature"><div class="signature-role">Peminjam,</div><div class="space"></div><strong>${printedText(borrower, blank)}</strong><div class="signature-nip">NIP. ${printedText(borrowerNip, blank)}</div></div>
         </div>`;
     }
 
@@ -1333,9 +1332,6 @@
         number.style.display = 'inline-block';
         number.style.width = '42pt';
       });
-      preview.querySelectorAll('.manual-signature-date').forEach((date) => {
-        date.innerHTML = date.innerHTML.replace(/\.{3,}/g, '');
-      });
       preview.querySelectorAll('.doc-number').forEach((number) => {
         number.innerHTML = number.innerHTML.replace(/\.{3,}/g, '');
       });
@@ -1464,7 +1460,7 @@
         .preview .signature-preview td { padding: 0 4pt; text-align: center; vertical-align: top; }
         .preview .bast-signing-gap { height: 58pt; }
         .preview .bast-manual-signature-fields table { width: 127.5pt; margin: 48pt auto 0; border-collapse: collapse; }
-        .preview .manual-signature-name, .preview .bast-manual-signature-name, .preview .bast-manual-signature-nip .handwrite-space { border-bottom: 0; }
+        .preview .bast-manual-signature-name, .preview .bast-manual-signature-nip .handwrite-space { border-bottom: 0; }
         .preview .bast-signatures { page-break-inside: avoid; }
         .extension-signature-preview { margin-top: 8mm; }
         p { orphans: 3; widows: 3; }

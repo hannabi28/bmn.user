@@ -161,6 +161,7 @@
     .bast-signature-preview .signature-role { display: inline-block; min-height: 3em; }
     .bast-signature-preview > div:last-child { grid-column: 1 / -1; width: 50%; justify-self: center; }
     .extension-signature-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .extension-signature-preview .line { height: 78px; margin: 6px 0 9px; }
 
     .preview, .preview *, .loan-preview, .loan-preview * {
       font-family: Arial, sans-serif !important;
@@ -237,8 +238,9 @@
     .loan-lines { margin: 8px 0 8px; }
     .loan-line { display: grid; grid-template-columns: 180px 16px minmax(0, 1fr); min-height: 27px; }
     .loan-line .value { overflow-wrap: anywhere; border-bottom: 1px dotted #111; min-height: 22px; }
-    .loan-sign-date { margin: 30px 0 0 auto; width: 250px; text-align: center; }
-    .loan-signature { margin: 30px 0 0 auto; width: 250px; text-align: center; }
+    .loan-sign-date { margin: 24px 0 0 auto; width: min(250px, 100%); text-align: center; }
+    .loan-signature { margin: 8px 0 0 auto; width: min(250px, 100%); text-align: center; line-height: 1.5; }
+    .loan-signature .signature-role, .loan-signature .signature-nip { display: block; }
     .loan-signature .space {
       height: 78px;
       margin: 6px 0 9px;
@@ -1168,7 +1170,7 @@
           <p>Atas peminjaman kendaraan dinas operasional/fungsional tersebut saya berjanji untuk memakai dengan baik selama saya pinjam, serta sanggup untuk mengembalikan dalam keadaan baik selama masa peminjaman.</p>
           <p>Apabila selama masa peminjaman terjadi kerusakan dan/atau kehilangan serta hal lain yang ditimbulkan, maka saya bertanggung jawab sepenuhnya sesuai ketentuan.</p>
           <div class="loan-sign-date">${escapeHtml(formatIndonesianDate(text(data.mulai, '... , (tanggal, bulan, tahun)')))}</div>
-          <div class="loan-signature">Peminjam,<div class="space">${state.loanSignature ? `<img src="${state.loanSignature}" alt="Tanda tangan peminjam">` : ''}</div><strong>${escapeHtml(text(data.nama, '(Nama Peminjam)'))}</strong>NIP. ${escapeHtml(text(data.nip, '(NIP Peminjam)'))}</div>
+          <div class="loan-signature"><div class="signature-role">Peminjam,</div><div class="space">${state.loanSignature ? `<img src="${state.loanSignature}" alt="Tanda tangan peminjam">` : ''}</div><strong>${escapeHtml(text(data.nama, '(Nama Peminjam)'))}</strong><div class="signature-nip">NIP. ${escapeHtml(text(data.nip, '(NIP Peminjam)'))}</div></div>
         </div>`;
     }
 
@@ -1256,8 +1258,8 @@
           <p>Menyatakan telah mengembalikan kendaraan operasional/fungsional berupa:</p>
           <div class="loan-lines"><div class="loan-line"><span>Merek/Tipe Kendaraan</span><span>:</span><span class="value">${escapeHtml(data.kendaraanPengembalian || loan.merk || '')}</span></div><div class="loan-line"><span>Nomor Polisi Kendaraan</span><span>:</span><span class="value">${escapeHtml(data.nopolPengembalian || loan.nopol || '')}</span></div><div class="loan-line"><span>Tanggal Pengembalian</span><span>:</span><span class="value">${escapeHtml(formatIndonesianDate(data.tanggalKembali || ''))}</span></div><div class="loan-line"><span>Nomor BAST Peminjaman</span><span>:</span><span class="value">${escapeHtml(data.nomorPeminjamanKembali || '')}</span></div></div>
           <p>Demikian Formulir Pengembalian Kendaraan Operasional/Fungsional ini dibuat untuk dipergunakan sebagaimana mestinya.</p>
-          <div class="loan-sign-date">... , (tanggal, bulan, tahun)</div>
-          <div class="loan-signature">Peminjam,<div class="space">${state.returnSignature ? `<img src="${state.returnSignature}" alt="Tanda tangan peminjam">` : ''}</div><strong>${escapeHtml(borrower)}</strong>NIP. ${escapeHtml(borrowerNip)}</div>
+          <div class="loan-sign-date">${escapeHtml(formatIndonesianDate(text(data.tanggalKembali, '... , (tanggal, bulan, tahun)')))}</div>
+          <div class="loan-signature"><div class="signature-role">Peminjam,</div><div class="space">${state.returnSignature ? `<img src="${state.returnSignature}" alt="Tanda tangan peminjam">` : ''}</div><strong>${escapeHtml(borrower)}</strong><div class="signature-nip">NIP. ${escapeHtml(borrowerNip)}</div></div>
         </div>`;
     }
 
