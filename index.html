@@ -146,7 +146,7 @@
       };
       const updateCount = () => { document.getElementById('submissionCount').textContent = `${readSubmissions().length} Pengajuan`; };
       const saveSubmission = (documentData = {}, archiveDocument = null, archiveError = '') => {
-        const submissions = readSubmissions();
+        const submissions = readSubmissions();  
         const existing = submissions.find((item) => item.id === loan.id);
         const submission = {
           ...(existing || {}),

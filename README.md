@@ -17,6 +17,8 @@ Lalu buka `http://localhost:8000`.
 ## Fitur
 
 - Dashboard responsif dengan ringkasan kendaraan, ruangan, barang, status BMN, dan transaksi terbaru.
+- Ringkasan, grafik rekapitulasi, dan grafik status BMN dihitung dari inventaris yang tersimpan; unit yang ditambah, diedit, atau dihapus langsung memperbarui dashboard. Tooltip grafik menampilkan angka saat diarahkan.
+- Panel Rekapitulasi BMN, Status BMN, Peminjaman Terbaru, Perpanjangan Terbaru, dan Pengembalian Terbaru menyediakan ekspor Microsoft Excel Worksheet (.xlsx) berformat dan PDF melalui dialog cetak browser.
 - Menu utama Kendaraan, Ruangan, dan Barang memiliki tampilan inventaris tersendiri, dilengkapi statistik, tabel, pencarian, filter, dan paginasi.
 - Data inventaris mendukung tambah, detail, edit, hapus, serta ekspor CSV untuk barang; data disimpan di localStorage browser.
 - Menu Peminjaman menampilkan daftar transaksi dengan pencarian, filter jenis/status/periode, paginasi, detail, dan ekspor CSV.
@@ -40,7 +42,7 @@ Lalu buka `http://localhost:8000`.
 - Data disimpan di localStorage sehingga tetap ada saat halaman direfresh pada browser yang sama.
 - Formulir peminjaman, perpanjangan, pengembalian, dan berita acara yang disimpan dari alur pengguna maupun dashboard diarsipkan sebagai PDF di Google Drive dan disimpan bersama data pengajuan di Google Sheets.
 - Dashboard memuat pengajuan dari Apps Script sehingga pengajuan pengguna lain juga dapat dilihat, beserta tautan unduh PDF formulir dan berita acara.
-- Daftar inventaris awal merupakan data contoh prototype dan belum tersinkron ke server/database.
+- Daftar inventaris awal merupakan data contoh prototype dan disimpan di localStorage browser; inventaris belum tersinkron ke server/database atau perangkat admin lain.
 - `user.html` menyediakan alur pengguna untuk mengajukan peminjaman kendaraan, ruangan, atau barang, mengisi formulir dan berita acara, lalu mengirimkannya ke daftar peminjaman admin.
 
 ## Catatan

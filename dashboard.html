@@ -273,14 +273,41 @@
       gap: 10px;
       padding: 12px 15px 8px;
     }
+    .panel-heading-actions { display: flex; align-items: center; justify-content: flex-end; gap: 9px; }
+    .export-actions { display: inline-flex; gap: 5px; }
+    .dashboard-export {
+      padding: 5px 7px;
+      border: 1px solid #d8e4f2;
+      border-radius: 5px;
+      background: #fff;
+      color: #245786;
+      font-size: 9px;
+      white-space: nowrap;
+    }
+    .dashboard-export:hover { border-color: #2879d0; background: #f3f8ff; color: #174f95; }
     .panel-heading h2 { display: flex; align-items: center; gap: 9px; margin: 0; color: var(--navy); font-size: 13px; }
     .panel-heading h2 span { color: #176bc3; font-size: 17px; }
     .legend { display: flex; flex-wrap: wrap; gap: 11px; color: #385477; font-size: 9px; }
     .legend-item { display: inline-flex; align-items: center; gap: 5px; }
     .legend-dot { width: 9px; height: 9px; border-radius: 3px; background: var(--dot); }
+    .chart-wrap { position: relative; }
     .bar-chart { display: block; width: 100%; height: 195px; padding: 0 10px 9px; }
     .bar-link { cursor: pointer; }
     .bar-link:hover rect { filter: brightness(.92); }
+    .chart-tooltip {
+      position: absolute;
+      z-index: 2;
+      max-width: 220px;
+      padding: 7px 9px;
+      border-radius: 5px;
+      background: #102b55;
+      color: #fff;
+      box-shadow: 0 3px 12px #102b5540;
+      font-size: 11px;
+      pointer-events: none;
+      transform: translate(8px, 8px);
+    }
+    .chart-tooltip[hidden] { display: none; }
     .donut-content { display: flex; min-height: 195px; align-items: center; justify-content: center; gap: clamp(12px, 3vw, 42px); padding: 3px 15px 13px; }
     .donut-chart { width: 155px; height: 155px; flex: 0 0 155px; }
     .donut-legend { display: grid; gap: 14px; }
@@ -616,46 +643,58 @@
       --shadow: 0 5px 16px #042b5620;
     }
     body { background: linear-gradient(110deg, #063d73 0%, #0879e8 100%); }
-    .app { display: block; }
+    .app { display: flex; }
     .sidebar { box-shadow: 8px 0 24px #062e5940; }
     .sidebar-collapsed .sidebar { transform: translateX(-100%); }
-    .workspace, .sidebar-collapsed .workspace { width: 100%; margin-left: 0; }
+    .workspace { width: calc(100% - 232px); margin-left: 232px; }
+    .sidebar-collapsed .workspace { width: 100%; margin-left: 0; }
     .topbar {
-      height: 66px;
-      padding: 0 max(18px, calc((100vw - 990px) / 2));
+      height: 72px;
+      padding: 0 34px 0 24px;
       border: 0;
       background: #f2bd19;
       box-shadow: 0 3px 12px #062e5926;
     }
-    .topbar-left { gap: 10px; }
+    .topbar-left { gap: 30px; }
     .topbar-left .topbar-divider, .topbar-left .agency { display: none; }
-    .topbar-right { gap: 8px; }
+    .topbar-right { gap: 0; }
     .dashboard-brand {
       display: flex;
-      min-width: 0;
+      flex: 0 0 auto;
       align-items: center;
-      gap: 12px;
+      gap: 0;
     }
     .dashboard-logo {
       display: block;
-      width: 90px;
-      height: 39px;
+      width: 98px;
+      height: 40px;
       padding: 3px 6px;
       border-radius: 9px;
       background: #fff;
       object-fit: contain;
     }
+    .dashboard-brand-copy {
+      width: 150px;
+      flex: 0 0 150px;
+      margin-left: 35px;
+      padding-left: 36px;
+      border-left: 1px solid #d59d0f;
+    }
     .dashboard-brand-copy strong, .dashboard-brand-copy small { display: block; }
     .dashboard-brand-copy strong { color: #082f59; font-size: 13px; font-weight: 800; }
     .dashboard-brand-copy small { margin-top: 3px; color: #355779; font-size: 10px; }
     .dashboard-clock {
-      min-width: 125px;
+      min-width: 140px;
+      margin-right: 28px;
       padding: 5px 9px;
       border: 1px solid #e0ad13;
       border-radius: 8px;
       background: #ffedaa;
       text-align: center;
     }
+    #dashboardRefresh { min-width: 90px; margin-right: 50px; }
+    .notification-wrap { margin-right: 26px; }
+    .topbar-right > .topbar-divider { margin-right: 30px; }
     .dashboard-clock strong, .dashboard-clock small { display: block; }
     .dashboard-clock strong { color: #102f55; font-size: 12px; }
     .dashboard-clock small { margin-top: 2px; color: #526984; font-size: 8px; }
@@ -688,15 +727,51 @@
     .activity-card th { background: #f4f8fd; }
     .sidebar-backdrop.visible { background: #061d36a6; }
     .compact-mode .dashboard { padding-top: 18px; }
+    @media (min-width: 761px) and (max-width: 1100px) {
+      .sidebar { width: 205px; }
+      .workspace { width: calc(100% - 205px); margin-left: 205px; }
+      .sidebar-collapsed .workspace { width: 100%; margin-left: 0; }
+      .topbar { padding-right: 16px; padding-left: 16px; }
+      .topbar-left { gap: 14px; }
+      .dashboard-logo { width: 78px; height: 36px; }
+      .dashboard-brand-copy {
+        width: 125px;
+        flex-basis: 125px;
+        margin-left: 10px;
+        padding-left: 14px;
+      }
+      .dashboard-brand-copy strong { font-size: 11px; }
+      .dashboard-brand-copy small { font-size: 9px; }
+      .dashboard-clock { min-width: 120px; margin-right: 12px; }
+      #dashboardRefresh { min-width: 76px; margin-right: 12px; }
+      .notification-wrap { margin-right: 8px; }
+      .topbar-right > .topbar-divider { margin-right: 12px; }
+    }
+    @media (min-width: 761px) and (max-width: 840px) {
+      .dashboard-clock, .user-copy { display: none; }
+      #dashboardRefresh { margin-right: 10px; }
+      .notification-wrap { margin-right: 8px; }
+      .topbar-right > .topbar-divider { margin-right: 10px; }
+    }
     @media (max-width: 760px) {
+      .app { display: block; }
+      .sidebar { width: 232px; transform: translateX(-100%); }
+      .sidebar-collapsed .sidebar { transform: translateX(-100%); }
+      .sidebar.open, .sidebar-collapsed .sidebar.open { transform: translateX(0); }
+      .workspace, .sidebar-collapsed .workspace { width: 100%; margin-left: 0; }
       .topbar { height: 64px; padding: 0 10px; }
       .topbar-left { gap: 5px; }
       .topbar-right { gap: 2px; }
       .dashboard-logo { width: 62px; height: 34px; padding: 3px; }
       .dashboard-brand { gap: 7px; }
+      .dashboard-brand-copy { width: auto; flex: 0 1 auto; margin-left: 7px; padding-left: 0; border-left: 0; }
       .dashboard-brand-copy strong { font-size: 10px; }
       .dashboard-brand-copy small { font-size: 8px; }
       .dashboard-clock { display: none; }
+      #dashboardRefresh, .notification-wrap, .topbar-right > .topbar-divider { margin-right: 0; }
+      .topbar #dashboardRefresh { width: 34px; min-width: 34px; padding: 0; justify-content: center; }
+      .topbar #dashboardRefresh span, .topbar .user-button .chevron { display: none; }
+      .topbar .user-button { gap: 0; padding: 5px; }
       .topbar .topbar-divider { display: none; }
       .dashboard { padding: 18px 12px 30px; }
       .heading-title h1 { color: #fff; }
@@ -705,6 +780,9 @@
       .dashboard-brand-copy small { display: none; }
       .dashboard-brand-copy strong { max-width: 112px; font-size: 9px; line-height: 1.3; }
       .topbar-right { gap: 0; }
+    }
+    @media (max-width: 360px) {
+      .profile-wrap { display: none; }
     }
   </style>
 </head>
@@ -797,16 +875,16 @@
 
           <section class="stats-grid" aria-label="Ringkasan BMN">
             <a class="stat-card" style="--card-color:#458fdf;--icon-bg:#e8f2ff" href="#kendaraan" data-page="kendaraan">
-              <span class="stat-icon" aria-hidden="true">🚘</span><span class="stat-copy"><span>Total Kendaraan</span><strong>48 Unit</strong><small>Lihat Detail&nbsp; →</small></span>
+              <span class="stat-icon" aria-hidden="true">🚘</span><span class="stat-copy"><span>Total Kendaraan</span><strong id="dashboardVehicleTotal">0 Unit</strong><small>Lihat Detail&nbsp; →</small></span>
             </a>
             <a class="stat-card" style="--card-color:#2198cf;--icon-bg:#e3f4ff" href="#ruangan" data-page="ruangan">
-              <span class="stat-icon" aria-hidden="true">▦</span><span class="stat-copy"><span>Total Ruangan</span><strong>32 Unit</strong><small>Lihat Detail&nbsp; →</small></span>
+              <span class="stat-icon" aria-hidden="true">▦</span><span class="stat-copy"><span>Total Ruangan</span><strong id="dashboardRoomTotal">0 Unit</strong><small>Lihat Detail&nbsp; →</small></span>
             </a>
             <a class="stat-card" style="--card-color:#4b61c5;--icon-bg:#eceeff" href="#barang" data-page="barang">
-              <span class="stat-icon" aria-hidden="true">◈</span><span class="stat-copy"><span>Total Barang</span><strong>1.250 Unit</strong><small>Lihat Detail&nbsp; →</small></span>
+              <span class="stat-icon" aria-hidden="true">◈</span><span class="stat-copy"><span>Total Barang</span><strong id="dashboardGoodsTotal">0 Unit</strong><small>Lihat Detail&nbsp; →</small></span>
             </a>
             <button class="stat-card" style="--card-color:#2da47b;--icon-bg:#e3f5ed" type="button" data-service="peminjaman">
-              <span class="stat-icon" aria-hidden="true">✓</span><span class="stat-copy"><span>Sedang Dipinjam</span><strong>86 Unit</strong><small>Lihat Detail&nbsp; →</small></span>
+              <span class="stat-icon" aria-hidden="true">✓</span><span class="stat-copy"><span>Sedang Dipinjam</span><strong id="dashboardLoanedTotal">0 Unit</strong><small>Lihat Detail&nbsp; →</small></span>
             </button>
           </section>
 
@@ -814,56 +892,29 @@
             <article class="panel-card">
               <div class="panel-heading">
                 <h2><span aria-hidden="true">▥</span>Rekapitulasi BMN</h2>
-                <div class="legend" aria-label="Legenda rekapitulasi">
-                  <span class="legend-item"><i class="legend-dot" style="--dot:#174f95"></i>Kendaraan</span>
-                  <span class="legend-item"><i class="legend-dot" style="--dot:#398fe0"></i>Ruangan</span>
-                  <span class="legend-item"><i class="legend-dot" style="--dot:#78b8f3"></i>Barang</span>
+                <div class="panel-heading-actions">
+                  <div class="legend" aria-label="Legenda rekapitulasi">
+                    <span class="legend-item"><i class="legend-dot" style="--dot:#174f95"></i>Kendaraan</span>
+                    <span class="legend-item"><i class="legend-dot" style="--dot:#398fe0"></i>Ruangan</span>
+                    <span class="legend-item"><i class="legend-dot" style="--dot:#78b8f3"></i>Barang</span>
+                  </div>
+                  <span class="export-actions"><button class="dashboard-export" type="button" data-dashboard-export="recap" data-export-format="excel">Excel</button><button class="dashboard-export" type="button" data-dashboard-export="recap" data-export-format="pdf">PDF</button></span>
                 </div>
               </div>
-              <svg class="bar-chart" viewBox="0 0 660 205" role="img" aria-label="Grafik jumlah kendaraan 48, ruangan 32, dan barang 1.250">
-                <g stroke="#e1e8f2" stroke-width="1">
-                  <path d="M56 18H646M56 53H646M56 88H646M56 123H646M56 158H646M56 193H646"/>
-                  <path d="M56 18V193M252 18V193M448 18V193M646 18V193"/>
-                </g>
-                <g fill="#4a6285" font-family="Arial,sans-serif" font-size="11" text-anchor="end">
-                  <text x="49" y="196">0</text><text x="49" y="161">250</text><text x="49" y="126">500</text><text x="49" y="91">750</text><text x="49" y="56">1.000</text><text x="49" y="21">1.250</text>
-                </g>
-                <a class="bar-link" href="#kendaraan" data-page="kendaraan" aria-label="Lihat data kendaraan">
-                  <rect x="95" y="186" width="120" height="7" rx="2" fill="#174f95"/><text x="155" y="180" fill="#17345f" font-family="Arial,sans-serif" font-size="11" font-weight="700" text-anchor="middle">48</text>
-                  <text x="155" y="207" fill="#385477" font-family="Arial,sans-serif" font-size="11" text-anchor="middle">Kendaraan</text>
-                </a>
-                <a class="bar-link" href="#ruangan" data-page="ruangan" aria-label="Lihat data ruangan">
-                  <rect x="291" y="188" width="120" height="5" rx="2" fill="#398fe0"/><text x="351" y="182" fill="#17345f" font-family="Arial,sans-serif" font-size="11" font-weight="700" text-anchor="middle">32</text>
-                  <text x="351" y="207" fill="#385477" font-family="Arial,sans-serif" font-size="11" text-anchor="middle">Ruangan</text>
-                </a>
-                <a class="bar-link" href="#barang" data-page="barang" aria-label="Lihat data barang">
-                  <rect x="487" y="18" width="120" height="175" rx="2" fill="#78b8f3"/><text x="547" y="12" fill="#17345f" font-family="Arial,sans-serif" font-size="11" font-weight="700" text-anchor="middle">1.250</text>
-                  <text x="547" y="207" fill="#385477" font-family="Arial,sans-serif" font-size="11" text-anchor="middle">Barang</text>
-                </a>
-              </svg>
+              <div class="chart-wrap"><svg class="bar-chart" id="dashboardRecapChart" viewBox="0 0 660 205" role="img" aria-label="Grafik rekapitulasi BMN"></svg><div class="chart-tooltip" role="tooltip" hidden></div></div>
             </article>
             <article class="panel-card">
-              <div class="panel-heading"><h2><span aria-hidden="true">◕</span>Status BMN</h2></div>
+              <div class="panel-heading"><h2><span aria-hidden="true">◕</span>Status BMN</h2><span class="export-actions"><button class="dashboard-export" type="button" data-dashboard-export="status" data-export-format="excel">Excel</button><button class="dashboard-export" type="button" data-dashboard-export="status" data-export-format="pdf">PDF</button></span></div>
               <div class="donut-content">
-                <svg class="donut-chart" viewBox="0 0 160 160" role="img" aria-label="Status BMN: tersedia 1.105, dipinjam 86, pemeliharaan 145">
-                  <circle cx="80" cy="80" r="59" fill="none" stroke="#edf1f6" stroke-width="24"/>
-                  <circle cx="80" cy="80" r="59" fill="none" stroke="#2da47b" stroke-width="24" stroke-dasharray="306.7 370.7" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="59" fill="none" stroke="#2879d0" stroke-width="24" stroke-dasharray="23.8 370.7" stroke-dashoffset="-306.7" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="59" fill="none" stroke="#f39426" stroke-width="24" stroke-dasharray="40.2 370.7" stroke-dashoffset="-330.5" transform="rotate(-90 80 80)"/>
-                  <text class="donut-total" x="80" y="78">1.336</text><text class="donut-caption" x="80" y="96">Total BMN</text>
-                </svg>
-                <div class="donut-legend">
-                  <button type="button" data-page="barang"><i style="--dot:#2da47b"></i><span><strong>Tersedia</strong><small>1.105 (82,6%)</small></span></button>
-                  <button type="button" data-service="peminjaman"><i style="--dot:#2879d0"></i><span><strong>Dipinjam</strong><small>86 (6,4%)</small></span></button>
-                  <button type="button" data-page="kendaraan"><i style="--dot:#f39426"></i><span><strong>Pemeliharaan</strong><small>145 (10,9%)</small></span></button>
-                </div>
+                <div class="chart-wrap"><svg class="donut-chart" id="dashboardStatusChart" viewBox="0 0 160 160" role="img" aria-label="Grafik status BMN"></svg><div class="chart-tooltip" role="tooltip" hidden></div></div>
+                <div class="donut-legend" id="dashboardStatusLegend"></div>
               </div>
             </article>
           </section>
 
           <section class="recent-grid" aria-label="Transaksi terbaru">
             <article class="panel-card activity-card">
-              <div class="panel-heading"><h2><span aria-hidden="true">▰</span>Peminjaman Terbaru</h2><button class="see-all" type="button" data-service="peminjaman">Lihat Semua&nbsp; →</button></div>
+              <div class="panel-heading"><h2><span aria-hidden="true">▰</span>Peminjaman Terbaru</h2><div class="panel-heading-actions"><span class="export-actions"><button class="dashboard-export" type="button" data-dashboard-export="loans" data-export-format="excel">Excel</button><button class="dashboard-export" type="button" data-dashboard-export="loans" data-export-format="pdf">PDF</button></span><button class="see-all" type="button" data-service="peminjaman">Lihat Semua&nbsp; →</button></div></div>
               <div class="table-scroll"><table>
                 <thead><tr><th>No. Transaksi</th><th>Peminjam</th><th>Jenis BMN</th><th>Tanggal</th><th>Status</th></tr></thead>
                         <tbody id="recentLoansBody">
@@ -874,7 +925,7 @@
               </table></div>
             </article>
             <article class="panel-card activity-card">
-              <div class="panel-heading"><h2><span aria-hidden="true">◴</span>Perpanjangan Terbaru</h2><button class="see-all" type="button" data-service="perpanjangan">Lihat Semua&nbsp; →</button></div>
+              <div class="panel-heading"><h2><span aria-hidden="true">◴</span>Perpanjangan Terbaru</h2><div class="panel-heading-actions"><span class="export-actions"><button class="dashboard-export" type="button" data-dashboard-export="extensions" data-export-format="excel">Excel</button><button class="dashboard-export" type="button" data-dashboard-export="extensions" data-export-format="pdf">PDF</button></span><button class="see-all" type="button" data-service="perpanjangan">Lihat Semua&nbsp; →</button></div></div>
               <div class="table-scroll"><table>
                 <thead><tr><th>No. Transaksi</th><th>Peminjam</th><th>BMN</th><th>Tanggal</th><th>Status</th></tr></thead>
                 <tbody id="recentExtensionsBody">
@@ -884,7 +935,7 @@
               </table></div>
             </article>
             <article class="panel-card activity-card">
-              <div class="panel-heading"><h2><span aria-hidden="true">↶</span>Pengembalian Terbaru</h2><button class="see-all" type="button" data-service="pengembalian">Lihat Semua&nbsp; →</button></div>
+              <div class="panel-heading"><h2><span aria-hidden="true">↶</span>Pengembalian Terbaru</h2><div class="panel-heading-actions"><span class="export-actions"><button class="dashboard-export" type="button" data-dashboard-export="returns" data-export-format="excel">Excel</button><button class="dashboard-export" type="button" data-dashboard-export="returns" data-export-format="pdf">PDF</button></span><button class="see-all" type="button" data-service="pengembalian">Lihat Semua&nbsp; →</button></div></div>
               <div class="table-scroll"><table>
                 <thead><tr><th>No. Transaksi</th><th>Peminjam</th><th>BMN</th><th>Tanggal</th></tr></thead>
                 <tbody id="recentReturnsBody">
@@ -1290,38 +1341,417 @@
           : '';
       }
 
-      function renderDashboardRecentActivity() {
-        const recent = (records) => records.slice().sort((left, right) =>
-          String(right.savedAt || '').localeCompare(String(left.savedAt || ''))
-        ).slice(0, 3);
-        const userLoans = loans.filter((record) =>
-          String(record.sourceId || '').startsWith('user-') ||
-          String(record.archiveSubmissionId || '').startsWith('dashboard-')
-        );
-        const userExtensions = extensions.filter((record) =>
-          String(record.id || '').startsWith('user-extension-') ||
-          String(record.archiveSubmissionId || '').startsWith('dashboard-')
-        );
-        const userReturns = returns.filter((record) =>
-          String(record.id || '').startsWith('user-return-') ||
-          String(record.archiveSubmissionId || '').startsWith('dashboard-')
-        );
+      function getDashboardSummary() {
+        const totals = Object.fromEntries(Object.keys(inventoryConfigs).map((entity) =>
+          [entity, getInventoryRecords(entity).length]
+        ));
+        const records = Object.keys(inventoryConfigs).flatMap((entity) => getInventoryRecords(entity));
+        const statusCounts = [
+          { label: 'Tersedia', value: records.filter((record) => record.status === 'Tersedia').length, color: '#2da47b', page: 'barang' },
+          { label: 'Dipinjam / Digunakan', value: records.filter((record) => ['Dipinjam', 'Digunakan'].includes(record.status)).length, color: '#2879d0', service: 'peminjaman' },
+          { label: 'Pemeliharaan / Rusak', value: records.filter((record) => ['Pemeliharaan', 'Dalam Pemeliharaan', 'Rusak'].includes(record.status)).length, color: '#f39426', page: 'kendaraan' }
+        ];
+        return { totals, total: records.length, loaned: statusCounts[1].value, statusCounts };
+      }
 
-        if (userLoans.length) {
-          document.getElementById('recentLoansBody').innerHTML = recent(userLoans).map((record) =>
-            `<tr><td><button class="row-link" type="button" data-service="peminjaman" data-entity="${escapeHtml(record.entity)}">${escapeHtml(record.number)}</button></td><td>${escapeHtml(record.name)}</td><td>${escapeHtml(entityLabels[record.entity] || 'BMN')}</td><td>${formatLoanDate(record.startDate)}</td><td><span class="status ${record.status === 'Menunggu' ? 'waiting' : ''}">${escapeHtml(record.status)}</span></td></tr>`
-          ).join('');
+      function renderDashboardSummary() {
+        const summary = getDashboardSummary();
+        document.getElementById('dashboardVehicleTotal').textContent = `${numberFormat.format(summary.totals.kendaraan)} Unit`;
+        document.getElementById('dashboardRoomTotal').textContent = `${numberFormat.format(summary.totals.ruangan)} Unit`;
+        document.getElementById('dashboardGoodsTotal').textContent = `${numberFormat.format(summary.totals.barang)} Unit`;
+        document.getElementById('dashboardLoanedTotal').textContent = `${numberFormat.format(summary.loaned)} Unit`;
+
+        const categories = [
+          { entity: 'kendaraan', label: 'Kendaraan', value: summary.totals.kendaraan, color: '#174f95' },
+          { entity: 'ruangan', label: 'Ruangan', value: summary.totals.ruangan, color: '#398fe0' },
+          { entity: 'barang', label: 'Barang', value: summary.totals.barang, color: '#78b8f3' }
+        ];
+        const max = Math.max(1, ...categories.map((category) => category.value));
+        const chartTop = 18;
+        const chartBottom = 175;
+        const chartHeight = chartBottom - chartTop;
+        const step = max / 5;
+        const grid = Array.from({ length: 6 }, (_, index) => {
+          const value = Math.round(step * index);
+          const y = chartBottom - chartHeight * index / 5;
+          return `<path d="M56 ${y}H646"/><text x="49" y="${y + 3}" fill="#4a6285" stroke="none" font-family="Arial,sans-serif" font-size="10" text-anchor="end">${numberFormat.format(value)}</text>`;
+        }).join('');
+        const bars = categories.map((category, index) => {
+          const x = 95 + index * 196;
+          const height = category.value ? Math.max(3, chartHeight * category.value / max) : 0;
+          const y = chartBottom - height;
+          return `<a class="bar-link" href="#${category.entity}" data-page="${category.entity}" data-chart-label="${category.label}" data-chart-value="${numberFormat.format(category.value)}" aria-label="${category.label}: ${numberFormat.format(category.value)} unit"><title>${category.label}: ${numberFormat.format(category.value)} unit</title><rect x="${x}" y="${y}" width="120" height="${height}" rx="3" fill="${category.color}"/><text x="${x + 60}" y="${Math.max(12, y - 6)}" fill="#17345f" font-family="Arial,sans-serif" font-size="11" font-weight="700" text-anchor="middle">${numberFormat.format(category.value)}</text><text x="${x + 60}" y="198" fill="#385477" font-family="Arial,sans-serif" font-size="11" text-anchor="middle">${category.label}</text></a>`;
+        }).join('');
+        const barChart = document.getElementById('dashboardRecapChart');
+        barChart.innerHTML = `<g stroke="#e1e8f2" stroke-width="1">${grid}</g><g>${bars}</g>`;
+        barChart.setAttribute('aria-label', `Grafik jumlah kendaraan ${numberFormat.format(categories[0].value)}, ruangan ${numberFormat.format(categories[1].value)}, dan barang ${numberFormat.format(categories[2].value)}`);
+        barChart.querySelectorAll('[data-page]').forEach((control) => {
+          control.addEventListener('click', (event) => {
+            event.preventDefault();
+            openRoute({ page: control.dataset.page, view: 'dashboard' }, true);
+          });
+        });
+
+        const circumference = 2 * Math.PI * 59;
+        let offset = 0;
+        const segments = summary.statusCounts.map((status) => {
+          const length = summary.total ? circumference * status.value / summary.total : 0;
+          const segment = `<circle cx="80" cy="80" r="59" fill="none" stroke="${status.color}" stroke-width="24" stroke-dasharray="${length} ${circumference - length}" stroke-dashoffset="${-offset}" transform="rotate(-90 80 80)" data-chart-label="${status.label}" data-chart-value="${numberFormat.format(status.value)}" data-chart-percent="${summary.total ? (status.value * 100 / summary.total).toFixed(1).replace('.', ',') : '0,0'}%"><title>${status.label}: ${numberFormat.format(status.value)} (${summary.total ? (status.value * 100 / summary.total).toFixed(1).replace('.', ',') : '0,0'}%)</title></circle>`;
+          offset += length;
+          return segment;
+        }).join('');
+        const statusChart = document.getElementById('dashboardStatusChart');
+        statusChart.innerHTML = `<circle cx="80" cy="80" r="59" fill="none" stroke="#edf1f6" stroke-width="24"/>${segments}<text class="donut-total" x="80" y="78">${numberFormat.format(summary.total)}</text><text class="donut-caption" x="80" y="96">Total BMN</text>`;
+        statusChart.setAttribute('aria-label', `Status BMN: ${summary.statusCounts.map((status) => `${status.label} ${numberFormat.format(status.value)}`).join(', ')}`);
+        document.getElementById('dashboardStatusLegend').innerHTML = summary.statusCounts.map((status) => {
+          const percentage = summary.total ? (status.value * 100 / summary.total).toFixed(1).replace('.', ',') : '0,0';
+          const routeData = status.page ? `data-page="${status.page}"` : `data-service="${status.service}"`;
+          return `<button type="button" ${routeData} data-chart-label="${status.label}" data-chart-value="${numberFormat.format(status.value)}" data-chart-percent="${percentage}%"><i style="--dot:${status.color}"></i><span><strong>${status.label}</strong><small>${numberFormat.format(status.value)} (${percentage}%)</small></span></button>`;
+        }).join('');
+        document.getElementById('dashboardStatusLegend').querySelectorAll('button').forEach((control) => {
+          control.addEventListener('click', () => {
+            if (control.dataset.page) openRoute({ page: control.dataset.page, view: 'dashboard' }, true);
+            if (control.dataset.service === 'peminjaman') openRoute({ page: 'peminjaman', view: 'list' }, true);
+          });
+        });
+      }
+
+      function renderDashboardRecentActivity() {
+        const recent = (records, dateFields) => records.slice().sort((left, right) => {
+          const dateOf = (record) => dateFields.map((field) => record[field]).find(Boolean) || '';
+          return String(dateOf(right)).localeCompare(String(dateOf(left)));
+        }).slice(0, 3);
+        const emptyRow = (columns) => `<tr><td class="empty-note" colspan="${columns}">Belum ada transaksi.</td></tr>`;
+        const recentLoans = recent(loans, ['savedAt', 'startDate']);
+        const recentExtensions = recent(extensions, ['savedAt', 'oldReturnDate']);
+        const recentReturns = recent(returns, ['savedAt', 'returnDate']);
+
+        document.getElementById('recentLoansBody').innerHTML = recentLoans.length ? recentLoans.map((record) =>
+          `<tr><td><button class="row-link" type="button" data-service="peminjaman" data-entity="${escapeHtml(record.entity)}">${escapeHtml(record.number || '—')}</button></td><td>${escapeHtml(record.name || '—')}</td><td>${escapeHtml(entityLabels[record.entity] || 'BMN')}</td><td>${formatLoanDate(record.startDate)}</td><td><span class="status ${record.status === 'Menunggu' ? 'waiting' : ''}">${escapeHtml(record.status || 'Menunggu')}</span></td></tr>`
+        ).join('') : emptyRow(5);
+        document.getElementById('recentExtensionsBody').innerHTML = recentExtensions.length ? recentExtensions.map((record) =>
+          `<tr><td><button class="row-link" type="button" data-service="perpanjangan" data-entity="${escapeHtml(record.entity)}">${escapeHtml(record.number || '—')}</button></td><td>${escapeHtml(record.name || '—')}</td><td>${escapeHtml(record.item || '—')}</td><td>${formatLoanDate(record.oldReturnDate)}</td><td><span class="status ${record.status === 'Menunggu' ? 'waiting' : ''}">${escapeHtml(record.status || 'Menunggu')}</span></td></tr>`
+        ).join('') : emptyRow(5);
+        document.getElementById('recentReturnsBody').innerHTML = recentReturns.length ? recentReturns.map((record) =>
+          `<tr><td><button class="row-link" type="button" data-service="pengembalian" data-entity="${escapeHtml(record.entity)}">${escapeHtml(record.number || '—')}</button></td><td>${escapeHtml(record.name || '—')}</td><td>${escapeHtml(record.item || '—')}</td><td>${formatLoanDate(record.returnDate)}</td></tr>`
+        ).join('') : emptyRow(4);
+      }
+
+      function getDashboardExportData(kind) {
+        const summary = getDashboardSummary();
+        if (kind === 'recap') {
+          return {
+            title: 'Rekapitulasi BMN',
+            headers: ['Jenis BMN', 'Jumlah'],
+            rows: [
+              ['Kendaraan', summary.totals.kendaraan],
+              ['Ruangan', summary.totals.ruangan],
+              ['Barang', summary.totals.barang]
+            ],
+            chartValues: [
+              { label: 'Kendaraan', value: summary.totals.kendaraan, color: '#174f95' },
+              { label: 'Ruangan', value: summary.totals.ruangan, color: '#398fe0' },
+              { label: 'Barang', value: summary.totals.barang, color: '#78b8f3' }
+            ]
+          };
         }
-        if (userExtensions.length) {
-          document.getElementById('recentExtensionsBody').innerHTML = recent(userExtensions).map((record) =>
-            `<tr><td><button class="row-link" type="button" data-service="perpanjangan" data-entity="${escapeHtml(record.entity)}">${escapeHtml(record.number)}</button></td><td>${escapeHtml(record.name)}</td><td>${escapeHtml(record.item)}</td><td>${formatLoanDate(record.oldReturnDate)}</td><td><span class="status ${record.status === 'Menunggu' ? 'waiting' : ''}">${escapeHtml(record.status)}</span></td></tr>`
-          ).join('');
+        if (kind === 'status') {
+          return {
+            title: 'Status BMN',
+            headers: ['Status', 'Jumlah', 'Persentase'],
+            rows: summary.statusCounts.map((status) => [
+              status.label,
+              status.value,
+              `${summary.total ? (status.value * 100 / summary.total).toFixed(1).replace('.', ',') : '0,0'}%`
+            ]),
+            chartValues: summary.statusCounts.map((status) => ({ ...status, label: status.label })),
+            total: summary.total
+          };
         }
-        if (userReturns.length) {
-          document.getElementById('recentReturnsBody').innerHTML = recent(userReturns).map((record) =>
-            `<tr><td><button class="row-link" type="button" data-service="pengembalian" data-entity="${escapeHtml(record.entity)}">${escapeHtml(record.number)}</button></td><td>${escapeHtml(record.name)}</td><td>${escapeHtml(record.item)}</td><td>${formatLoanDate(record.returnDate)}</td></tr>`
-          ).join('');
+        const config = {
+          loans: { title: 'Peminjaman Terbaru', tableId: 'recentLoansBody' },
+          extensions: { title: 'Perpanjangan Terbaru', tableId: 'recentExtensionsBody' },
+          returns: { title: 'Pengembalian Terbaru', tableId: 'recentReturnsBody' }
+        }[kind];
+        if (!config) throw new Error('Bagian dashboard tidak dikenal untuk ekspor.');
+        const table = document.getElementById(config.tableId).closest('table');
+        return {
+          title: config.title,
+          headers: [...table.querySelectorAll('thead th')].map((cell) => cell.textContent.trim()),
+          rows: [...table.querySelectorAll('tbody tr')].filter((row) => !row.querySelector('.empty-note')).map((row) =>
+            [...row.cells].map((cell) => cell.innerText.trim())
+          )
+        };
+      }
+
+      function buildExportHtml(data) {
+        const maxValue = Math.max(1, ...(data.chartValues || []).map((entry) => entry.value));
+        const chartRows = (data.chartValues || []).map((entry) => {
+          const width = Math.max(entry.value ? 3 : 0, Math.round(entry.value * 100 / maxValue));
+          const percent = data.total ? `${(entry.value * 100 / data.total).toFixed(1).replace('.', ',')}%` : '';
+          return `<tr><td>${escapeHtml(entry.label)}</td><td class="number">${numberFormat.format(entry.value)}</td>${data.total === undefined ? '' : `<td>${percent}</td>`}<td class="bar-cell"><table class="bar-track" cellpadding="0" cellspacing="0"><tr><td bgcolor="${entry.color}" width="${width}" style="width:${width}%;height:13px">&nbsp;</td><td>&nbsp;</td></tr></table></td></tr>`;
+        }).join('');
+        const columns = data.headers.map((header) => `<th>${escapeHtml(header)}</th>`).join('');
+        const rows = data.rows.map((row) => `<tr>${row.map((cell, index) =>
+          `<td${typeof cell === 'number' ? ' class="number"' : ''}>${escapeHtml(typeof cell === 'number' ? numberFormat.format(cell) : cell)}</td>`
+        ).join('')}</tr>`).join('');
+        const chart = data.chartValues
+          ? `<h2>Grafik ${escapeHtml(data.title)}</h2><table class="report-table chart-table"><thead><tr><th>Komponen</th><th>Jumlah</th>${data.total === undefined ? '' : '<th>Persentase</th>'}<th>Visual</th></tr></thead><tbody>${chartRows}</tbody></table>`
+          : '';
+        const total = data.total === undefined ? '' : `<p class="summary">Total seluruh BMN: <strong>${numberFormat.format(data.total)} unit</strong></p>`;
+        const exportDate = new Intl.DateTimeFormat('id-ID', { dateStyle: 'long' }).format(new Date());
+        return `<!doctype html><html lang="id"><head><meta charset="utf-8"><title>${escapeHtml(data.title)}</title><style>
+          @page{size:A4 landscape;margin:16mm}body{font-family:Arial,Helvetica,sans-serif;color:#193454;font-size:10pt;margin:24px}
+          h1{font-size:20pt;color:#102b55;margin:0 0 5px}h2{font-size:13pt;color:#174f95;margin:22px 0 8px}
+          .subtitle{color:#647a9b;margin:0 0 18px;font-size:9pt}.summary{padding:10px 12px;background:#eaf3ff;border-left:4px solid #2879d0}
+          .report-table{width:100%;border-collapse:collapse;margin:8px 0 18px}.report-table th{background:#174f95;color:#fff;text-align:left;font-weight:bold}
+          .report-table th,.report-table td{border:1px solid #d5e0ed;padding:8px 10px}.report-table tbody tr:nth-child(even){background:#f2f6fb}
+          .report-table .number{text-align:right;font-weight:bold}.chart-table td{height:27px}.bar-cell{width:55%}.bar-track{width:100%;height:13px;border-collapse:collapse;background:#eef2f8}
+          .bar-track td{border:0;padding:0;height:13px}.footer{margin-top:24px;color:#71839c;font-size:8pt}
+          @media print{body{margin:0}.report-table{page-break-inside:auto}tr{page-break-inside:avoid}}
+        </style></head><body><h1>SIM-BMN | ${escapeHtml(data.title)}</h1><p class="subtitle">Laporan dashboard &bull; Diunduh ${escapeHtml(exportDate)}</p>${total}${chart}<h2>Data ${escapeHtml(data.title)}</h2><table class="report-table"><thead><tr>${columns}</tr></thead><tbody>${rows || `<tr><td colspan="${data.headers.length}">Tidak ada data.</td></tr>`}</tbody></table><p class="footer">Dokumen dibuat otomatis oleh SIM-BMN.</p></body></html>`;
+      }
+
+      function excelXmlEscape(value) {
+        return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      function excelColumnName(index) {
+        let name = '';
+        let column = index + 1;
+        while (column > 0) {
+          const remainder = (column - 1) % 26;
+          name = String.fromCharCode(65 + remainder) + name;
+          column = Math.floor((column - 1) / 26);
         }
+        return name;
+      }
+
+      function createExcelStylesXml() {
+        const fonts = [
+          '<font><sz val="10"/><color rgb="FF193454"/><name val="Arial"/></font>',
+          '<font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Arial"/></font>',
+          '<font><b/><sz val="16"/><color rgb="FFFFFFFF"/><name val="Arial"/></font>',
+          '<font><i/><sz val="10"/><color rgb="FF647A9B"/><name val="Arial"/></font>',
+          '<font><b/><sz val="11"/><color rgb="FF174F95"/><name val="Arial"/></font>',
+          '<font><b/><sz val="10"/><color rgb="FF174F95"/><name val="Arial"/></font>',
+          '<font><b/><sz val="10"/><color rgb="FF398FE0"/><name val="Arial"/></font>',
+          '<font><b/><sz val="10"/><color rgb="FF78B8F3"/><name val="Arial"/></font>',
+          '<font><b/><sz val="10"/><color rgb="FF2DA47B"/><name val="Arial"/></font>',
+          '<font><b/><sz val="10"/><color rgb="FFF39426"/><name val="Arial"/></font>'
+        ];
+        const fills = [
+          '<fill><patternFill patternType="none"/></fill>',
+          '<fill><patternFill patternType="gray125"/></fill>',
+          '<fill><patternFill patternType="solid"><fgColor rgb="FF174F95"/><bgColor indexed="64"/></patternFill></fill>',
+          '<fill><patternFill patternType="solid"><fgColor rgb="FFEAF3FF"/><bgColor indexed="64"/></patternFill></fill>',
+          '<fill><patternFill patternType="solid"><fgColor rgb="FFF3F7FC"/><bgColor indexed="64"/></patternFill></fill>'
+        ];
+        const border = '<border><left style="thin"><color rgb="FFD5E0ED"/></left><right style="thin"><color rgb="FFD5E0ED"/></right><top style="thin"><color rgb="FFD5E0ED"/></top><bottom style="thin"><color rgb="FFD5E0ED"/></bottom><diagonal/></border>';
+        const styles = [
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>',
+          '<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>',
+          '<xf numFmtId="0" fontId="2" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+          '<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+          '<xf numFmtId="0" fontId="4" fillId="3" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf>',
+          '<xf numFmtId="0" fontId="0" fillId="4" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf>',
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>',
+          '<xf numFmtId="0" fontId="5" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+          '<xf numFmtId="0" fontId="6" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+          '<xf numFmtId="0" fontId="7" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+          '<xf numFmtId="0" fontId="8" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+          '<xf numFmtId="0" fontId="9" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>'
+        ];
+        return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="${fonts.length}">${fonts.join('')}</fonts><fills count="${fills.length}">${fills.join('')}</fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>${border}</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="${styles.length}">${styles.join('')}</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+      }
+
+      function createExcelZip(files) {
+        const encoder = new TextEncoder();
+        const crcTable = Array.from({ length: 256 }, (_, index) => {
+          let value = index;
+          for (let bit = 0; bit < 8; bit += 1) value = value & 1 ? 0xedb88320 ^ (value >>> 1) : value >>> 1;
+          return value >>> 0;
+        });
+        const crc32 = (bytes) => {
+          let crc = 0xffffffff;
+          bytes.forEach((byte) => { crc = (crc >>> 8) ^ crcTable[(crc ^ byte) & 0xff]; });
+          return (crc ^ 0xffffffff) >>> 0;
+        };
+        const uint16 = (value) => Uint8Array.from([value & 0xff, (value >>> 8) & 0xff]);
+        const uint32 = (value) => Uint8Array.from([value & 0xff, (value >>> 8) & 0xff, (value >>> 16) & 0xff, (value >>> 24) & 0xff]);
+        const localParts = [];
+        const centralParts = [];
+        let offset = 0;
+
+        files.forEach(([fileName, content]) => {
+          const nameBytes = encoder.encode(fileName);
+          const fileBytes = encoder.encode(content);
+          const checksum = crc32(fileBytes);
+          const localHeader = new Uint8Array([
+            0x50, 0x4b, 0x03, 0x04,
+            ...uint16(20), ...uint16(0x0800), ...uint16(0), ...uint16(0), ...uint16(33),
+            ...uint32(checksum), ...uint32(fileBytes.length), ...uint32(fileBytes.length),
+            ...uint16(nameBytes.length), ...uint16(0)
+          ]);
+          localParts.push(localHeader, nameBytes, fileBytes);
+
+          const centralHeader = new Uint8Array([
+            0x50, 0x4b, 0x01, 0x02,
+            ...uint16(20), ...uint16(20), ...uint16(0x0800), ...uint16(0), ...uint16(0), ...uint16(33),
+            ...uint32(checksum), ...uint32(fileBytes.length), ...uint32(fileBytes.length),
+            ...uint16(nameBytes.length), ...uint16(0), ...uint16(0), ...uint16(0), ...uint16(0), ...uint32(0), ...uint32(offset)
+          ]);
+          centralParts.push(centralHeader, nameBytes);
+          offset += localHeader.length + nameBytes.length + fileBytes.length;
+        });
+
+        const centralSize = centralParts.reduce((size, part) => size + part.length, 0);
+        const endRecord = new Uint8Array([
+          0x50, 0x4b, 0x05, 0x06,
+          ...uint16(0), ...uint16(0), ...uint16(files.length), ...uint16(files.length),
+          ...uint32(centralSize), ...uint32(offset), ...uint16(0)
+        ]);
+        return new Blob([...localParts, ...centralParts, endRecord], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+      }
+
+      function buildExcelWorkbook(data) {
+        const exportDate = new Intl.DateTimeFormat('id-ID', { dateStyle: 'long' }).format(new Date());
+        const maxValue = Math.max(1, ...(data.chartValues || []).map((entry) => entry.value));
+        const chartHeaders = data.chartValues
+          ? ['Komponen', 'Jumlah', ...(data.total === undefined ? [] : ['Persentase']), 'Visualisasi']
+          : [];
+        const columnCount = Math.max(data.headers.length, chartHeaders.length, 1);
+        const rows = [];
+        const mergeRanges = [`A1:${excelColumnName(columnCount - 1)}1`, `A2:${excelColumnName(columnCount - 1)}2`];
+        const pushRow = (values, style, styles = []) => rows.push({ values, style, styles });
+        pushRow([{ value: `SIM-BMN | ${data.title}`, style: 2 }]);
+        pushRow([{ value: `Laporan dashboard - Diunduh ${exportDate}`, style: 3 }]);
+        pushRow([]);
+        if (data.chartValues) {
+          const chartTitleRow = rows.length + 1;
+          mergeRanges.push(`A${chartTitleRow}:${excelColumnName(columnCount - 1)}${chartTitleRow}`);
+          pushRow([{ value: `Grafik ${data.title}`, style: 4 }]);
+          pushRow(chartHeaders.map((header) => ({ value: header, style: 1 })));
+          data.chartValues.forEach((entry) => {
+            const percent = data.total === undefined ? null : `${data.total ? (entry.value * 100 / data.total).toFixed(1).replace('.', ',') : '0,0'}%`;
+            const bar = '\u2588'.repeat(entry.value ? Math.max(1, Math.round(entry.value * 24 / maxValue)) : 0);
+            const colorStyle = {
+              '#174f95': 8, '#398fe0': 9, '#78b8f3': 10, '#2da47b': 11, '#f39426': 12
+            }[entry.color] || 8;
+            const chartRow = [
+              { value: entry.label, style: 5 },
+              { value: entry.value, style: 7 },
+              ...(percent === null ? [] : [{ value: percent, style: 7 }]),
+              { value: bar, style: colorStyle }
+            ];
+            pushRow(chartRow);
+          });
+          pushRow([]);
+        }
+
+        const headerRow = rows.length + 1;
+        pushRow(data.headers.map((header) => ({ value: header, style: 1 })));
+        data.rows.forEach((row, rowIndex) => {
+          const alternateStyle = rowIndex % 2 ? 6 : 5;
+          pushRow(row.map((value, columnIndex) => ({
+            value,
+            style: typeof value === 'number' ? 7 : alternateStyle
+          })));
+        });
+
+        const cellXml = (cell, rowNumber, columnIndex) => {
+          const value = cell && typeof cell === 'object' && Object.prototype.hasOwnProperty.call(cell, 'value') ? cell.value : cell;
+          const style = cell && typeof cell === 'object' && cell.style !== undefined ? cell.style : 5;
+          const reference = `${excelColumnName(columnIndex)}${rowNumber}`;
+          if (typeof value === 'number' && Number.isFinite(value)) {
+            return `<c r="${reference}" s="${style}" t="n"><v>${value}</v></c>`;
+          }
+          if (value === undefined || value === null || value === '') return `<c r="${reference}" s="${style}"/>`;
+          return `<c r="${reference}" s="${style}" t="inlineStr"><is><t xml:space="preserve">${excelXmlEscape(value)}</t></is></c>`;
+        };
+        const sheetRows = rows.map((row, rowIndex) => {
+          const rowNumber = rowIndex + 1;
+          const height = rowNumber === 1 ? '30' : rowNumber === 2 ? '22' : row.values.some((cell) => cell && cell.style === 1) ? '26' : '22';
+          const cells = row.values.map((cell, columnIndex) => cellXml(cell, rowNumber, columnIndex)).join('');
+          return `<row r="${rowNumber}" ht="${height}" customHeight="1">${cells}</row>`;
+        }).join('');
+        const lastColumn = excelColumnName(columnCount - 1);
+        const lastRow = rows.length;
+        const columnWidths = Array.from({ length: columnCount }, (_, index) => {
+          const header = data.headers[index] || chartHeaders[index] || '';
+          const width = index === columnCount - 1 && data.chartValues ? 34 : Math.min(34, Math.max(14, header.length + 3));
+          return `<col min="${index + 1}" max="${index + 1}" width="${width}" customWidth="1"/>`;
+        }).join('');
+        const freezeRows = data.chartValues ? 2 : headerRow;
+        const merges = mergeRanges.map((range) => `<mergeCell ref="${range}"/>`).join('');
+        const mergeXml = merges ? `<mergeCells count="${mergeRanges.length}">${merges}</mergeCells>` : '';
+        const autoFilter = `<autoFilter ref="A${headerRow}:${excelColumnName(data.headers.length - 1)}${lastRow}"/>`;
+        const worksheetXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:${lastColumn}${lastRow}"/><sheetViews><sheetView showGridLines="0" workbookViewId="0"><pane ySplit="${freezeRows}" topLeftCell="A${freezeRows + 1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="22"/><cols>${columnWidths}</cols><sheetData>${sheetRows}</sheetData>${autoFilter}${mergeXml}<pageMargins left="0.3" right="0.3" top="0.5" bottom="0.5" header="0.2" footer="0.2"/><pageSetup orientation="landscape" paperSize="9"/></worksheet>`;
+        const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
+        const rootRelationships = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+        const workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets><sheet name="Laporan BMN" sheetId="1" r:id="rId1"/></sheets></workbook>';
+        const workbookRelationships = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+        return createExcelZip([
+          ['[Content_Types].xml', contentTypes],
+          ['_rels/.rels', rootRelationships],
+          ['xl/workbook.xml', workbook],
+          ['xl/_rels/workbook.xml.rels', workbookRelationships],
+          ['xl/styles.xml', createExcelStylesXml()],
+          ['xl/worksheets/sheet1.xml', worksheetXml]
+        ]);
+      }
+
+      function exportDashboardSection(kind, format) {
+        const data = getDashboardExportData(kind);
+        const safeName = kind.replace(/[^a-z0-9-]/gi, '-');
+        if (format === 'excel') {
+          const blob = buildExcelWorkbook(data);
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `laporan-${safeName}-${new Date().toISOString().slice(0, 10)}.xlsx`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+          return;
+        }
+        const html = buildExportHtml(data);
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+          showArchiveSyncStatus('Izinkan pop-up di browser untuk mencetak laporan PDF.', true);
+          return;
+        }
+        printWindow.onload = () => window.setTimeout(() => printWindow.print(), 250);
+        printWindow.document.open();
+        printWindow.document.write(html);
+        printWindow.document.close();
+      }
+
+      function bindChartTooltips() {
+        document.querySelectorAll('.chart-wrap').forEach((wrapper) => {
+          const tooltip = wrapper.querySelector('.chart-tooltip');
+          const showTooltip = (event) => {
+            const item = event.target.closest('[data-chart-label]');
+            if (!item) {
+              tooltip.hidden = true;
+              return;
+            }
+            const label = item.dataset.chartLabel;
+            const value = item.dataset.chartValue;
+            const percent = item.dataset.chartPercent;
+            tooltip.textContent = `${label}: ${value}${percent ? ` (${percent})` : ''}`;
+            tooltip.hidden = false;
+            const bounds = wrapper.getBoundingClientRect();
+            tooltip.style.left = `${Math.max(0, Math.min(event.clientX - bounds.left, bounds.width - tooltip.offsetWidth - 8))}px`;
+            tooltip.style.top = `${Math.max(0, event.clientY - bounds.top - tooltip.offsetHeight - 8)}px`;
+          };
+          wrapper.addEventListener('pointermove', showTooltip);
+          wrapper.addEventListener('pointerleave', () => { tooltip.hidden = true; });
+        });
       }
 
       function showArchiveSyncStatus(message, isError = false) {
@@ -2613,6 +3043,7 @@
 
       function saveInventoryRecords() {
         localStorage.setItem('bmn-inventory-v1', JSON.stringify(inventoryRecords));
+        renderDashboardSummary();
       }
 
       function getStatusClass(status) {
@@ -3203,6 +3634,16 @@
       document.getElementById('exportExtensionsButton').addEventListener('click', downloadExtensionsCsv);
       document.getElementById('exportReturnsButton').addEventListener('click', downloadReturnsCsv);
       document.getElementById('exportLoansButton').addEventListener('click', downloadLoansCsv);
+      document.querySelectorAll('[data-dashboard-export]').forEach((button) => {
+        button.addEventListener('click', () => {
+          try {
+            exportDashboardSection(button.dataset.dashboardExport, button.dataset.exportFormat);
+          } catch (error) {
+            console.error('Ekspor laporan dashboard gagal.', error);
+            showArchiveSyncStatus(`Ekspor laporan gagal: ${error.message}`, true);
+          }
+        });
+      });
       document.getElementById('backToLoansButton').addEventListener('click', () => {
         const listPage = activeRoute.mode === 'extension' ? 'perpanjangan' : activeRoute.mode === 'return' ? 'pengembalian' : 'peminjaman';
         openRoute({ page: listPage, view: 'list' }, true);
@@ -3298,10 +3739,18 @@
         updateLoanFromChild(event.data);
       });
       window.addEventListener('storage', (event) => {
-        if (event.key !== 'bmn-user-submissions-v1') return;
-        importUserSubmissions();
-        renderDashboardRecentActivity();
-        if (activeRoute.page === 'peminjaman') renderLoans();
+        if (event.key === 'bmn-user-submissions-v1') {
+          importUserSubmissions();
+          renderDashboardRecentActivity();
+          if (activeRoute.page === 'peminjaman') renderLoans();
+          if (activeRoute.page === 'perpanjangan') renderExtensions();
+          if (activeRoute.page === 'pengembalian') renderReturns();
+        }
+        if (event.key === 'bmn-inventory-v1') {
+          inventoryRecords = event.newValue ? JSON.parse(event.newValue) : {};
+          renderDashboardSummary();
+          if (inventoryConfigs[activeRoute.page]) renderInventory(activeRoute.page);
+        }
       });
       frame.addEventListener('load', () => {
         try {
@@ -3331,6 +3780,8 @@
       const today = new Date();
       dashboardDate.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
       importUserSubmissions();
+      renderDashboardSummary();
+      bindChartTooltips();
       renderDashboardRecentActivity();
       openRoute(routeFromHash());
       syncRemoteSubmissions();
