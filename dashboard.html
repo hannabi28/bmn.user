@@ -333,6 +333,9 @@
     .row-link:hover { color: #176bc3; text-decoration: underline; }
     .status { display: inline-block; padding: 3px 6px; border-radius: 20px; background: #dff3ea; color: #18764f; font-size: 8px; }
     .status.waiting { background: #fff0dc; color: #ae5e08; }
+    .status.rejected { background: #ffe4e7; color: #be2435; }
+    .status.borrowed { background: #e0edff; color: #1762b8; }
+    .status.returned { background: #edf1f8; color: #52627b; }
     .empty-note { padding: 18px 10px; color: var(--muted); font-size: 10px; text-align: center; }
     .page-frame { display: block; width: 100%; height: calc(100vh - 68px); border: 0; background: #fff; }
     .page-frame[hidden], .dashboard[hidden] { display: none; }
@@ -516,10 +519,14 @@
     .loan-type-option strong { font-size: 12px; }
     .loan-type-option small { color: var(--muted); font-size: 9px; line-height: 1.5; }
     .loan-detail-meta { margin: 0 0 12px; color: var(--muted); font-size: 10px; }
-    .loan-context-menu { position: fixed; z-index: 20; display: none; min-width: 150px; padding: 5px; border: 1px solid var(--line); border-radius: 7px; background: #fff; box-shadow: 0 8px 22px #122d4b28; }
+    .loan-context-menu { position: fixed; z-index: 20; display: none; min-width: 150px; max-height: min(420px, calc(100vh - 16px)); overflow-y: auto; padding: 5px; border: 1px solid var(--line); border-radius: 7px; background: #fff; box-shadow: 0 8px 22px #122d4b28; }
     .loan-context-menu.open { display: grid; }
     .loan-context-menu button { padding: 8px; border: 0; border-radius: 4px; background: transparent; color: var(--ink); font-size: 10px; text-align: left; }
     .loan-context-menu button:hover { background: #f0f5fc; }
+    .loan-context-menu button[aria-pressed="true"] { background: #eaf3ff; color: #176bc3; font-weight: 700; }
+    .loan-context-menu .menu-label { padding: 7px 8px 3px; border-top: 1px solid var(--line); color: var(--muted); font-size: 9px; font-weight: 700; }
+    .loan-context-menu button.delete-action { margin-top: 4px; border-top: 1px solid var(--line); border-radius: 0 0 4px 4px; color: #b42332; }
+    .loan-context-menu button.delete-action:hover { background: #fff0f1; }
     @media (max-width: 1100px) {
       .inventory-page { padding: 17px 14px; }
       .inventory-stat-grid { gap: 8px; }
@@ -969,7 +976,7 @@
           <div class="loan-toolbar">
             <label class="loan-search"><span aria-hidden="true">⌕</span><input id="loanSearch" type="search" placeholder="Cari nomor peminjaman, nama peminjam..." aria-label="Cari peminjaman"></label>
             <label class="loan-filter-wrap">Jenis BMN:<select class="loan-filter" id="loanTypeFilter"><option value="">Semua</option><option value="kendaraan">Kendaraan</option><option value="ruangan">Ruangan</option><option value="barang">Barang</option></select></label>
-            <label class="loan-filter-wrap">Status:<select class="loan-filter" id="loanStatusFilter"><option value="">Semua</option><option>Disetujui</option><option>Menunggu</option><option>Dipinjam</option><option>Dikembalikan</option></select></label>
+            <label class="loan-filter-wrap">Status:<select class="loan-filter" id="loanStatusFilter"><option value="">Semua</option><option>Disetujui</option><option>Menunggu</option><option>Ditolak</option><option>Dipinjam</option><option>Dikembalikan</option></select></label>
             <label class="loan-filter-wrap">▦ Periode<input class="loan-filter loan-period" id="loanPeriodFilter" type="month" aria-label="Filter periode"></label>
             <button class="inventory-primary loan-search-button" id="loanSearchButton" type="button">⌕ &nbsp;Cari</button>
           </div>
@@ -1006,7 +1013,7 @@
           <div class="loan-toolbar">
             <label class="loan-search"><span aria-hidden="true">⌕</span><input id="returnSearch" type="search" placeholder="Cari nomor pengembalian, nama peminjam..." aria-label="Cari pengembalian"></label>
             <label class="loan-filter-wrap">Jenis BMN:<select class="loan-filter" id="returnTypeFilter"><option value="">Semua</option><option value="kendaraan">Kendaraan</option><option value="ruangan">Ruangan</option><option value="barang">Barang</option></select></label>
-            <label class="loan-filter-wrap">Status:<select class="loan-filter" id="returnStatusFilter"><option value="">Semua</option><option>Diterima</option><option>Diproses</option></select></label>
+            <label class="loan-filter-wrap">Status:<select class="loan-filter" id="returnStatusFilter"><option value="">Semua</option><option>Menunggu</option><option>Disetujui</option><option>Ditolak</option><option>Diterima</option><option>Diproses</option></select></label>
             <label class="loan-filter-wrap">▦ Periode<input class="loan-filter loan-period" id="returnPeriodFilter" type="month" aria-label="Filter periode pengembalian"></label>
             <button class="inventory-primary loan-search-button" id="returnSearchButton" type="button">⌕ &nbsp;Cari</button>
           </div>
@@ -1151,12 +1158,22 @@
     <button type="button" data-loan-menu="bast">Buka berita acara</button>
     <button type="button" data-loan-menu="print">Cetak formulir / PDF</button>
     <button type="button" data-loan-menu="word">Simpan formulir ke Word</button>
+    <div class="menu-label" role="presentation">Ubah status</div>
+    <button type="button" data-loan-menu="status" data-status="Menunggu">Menunggu</button>
+    <button type="button" data-loan-menu="status" data-status="Disetujui">Disetujui</button>
+    <button type="button" data-loan-menu="status" data-status="Ditolak">Ditolak</button>
+    <button class="delete-action" type="button" data-loan-menu="delete">Hapus dari daftar</button>
   </div>
   <div class="loan-context-menu" id="extensionContextMenu" role="menu">
     <button type="button" data-extension-menu="detail">Lihat detail</button>
     <button type="button" data-extension-menu="form">Buka formulir</button>
     <button type="button" data-extension-menu="print">Cetak formulir / PDF</button>
     <button type="button" data-extension-menu="word">Simpan formulir ke Word</button>
+    <div class="menu-label" role="presentation">Ubah status</div>
+    <button type="button" data-extension-menu="status" data-status="Menunggu">Menunggu</button>
+    <button type="button" data-extension-menu="status" data-status="Disetujui">Disetujui</button>
+    <button type="button" data-extension-menu="status" data-status="Ditolak">Ditolak</button>
+    <button class="delete-action" type="button" data-extension-menu="delete">Hapus dari daftar</button>
   </div>
   <div class="loan-context-menu" id="returnContextMenu" role="menu">
     <button type="button" data-return-menu="detail">Lihat detail</button>
@@ -1165,6 +1182,11 @@
     <button type="button" data-return-menu="print">Cetak formulir / PDF</button>
     <button type="button" data-return-menu="word">Simpan formulir ke Word</button>
     <button type="button" data-return-menu="word-bast">Simpan berita acara ke Word</button>
+    <div class="menu-label" role="presentation">Ubah status</div>
+    <button type="button" data-return-menu="status" data-status="Menunggu">Menunggu</button>
+    <button type="button" data-return-menu="status" data-status="Disetujui">Disetujui</button>
+    <button type="button" data-return-menu="status" data-status="Ditolak">Ditolak</button>
+    <button class="delete-action" type="button" data-return-menu="delete">Hapus dari daftar</button>
   </div>
 
   <script src="bmn-archive.js"></script>
@@ -1304,6 +1326,8 @@
       let loans = JSON.parse(localStorage.getItem('bmn-loans-v1') || 'null');
       let extensions = JSON.parse(localStorage.getItem('bmn-extensions-v1') || 'null');
       let returns = JSON.parse(localStorage.getItem('bmn-returns-v1') || 'null');
+      const deletedTransactionStorageKey = 'bmn-deleted-transactions-v1';
+      let deletedTransactions = JSON.parse(localStorage.getItem(deletedTransactionStorageKey) || '[]');
       const extensionPageSize = 5;
       let extensionPageNumber = 1;
       let extensionSearchQuery = '';
@@ -1317,8 +1341,75 @@
       let returnType = '';
       let returnStatus = '';
       const entityLabels = { kendaraan: 'Kendaraan', ruangan: 'Ruangan', barang: 'Barang' };
-      const loanStatuses = ['Disetujui', 'Menunggu', 'Dipinjam', 'Dikembalikan'];
-      const extensionStatuses = ['Menunggu', 'Disetujui', 'Ditolak'];
+      const workflowStatuses = ['Menunggu', 'Disetujui', 'Ditolak'];
+      const loanStatuses = [...workflowStatuses, 'Dipinjam', 'Dikembalikan'];
+      const extensionStatuses = workflowStatuses;
+      const returnStatuses = [...workflowStatuses, 'Diterima', 'Diproses'];
+
+      function getWorkflowStatusClass(status) {
+        if (status === 'Menunggu' || status === 'Diproses') return 'waiting';
+        if (status === 'Ditolak') return 'rejected';
+        if (status === 'Dipinjam') return 'borrowed';
+        if (status === 'Dikembalikan') return 'returned';
+        return '';
+      }
+
+      function updateWorkflowStatus(records, id, status, persist) {
+        if (!workflowStatuses.includes(status)) return;
+        const record = records.find((item) => item.id === id);
+        if (!record || record.status === status) return;
+        record.status = status;
+        persist();
+        showArchiveSyncStatus(`Status ${record.number} diubah menjadi ${status}.`);
+      }
+
+      function openTransactionActionMenu(menu, trigger, record) {
+        menu.querySelectorAll('[data-status]').forEach((button) => {
+          button.setAttribute('aria-pressed', String(button.dataset.status === record.status));
+        });
+        menu.classList.add('open');
+        const bounds = trigger.getBoundingClientRect();
+        const menuWidth = menu.offsetWidth;
+        const menuHeight = menu.offsetHeight;
+        menu.style.left = `${Math.max(8, Math.min(bounds.right - menuWidth, window.innerWidth - menuWidth - 8))}px`;
+        menu.style.top = `${Math.max(8, Math.min(bounds.bottom + 5, window.innerHeight - menuHeight - 8))}px`;
+      }
+
+      function isTransactionDeleted(kind, submission, dashboardRecordId) {
+        const submissionId = String(submission.id || '');
+        const candidates = new Set([
+          submissionId,
+          String(submission.adminRecordId || ''),
+          String(dashboardRecordId || ''),
+          `user-${submissionId}`,
+          `user-extension-${submissionId}`,
+          `user-return-${submissionId}`
+        ].filter(Boolean));
+        return deletedTransactions.some((entry) => entry.kind === kind && candidates.has(String(entry.id)));
+      }
+
+      function deleteTransactionFromList(kind, id) {
+        const config = {
+          peminjaman: { records: loans, save: persistLoans },
+          perpanjangan: { records: extensions, save: persistExtensions },
+          pengembalian: { records: returns, save: persistReturns }
+        }[kind];
+        const record = config && config.records.find((item) => item.id === id);
+        if (!record || !window.confirm(`Hapus "${record.number}" dari daftar pada browser ini? Data pengajuan dan arsip di Google Sheets/Drive tidak dihapus.`)) return;
+
+        const identifiers = [...new Set([record.id, record.sourceId, record.archiveSubmissionId].filter(Boolean).map(String))];
+        const deletedAt = new Date().toISOString();
+        deletedTransactions = [
+          ...deletedTransactions.filter((entry) => entry.kind !== kind || !identifiers.includes(String(entry.id))),
+          ...identifiers.map((identifier) => ({ kind, id: identifier, deletedAt }))
+        ];
+        localStorage.setItem(deletedTransactionStorageKey, JSON.stringify(deletedTransactions));
+        if (kind === 'peminjaman') loans = loans.filter((item) => item.id !== id);
+        if (kind === 'perpanjangan') extensions = extensions.filter((item) => item.id !== id);
+        if (kind === 'pengembalian') returns = returns.filter((item) => item.id !== id);
+        config.save();
+        showArchiveSyncStatus(`"${record.number}" dihapus dari daftar browser ini. Arsip Google Sheets/Drive tetap tersimpan.`);
+      }
 
       function escapeHtml(value) {
         return String(value ?? '').replace(/[&<>"']/g, (character) => ({
@@ -1427,10 +1518,10 @@
         const recentReturns = recent(returns, ['savedAt', 'returnDate']);
 
         document.getElementById('recentLoansBody').innerHTML = recentLoans.length ? recentLoans.map((record) =>
-          `<tr><td><button class="row-link" type="button" data-service="peminjaman" data-entity="${escapeHtml(record.entity)}">${escapeHtml(record.number || '—')}</button></td><td>${escapeHtml(record.name || '—')}</td><td>${escapeHtml(entityLabels[record.entity] || 'BMN')}</td><td>${formatLoanDate(record.startDate)}</td><td><span class="status ${record.status === 'Menunggu' ? 'waiting' : ''}">${escapeHtml(record.status || 'Menunggu')}</span></td></tr>`
+          `<tr><td><button class="row-link" type="button" data-service="peminjaman" data-entity="${escapeHtml(record.entity)}">${escapeHtml(record.number || '—')}</button></td><td>${escapeHtml(record.name || '—')}</td><td>${escapeHtml(entityLabels[record.entity] || 'BMN')}</td><td>${formatLoanDate(record.startDate)}</td><td><span class="status ${getWorkflowStatusClass(record.status)}">${escapeHtml(record.status || 'Menunggu')}</span></td></tr>`
         ).join('') : emptyRow(5);
         document.getElementById('recentExtensionsBody').innerHTML = recentExtensions.length ? recentExtensions.map((record) =>
-          `<tr><td><button class="row-link" type="button" data-service="perpanjangan" data-entity="${escapeHtml(record.entity)}">${escapeHtml(record.number || '—')}</button></td><td>${escapeHtml(record.name || '—')}</td><td>${escapeHtml(record.item || '—')}</td><td>${formatLoanDate(record.oldReturnDate)}</td><td><span class="status ${record.status === 'Menunggu' ? 'waiting' : ''}">${escapeHtml(record.status || 'Menunggu')}</span></td></tr>`
+          `<tr><td><button class="row-link" type="button" data-service="perpanjangan" data-entity="${escapeHtml(record.entity)}">${escapeHtml(record.number || '—')}</button></td><td>${escapeHtml(record.name || '—')}</td><td>${escapeHtml(record.item || '—')}</td><td>${formatLoanDate(record.oldReturnDate)}</td><td><span class="status ${getWorkflowStatusClass(record.status)}">${escapeHtml(record.status || 'Menunggu')}</span></td></tr>`
         ).join('') : emptyRow(5);
         document.getElementById('recentReturnsBody').innerHTML = recentReturns.length ? recentReturns.map((record) =>
           `<tr><td><button class="row-link" type="button" data-service="pengembalian" data-entity="${escapeHtml(record.entity)}">${escapeHtml(record.number || '—')}</button></td><td>${escapeHtml(record.name || '—')}</td><td>${escapeHtml(record.item || '—')}</td><td>${formatLoanDate(record.returnDate)}</td></tr>`
@@ -1901,7 +1992,7 @@
       } else {
         returns = returns.map((record) => ({
           ...record,
-          status: ['Diterima', 'Diproses'].includes(record.status) ? record.status : 'Diproses'
+          status: returnStatuses.includes(record.status) ? record.status : 'Menunggu'
         }));
       }
 
@@ -1943,7 +2034,7 @@
         const start = records.length ? (loanPageNumber - 1) * loanPageSize : 0;
         const visibleRecords = records.slice(start, start + loanPageSize);
         const rows = visibleRecords.map((record, index) => {
-          const statusClass = record.status === 'Menunggu' ? 'waiting' : record.status === 'Dipinjam' ? 'borrowed' : record.status === 'Dikembalikan' ? 'returned' : '';
+          const statusClass = getWorkflowStatusClass(record.status);
           return `<tr>
             <td>${start + index + 1}</td>
             <td><button class="loan-number" type="button" data-loan-action="detail" data-loan-id="${escapeHtml(record.id)}">${escapeHtml(record.number)}</button></td>
@@ -2010,7 +2101,7 @@
         const start = records.length ? (extensionPageNumber - 1) * extensionPageSize : 0;
         const visibleRecords = records.slice(start, start + extensionPageSize);
         const rows = visibleRecords.map((record, index) => {
-          const statusClass = record.status === 'Menunggu' ? 'waiting' : record.status === 'Ditolak' ? 'rejected' : '';
+          const statusClass = getWorkflowStatusClass(record.status);
           return `<tr>
             <td>${start + index + 1}</td>
             <td><button class="loan-number" type="button" data-extension-action="detail" data-extension-id="${escapeHtml(record.id)}">${escapeHtml(record.number)}</button></td>
@@ -2045,6 +2136,7 @@
       function persistExtensions() {
         localStorage.setItem('bmn-extensions-v1', JSON.stringify(extensions));
         if (activeRoute.page === 'perpanjangan') renderExtensions();
+        renderDashboardRecentActivity();
       }
 
       function getFilteredReturns() {
@@ -2068,7 +2160,7 @@
         const start = records.length ? (returnPageNumber - 1) * returnPageSize : 0;
         const visibleRecords = records.slice(start, start + returnPageSize);
         const rows = visibleRecords.map((record, index) => {
-          const statusClass = record.status === 'Diproses' ? 'waiting' : '';
+          const statusClass = getWorkflowStatusClass(record.status);
           return `<tr>
             <td>${start + index + 1}</td>
             <td><button class="loan-number" type="button" data-return-action="detail" data-return-id="${escapeHtml(record.id)}">${escapeHtml(record.number)}</button></td>
@@ -2101,6 +2193,7 @@
       function persistReturns() {
         localStorage.setItem('bmn-returns-v1', JSON.stringify(returns));
         if (activeRoute.page === 'pengembalian') renderReturns();
+        renderDashboardRecentActivity();
       }
 
       function createReturnFromForm(entity, data, returnId = null, loanId = null, signature = '') {
@@ -2123,7 +2216,7 @@
           item,
           quantity: `${quantity} ${quantityUnit}`,
           returnDate: data.tanggalKembali || '',
-          status: existing?.status || 'Diproses',
+          status: existing?.status || 'Menunggu',
           data: { ...(existing?.data || {}), ...data },
           signature: signature || existing?.signature || '',
           bast: existing?.bast || null,
@@ -2196,11 +2289,7 @@
           openReturnForm(record.entity, record, 'pengembalian', 'print-return');
         } else if (action === 'more') {
           selectedReturnMenuId = id;
-          const menu = document.getElementById('returnContextMenu');
-          const bounds = trigger.getBoundingClientRect();
-          menu.style.left = `${Math.max(8, Math.min(bounds.right - 210, window.innerWidth - 220))}px`;
-          menu.style.top = `${Math.min(bounds.bottom + 5, window.innerHeight - 200)}px`;
-          menu.classList.add('open');
+          openTransactionActionMenu(document.getElementById('returnContextMenu'), trigger, record);
         }
       }
 
@@ -2293,11 +2382,7 @@
           openExtensionForm(record.entity, record, 'print-extension');
         } else if (action === 'more') {
           selectedExtensionMenuId = id;
-          const menu = document.getElementById('extensionContextMenu');
-          const bounds = trigger.getBoundingClientRect();
-          menu.style.left = `${Math.max(8, Math.min(bounds.right - 190, window.innerWidth - 200))}px`;
-          menu.style.top = `${Math.min(bounds.bottom + 5, window.innerHeight - 170)}px`;
-          menu.classList.add('open');
+          openTransactionActionMenu(document.getElementById('extensionContextMenu'), trigger, record);
         }
       }
 
@@ -2319,6 +2404,7 @@
       function persistLoans() {
         localStorage.setItem('bmn-loans-v1', JSON.stringify(loans));
         renderLoans();
+        renderDashboardRecentActivity();
       }
 
       function createLoanFromForm(entity, data, sourceRecord = null, recordId = null, signature = '') {
@@ -2344,7 +2430,7 @@
           savedAt: new Date().toISOString()
         };
         if (sourceRecord) {
-          if (loanStatuses.includes(sourceRecord.status)) {
+          if (!existing && loanStatuses.includes(sourceRecord.status)) {
             record.status = sourceRecord.status;
           }
           record.savedAt = sourceRecord.savedAt || record.savedAt;
@@ -2369,6 +2455,8 @@
           const dashboardRecordId = String(submission.id || '').startsWith('dashboard-')
             ? String(submission.id).slice('dashboard-'.length)
             : null;
+          const submissionKind = ['perpanjangan', 'pengembalian'].includes(submission.kind) ? submission.kind : 'peminjaman';
+          if (isTransactionDeleted(submissionKind, submission, dashboardRecordId)) return;
           if (dashboardRecordId) {
             const dashboardLoan = loans.find((record) => record.id === dashboardRecordId);
             const dashboardExtension = extensions.find((record) => record.id === dashboardRecordId);
@@ -2562,11 +2650,7 @@
           openLoanForm(record.entity, record, 'loan', 'print');
         } else if (action === 'more') {
           selectedLoanMenuId = id;
-          const menu = document.getElementById('loanContextMenu');
-          const bounds = trigger.getBoundingClientRect();
-          menu.style.left = `${Math.max(8, Math.min(bounds.right - 150, window.innerWidth - 160))}px`;
-          menu.style.top = `${Math.min(bounds.bottom + 5, window.innerHeight - 150)}px`;
-          menu.classList.add('open');
+          openTransactionActionMenu(document.getElementById('loanContextMenu'), trigger, record);
         }
       }
 
@@ -3693,6 +3777,8 @@
           const record = findLoan(selectedLoanMenuId);
           document.getElementById('loanContextMenu').classList.remove('open');
           if (!record) return;
+          if (button.dataset.loanMenu === 'status') updateWorkflowStatus(loans, record.id, button.dataset.status, persistLoans);
+          if (button.dataset.loanMenu === 'delete') deleteTransactionFromList('peminjaman', record.id);
           if (button.dataset.loanMenu === 'detail') showLoanDetail(record);
           if (button.dataset.loanMenu === 'bast') openLoanForm(record.entity, record, 'bast');
           if (button.dataset.loanMenu === 'print') openLoanForm(record.entity, record, 'loan', 'print');
@@ -3704,6 +3790,8 @@
           const record = findExtension(selectedExtensionMenuId);
           document.getElementById('extensionContextMenu').classList.remove('open');
           if (!record) return;
+          if (button.dataset.extensionMenu === 'status') updateWorkflowStatus(extensions, record.id, button.dataset.status, persistExtensions);
+          if (button.dataset.extensionMenu === 'delete') deleteTransactionFromList('perpanjangan', record.id);
           if (button.dataset.extensionMenu === 'detail') showExtensionDetail(record);
           if (button.dataset.extensionMenu === 'form') openExtensionForm(record.entity, record);
           if (button.dataset.extensionMenu === 'print') openExtensionForm(record.entity, record, 'print-extension');
@@ -3715,6 +3803,8 @@
           const record = findReturn(selectedReturnMenuId);
           document.getElementById('returnContextMenu').classList.remove('open');
           if (!record) return;
+          if (button.dataset.returnMenu === 'status') updateWorkflowStatus(returns, record.id, button.dataset.status, persistReturns);
+          if (button.dataset.returnMenu === 'delete') deleteTransactionFromList('pengembalian', record.id);
           if (button.dataset.returnMenu === 'detail') showReturnDetail(record);
           if (button.dataset.returnMenu === 'form') openReturnForm(record.entity, record);
           if (button.dataset.returnMenu === 'bast') openReturnForm(record.entity, record, 'berita-acara');

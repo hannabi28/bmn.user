@@ -21,9 +21,11 @@ Lalu buka `http://localhost:8000`.
 - Panel Rekapitulasi BMN, Status BMN, Peminjaman Terbaru, Perpanjangan Terbaru, dan Pengembalian Terbaru menyediakan ekspor Microsoft Excel Worksheet (.xlsx) berformat dan PDF melalui dialog cetak browser.
 - Menu utama Kendaraan, Ruangan, dan Barang memiliki tampilan inventaris tersendiri, dilengkapi statistik, tabel, pencarian, filter, dan paginasi.
 - Data inventaris mendukung tambah, detail, edit, hapus, serta ekspor CSV untuk barang; data disimpan di localStorage browser.
-- Menu Peminjaman menampilkan daftar transaksi dengan pencarian, filter jenis/status/periode, paginasi, detail, dan ekspor CSV.
-- Menu Perpanjangan menampilkan daftar pengajuan beserta ringkasan status, pencarian, filter jenis/status/periode, paginasi, detail, dan ekspor CSV.
-- Menu Pengembalian menampilkan nomor dan tanggal pengembalian, peminjam, jenis BMN, jumlah, status, pencarian, filter, paginasi, detail, dan ekspor CSV.
+- Menu Peminjaman menampilkan daftar transaksi dengan pencarian, filter jenis/status/periode, paginasi, detail, dan ekspor CSV; menu Aksi dapat mengubah status atau menghapus transaksi dari daftar browser ini.
+- Menu Perpanjangan menampilkan daftar pengajuan beserta ringkasan status, pencarian, filter jenis/status/periode, paginasi, detail, dan ekspor CSV; menu Aksi dapat mengubah status atau menghapus pengajuan dari daftar browser ini.
+- Menu Pengembalian menampilkan nomor dan tanggal pengembalian, peminjam, jenis BMN, jumlah, status, pencarian, filter, paginasi, detail, dan ekspor CSV; menu Aksi dapat memilih status atau menghapus data dari daftar browser ini.
+- Penghapusan daftar memerlukan konfirmasi dan disimpan sebagai penanda lokal agar data arsip tidak muncul kembali setelah sinkronisasi; salinan Google Sheets dan PDF Google Drive tidak ikut dihapus.
+- Perubahan status disimpan di localStorage browser admin dan tetap terbaca setelah halaman dimuat ulang; status belum disinkronkan antarperangkat.
 - Pengajuan dari daftar memilih Kendaraan, Ruangan, atau Barang; formulir dan berita acara menggunakan kolom khusus pada halaman aset masing-masing.
 - Formulir peminjaman, perpanjangan, pengembalian, dan berita acara menggunakan kolom sesuai jenis aset; dokumen dapat dicetak/disimpan sebagai PDF melalui dialog cetak atau diekspor sebagai Word dengan kop surat.
 - Pengajuan perpanjangan tersimpan di browser dan terhubung ke formulir Kendaraan, Ruangan, atau Barang yang sesuai.
