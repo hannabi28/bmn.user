@@ -42,20 +42,21 @@
       .map((style) => style.textContent)
       .join('\n');
     const overrides = `
-      @page { size: A4 portrait; margin: 12mm; }
+      @page { size: A4 portrait; margin: 1cm 1.5cm 2cm; }
       html, body {
         width: auto !important; height: auto !important; min-width: 0 !important;
         min-height: 0 !important; margin: 0 !important; padding: 0 !important;
         overflow: visible !important; background: #fff !important;
       }
-      body.${config.mode} { display: block !important; color: #111 !important; }
+      body.${config.mode} { display: block !important; color: #111 !important; font-family: Arial, sans-serif !important; font-size: 12pt !important; }
       .archive-document {
         display: block !important; width: 100% !important; max-width: none !important;
         min-width: 0 !important; margin: 0 !important; padding: 0 !important;
         overflow: visible !important; border: 0 !important; border-radius: 0 !important;
         box-shadow: none !important; background: #fff !important; color: #111 !important;
+        font-family: Arial, sans-serif !important; font-size: 12pt !important;
       }
-      .archive-document, .archive-document * { font-family: Arial, sans-serif !important; }
+      .archive-document, .archive-document * { font-family: Arial, sans-serif !important; font-size: 12pt !important; }
       .archive-document img { max-width: 100% !important; object-fit: contain !important; }
     `;
     const html = `<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${config.label}</title><style>${styles}\n${overrides}</style></head><body class="${config.mode}">${clone.outerHTML}</body></html>`;

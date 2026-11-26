@@ -2927,7 +2927,7 @@
           [34, 4, 62].forEach((width, cellIndex) => {
             const cell = row.insertCell();
             cell.setAttribute('width', `${width}%`);
-            cell.style.cssText = `width:${width}%;padding:2pt 2pt;vertical-align:top;${cellIndex === 2 ? 'border-bottom:1px dotted #111;' : ''}`;
+            cell.style.cssText = `width:${width}%;padding:2pt 2pt;vertical-align:top;`;
             while (cells[cellIndex].firstChild) cell.appendChild(cells[cellIndex].firstChild);
           });
           line.replaceWith(table);
@@ -3004,10 +3004,10 @@
           }
           signatures.replaceWith(table);
         }
-        clone.style.cssText = 'display:block;width:100%;max-width:none;margin:0;padding:0;border:0;box-shadow:none;color:#111;font-family:Arial,sans-serif;font-size:9pt;line-height:1.3;';
+        clone.style.cssText = 'display:block;width:100%;max-width:none;margin:0;padding:0;border:0;box-shadow:none;color:#111;font-family:Arial,sans-serif;font-size:12pt;line-height:1.3;';
         clone.querySelectorAll('*:not(img)').forEach((element) => {
           element.style.fontFamily = 'Arial, sans-serif';
-          element.style.fontSize = '9pt';
+          element.style.fontSize = '12pt';
           element.style.lineHeight = '1.3';
           element.style.color = '#111';
         });
@@ -3020,13 +3020,13 @@
           heading.style.textAlign = 'center';
         });
         clone.querySelectorAll('.doc-subtitle').forEach((heading) => {
-          heading.style.cssText += 'margin:0;font-size:10pt;font-weight:bold;';
+          heading.style.cssText += 'margin:0;font-size:12pt;font-weight:bold;';
         });
         clone.querySelectorAll('h2').forEach((heading) => {
-          heading.style.cssText += 'margin:0;text-align:center;font-size:12pt;font-weight:bold;text-decoration:underline;';
+          heading.style.cssText += 'margin:0;text-align:center;font-size:12pt;font-weight:bold;text-decoration:none;';
         });
         clone.querySelectorAll('h3').forEach((heading) => {
-          heading.style.cssText += 'margin:5pt 0 2pt;text-align:center;font-size:10pt;font-weight:bold;text-decoration:underline;';
+          heading.style.cssText += 'margin:5pt 0 2pt;text-align:center;font-size:12pt;font-weight:bold;text-decoration:none;';
         });
         clone.querySelectorAll('h4').forEach((heading) => {
           heading.style.cssText += 'margin:0 0 4pt;text-align:center;font-weight:bold;text-decoration:underline;';
@@ -3041,17 +3041,17 @@
           body.style.marginTop = '20pt';
         });
         const styles = `
-          @page WordSection1 { size: 595.3pt 841.9pt; margin: 28.35pt; }
-          body { margin: 0; color: #111; font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.3; }
+          @page WordSection1 { size: 595.3pt 841.9pt; margin: 28.35pt 42.52pt 56.7pt 42.52pt; }
+          body { margin: 0; color: #111; font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.3; }
           .WordSection1 { page: WordSection1; }
-          .loan-preview, .preview { width: 100%; max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; color: #111; font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.3; }
+          .loan-preview, .preview { width: 100%; max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; color: #111; font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.3; }
           .loan-letterhead, .letterhead { display: block; width: 100%; margin: 0 auto 12pt; text-align: center; }
           .loan-letterhead img, .letterhead img { display: block; width: 100%; max-width: 100%; height: auto; margin: 0 auto; }
           .preview p, .loan-preview p { margin: 0 0 5pt; text-align: justify; }
-          .preview .doc-subtitle { margin: 0; text-align: center; font-size: 9pt; font-weight: bold; }
-          .preview h3 { margin: 5pt 0 2pt; text-align: center; font-size: 10pt; font-weight: bold; text-decoration: underline; }
+          .preview .doc-subtitle { margin: 0; text-align: center; font-size: 12pt; font-weight: bold; }
+          .preview h3 { margin: 5pt 0 2pt; text-align: center; font-size: 12pt; font-weight: bold; text-decoration: none; }
           .preview .doc-number { margin: 3pt 0 12pt; text-align: center; }
-          .loan-preview h2 { margin: 0; text-align: center; font-size: 12pt; font-weight: bold; text-decoration: underline; }
+          .loan-preview h2 { margin: 0; text-align: center; font-size: 12pt; font-weight: bold; text-decoration: none; }
           .loan-preview .loan-body { margin-top: 20pt; }
           .preview .doc-table { width: 100%; border-collapse: collapse; margin: 8pt 0; }
           .preview .doc-table td { padding: 2pt 3pt; vertical-align: top; }
@@ -3064,7 +3064,7 @@
         const title = kind === 'bast' ? activeRoute.mode === 'return' ? 'berita-acara-pengembalian' : 'berita-acara-peminjaman' :
           kind === 'extension' ? 'formulir-perpanjangan' : kind === 'return' ? 'formulir-pengembalian' : 'formulir-peminjaman';
         const cloneHtml = clone.outerHTML.replace(/ data-word-content-id="([^"]+)"/g, ' src="cid:$1"');
-        const html = `<!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><meta name="ProgId" content="Word.Document"><meta name="Generator" content="SIM-BMN"><title>${title}</title><style>${styles}</style></head><body><div class="WordSection1" style="font-family:Arial,sans-serif;font-size:9pt;">${cloneHtml}</div></body></html>`;
+        const html = `<!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><meta name="ProgId" content="Word.Document"><meta name="Generator" content="SIM-BMN"><title>${title}</title><style>${styles}</style></head><body><div class="WordSection1" style="font-family:Arial,sans-serif;font-size:12pt;">${cloneHtml}</div></body></html>`;
         const boundary = `----=_NextPart_${Date.now().toString(16)}_${Math.random().toString(16).slice(2)}`;
         const mhtml = [
           'MIME-Version: 1.0',
@@ -3846,6 +3846,26 @@
         try {
           const child = frame.contentDocument;
           if (!child || !child.body) throw new Error('Dokumen layanan tidak dapat dibaca.');
+          const titleStyle = child.createElement('style');
+          titleStyle.textContent = `
+            @media screen {
+              .loan-preview h2, .extension-preview h2, .return-preview h2,
+              .preview .doc-subtitle, .preview h3 {
+                font-family: Arial, sans-serif !important;
+                font-size: 18px !important;
+                font-weight: 700 !important;
+                line-height: 1.35 !important;
+                text-decoration: none !important;
+              }
+            }
+            @media print {
+              .loan-preview h2, .extension-preview h2, .return-preview h2,
+              .preview .doc-subtitle, .preview h3 {
+                text-decoration: none !important;
+              }
+            }
+          `;
+          child.head.appendChild(titleStyle);
           const childSidebar = child.querySelector('.app-shell > .sidebar, .app-shell .sidebar');
           const childShell = child.querySelector('.app-shell');
           if (childSidebar) childSidebar.style.display = 'none';

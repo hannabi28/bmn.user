@@ -281,6 +281,8 @@
             '.embedded-form .next-document{margin-top:20px!important;padding:18px!important;border:1px solid #d5e5f5!important;border-radius:14px!important;background:#f8fbff!important}',
             '.embedded-form .next-document h3{margin:0 0 6px!important;color:#102b55!important;font-size:15px!important}',
             '.embedded-form .next-document p{margin:0!important;color:#607995!important;font:11px/1.5 Arial,sans-serif!important}',
+            '@media screen{.embedded-form .loan-preview h2,.embedded-form .extension-preview h2,.embedded-form .return-preview h2,.embedded-form .preview .doc-subtitle,.embedded-form .preview h3{font-family:Arial,sans-serif!important;font-size:18px!important;font-weight:700!important;line-height:1.35!important;text-decoration:none!important}}',
+            '@media print{@page{size:A4 portrait;margin:1cm 1.5cm 2cm}.embedded-form .preview,.embedded-form .preview *,.embedded-form .loan-preview,.embedded-form .loan-preview *,.embedded-form .extension-preview,.embedded-form .extension-preview *,.embedded-form .return-preview,.embedded-form .return-preview *{font-family:Arial,sans-serif!important;font-size:12pt!important}.embedded-form .loan-preview h2,.embedded-form .extension-preview h2,.embedded-form .return-preview h2,.embedded-form .preview .doc-subtitle,.embedded-form .preview h3{text-decoration:none!important}}',
             '@media (max-width:760px){.dashboard-page{padding:12px!important}.embedded-form .panel{padding:18px!important}.embedded-form .form-grid{grid-template-columns:1fr!important}.embedded-form .field.full{grid-column:auto!important}.embedded-form .actions .btn{flex:1 1 145px!important}}'
           ].join('');
           childDocument.head.appendChild(style);

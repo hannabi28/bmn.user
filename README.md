@@ -28,6 +28,7 @@ Lalu buka `http://localhost:8000`.
 - Perubahan status disimpan di localStorage browser admin dan tetap terbaca setelah halaman dimuat ulang; status belum disinkronkan antarperangkat.
 - Pengajuan dari daftar memilih Kendaraan, Ruangan, atau Barang; formulir dan berita acara menggunakan kolom khusus pada halaman aset masing-masing.
 - Formulir peminjaman, perpanjangan, pengembalian, dan berita acara menggunakan kolom sesuai jenis aset; dokumen dapat dicetak/disimpan sebagai PDF melalui dialog cetak atau diekspor sebagai Word dengan kop surat.
+- Formulir dan berita acara memakai kertas A4, margin atas 1 cm, bawah 2 cm, kiri/kanan 1,5 cm, serta Arial 12 pt; isian data tidak diberi garis titik.
 - Pengajuan perpanjangan tersimpan di browser dan terhubung ke formulir Kendaraan, Ruangan, atau Barang yang sesuai.
 - Pengembalian dan berita acara serah terima pengembalian tersimpan di browser dan terhubung ke formulir Kendaraan, Ruangan, atau Barang yang sesuai.
 - Navigasi dashboard menghubungkan kartu, grafik, menu, dan transaksi ke daftar peminjaman atau formulir aset yang sesuai.
